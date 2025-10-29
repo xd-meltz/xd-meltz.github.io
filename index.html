@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Igor Rix Photography</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: #111;
+      color: #fff;
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    section {
+      padding: 60px 30px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    h1, h2, h3 {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    /* Navbar */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 20px;
+      z-index: 10;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+      flex-wrap: wrap;
+    }
+
+    nav .pfp {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      margin-right: 20px;
+      object-fit: cover;
+      border: 2px solid #ff4c4c;
+      transition: transform 0.3s;
+    }
+
+    nav .pfp:hover { transform: scale(1.1) rotate(5deg); }
+
+    nav a {
+      margin: 8px 15px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      transition: color 0.3s, text-shadow 0.3s;
+    }
+
+    nav a:hover {
+      color: #ff4c4c;
+      text-shadow: 0 0 10px #ff4c4c;
+    }
+
+    /* Hero Section */
+    #hero {
+      position: relative;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      overflow: hidden;
+      background: radial-gradient(circle at 50% 20%, #1a1a1a 0%, #000 80%);
+      color: #fff;
+    }
+
+    .wave-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 300%;
+      height: 100%;
+      background: url('https://svgshare.com/i/12ZT.svg') repeat-x;
+      background-size: 50% 100%;
+      animation: waveLoop 20s linear infinite;
+      opacity: 0.25;
+      z-index: 0;
+    }
+
+    @keyframes waveLoop {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    #hero h1, #hero p {
+      position: relative;
+      z-index: 1;
+      animation: fadeInUp 1s ease forwards;
+    }
+
+    #hero h1 {
+      font-size: 4em;
+      font-weight: 700;
+      background: linear-gradient(90deg, #ff4c4c, #fff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    #hero p {
+      font-size: 1.2em;
+      color: #ccc;
+      animation-delay: 0.5s;
+    }
+
+    @keyframes fadeInUp {
+      0% { opacity: 0; transform: translateY(50px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-decoration {
+      position: absolute;
+      bottom: 15%;
+      width: 80px;
+      height: 4px;
+      background: #fff;
+      border-radius: 2px;
+      animation: slide 2s infinite alternate;
+      z-index: 1;
+    }
+
+    @keyframes slide {
+      0% { transform: translateX(-50px); }
+      100% { transform: translateX(50px); }
+    }
+
+    .scroll-indicator {
+      position: absolute;
+      bottom: 30px;
+      width: 20px;
+      height: 20px;
+      border-left: 2px solid #fff;
+      border-bottom: 2px solid #fff;
+      transform: rotate(-45deg);
+      animation: bounce 1.5s infinite;
+      opacity: 0.6;
+      z-index: 1;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0) rotate(-45deg); }
+      50% { transform: translateY(10px) rotate(-45deg); }
+    }
+
+    /* About Section */
+    #about {
+      text-align: center;
+      max-width: 800px;
+      animation: fadeIn 1s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+
+    /* Portfolio Section */
+    #portfolio {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      width: 100%;
+      padding-top: 40px;
+    }
+
+    #portfolio img {
+      width: 100%;
+      border-radius: 20px;
+      transition: transform 0.5s, filter 0.5s, box-shadow 0.5s;
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(255,255,255,0.1);
+      aspect-ratio: 2 / 3;
+      object-fit: cover;
+    }
+
+    #portfolio img:hover {
+      transform: scale(1.1) rotate(-2deg);
+      filter: brightness(1.3);
+      box-shadow: 0 10px 25px rgba(255,255,255,0.6);
+    }
+
+    /* Lightbox */
+    .lightbox {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.9);
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+
+    .lightbox img {
+      max-width: 90%;
+      max-height: 90%;
+      border-radius: 10px;
+      box-shadow: 0 0 30px rgba(255,255,255,0.2);
+      animation: zoomIn 0.3s ease;
+    }
+
+    @keyframes zoomIn {
+      0% { transform: scale(0.8); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* Gear Section */
+    #gear {
+      text-align: center;
+    }
+
+    .gear-list {
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+      margin-top: 30px;
+    }
+
+    .gear-item {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .bullet {
+      width: 10px;
+      height: 10px;
+      background: #ff4c4c;
+      border-radius: 50%;
+      flex-shrink: 0;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.4); opacity: 0.6; }
+    }
+
+    #gear img {
+      width: 140px;
+      border-radius: 20px;
+      object-fit: cover;
+      box-shadow: 0 5px 15px rgba(255,255,255,0.2);
+      transition: transform 0.5s, box-shadow 0.5s;
+    }
+
+    #gear img:hover {
+      transform: rotate(5deg) scale(1.05);
+      box-shadow: 0 15px 35px rgba(255,255,255,0.6);
+    }
+
+    #gear p {
+      color: #fff;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    /* Buy Section */
+    #buy a {
+      display: inline-block;
+      padding: 15px 30px;
+      margin-top: 20px;
+      background: #ff4c4c;
+      color: #fff;
+      font-weight: bold;
+      border-radius: 50px;
+      transition: transform 0.3s, background 0.3s, box-shadow 0.3s;
+      box-shadow: 0 5px 15px rgba(255,76,76,0.4);
+    }
+
+    #buy a:hover {
+      transform: scale(1.1);
+      background: #fff;
+      color: #111;
+      box-shadow: 0 10px 25px rgba(255,255,255,0.5);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      #hero h1 { font-size: 2.5em; }
+      #hero p { font-size: 1em; }
+      nav { padding: 10px 15px; }
+      nav a { margin: 6px 10px; }
+      #portfolio { padding: 20px; }
+      #gear img { width: 120px; }
+    }
+
+    @media (max-width: 480px) {
+      #hero h1 { font-size: 2em; }
+      #hero p { font-size: 0.9em; }
+      section { padding: 50px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav>
+    <img class="pfp" src="https://i.postimg.cc/Rq5XKvs2/20251021-170406720-i-OS.avif" alt="Profile Picture">
+    <a href="#hero">Home</a>
+    <a href="#about">About</a>
+    <a href="#portfolio">Portfolio</a>
+    <a href="#gear">Gear</a>
+    <a href="#buy">Buy</a>
+  </nav>
+
+  <!-- Hero Section -->
+  <section id="hero">
+    <div class="wave-bg"></div>
+    <h1>Igor Rix</h1>
+    <p>Capturing Moments, One Shutter at a Time</p>
+    <div class="hero-decoration"></div>
+    <div class="scroll-indicator"></div>
+  </section>
+
+  <!-- About Section -->
+  <section id="about">
+    <h2>About Me</h2>
+    <p>Hello! I’m a passionate photographer who loves capturing motorsports and wildlife. Whether it’s in the bush or on the track, I strive to tell a story through my lens.</p>
+  </section>
+
+  <!-- Portfolio Section -->
+  <section id="portfolio">
+    <h2 style="grid-column: 1/-1;">My Work</h2>
+    <img src="https://i.postimg.cc/Sx8RKgqk/IG-CAPE1000-DAY2-00029.jpg" alt="Photo 1">
+    <img src="https://i.postimg.cc/jdTtXRYB/IG-CAPE1000-DAY2-00033.jpg" alt="Photo 2">
+    <img src="https://i.postimg.cc/tC7tBnGG/IG-CAPE1000-DAY2-00024.jpg" alt="Photo 3">
+    <img src="https://i.postimg.cc/htcmHXHW/IG-CAPE1000-REG-00295.jpg" alt="Photo 5">
+    <img src="https://i.postimg.cc/V6w7Jfhn/2-IMG-0884.jpg" alt="Photo 6">
+    <img src="https://i.postimg.cc/RFTgKrrj/3-IMG-1158.jpg" alt="Photo 6">
+    <img src="https://i.postimg.cc/R0KsC6gB/1-IMG-1365.jpg" alt="Photo 6">
+    <img src="https://i.postimg.cc/SRNDGZkC/4-IMG-0873.jpg" alt="Photo 6">
+    <img src="https://i.postimg.cc/Pf26qkQK/5-IMG-0750.jpg" alt="Photo 6">
+    <img src="https://i.postimg.cc/GhfqkJN8/6-IMG-0323.jpg" alt="Photo 6">
+    <img src="https://i.postimg.cc/nzT1MvBh/9-20240626044900-IMG-9664.jpg" alt="Photo 6">
+    <img src="https://i.postimg.cc/vmFhK8GF/7-20240721113829-IMG-0109.jpg" alt="Photo 6">
+    <img src="https://i.postimg.cc/0NYn1gNw/8-20240713001845-IMG-9891.jpg" alt="Photo 6">
+    <img src="https://i.postimg.cc/90ntYCL6/10-20240625224959-IMG-9600.jpg" alt="Photo 6">
+    <img src="https://i.postimg.cc/158K5VtZ/11-20240610035405-IMG-9019.jpg" alt="Photo 6">
+  </section>
+
+  <!-- Lightbox Container -->
+  <div class="lightbox" id="lightbox">
+    <img src="" alt="Expanded Image">
+  </div>
+
+  <!-- Gear Section -->
+  <section id="gear">
+    <h2>My Gear</h2>
+    <div class="gear-list">
+      <div class="gear-item">
+        <span class="bullet"></span>
+        <a href="https://www.sony.com/za/interchangeable-lens-cameras/products/ilce-6400" target="_blank"><img src="https://i.postimg.cc/4xhJQGfN/sony-a6400.webp" alt="Sony a6400"></a>
+        <p><a href="https://www.sony.com/za/interchangeable-lens-cameras/products/ilce-6400" target="_blank">Sony a6400</a></p>
+      </div>
+      <div class="gear-item">
+        <span class="bullet"></span>
+        <a href="https://www.sony.com/za/electronics/interchangeable-lenses/selp16502" target="_blank"><img src="https://i.postimg.cc/13CySzvC/16-50.png" alt="E PZ 16-50mm Lens"></a>
+        <p><a href="https://www.sony.com/za/electronics/interchangeable-lenses/selp16502" target="_blank">E PZ 16-50mm F3.5-5.6 OSS II</a></p>
+      </div>
+      <div class="gear-item">
+        <span class="bullet"></span>
+        <a href="https://www.tamron.com/global/consumer/lenses/a047/photo.html" target="_blank"><img src="https://i.postimg.cc/zvck5KRS/tamron.png" alt="Tamron 70-300mm Lens"></a>
+        <p><a href="https://www.tamron.com/global/consumer/lenses/a047/photo.html" target="_blank">Tamron 70-300mm F/4.5-6.3 Di III RXD</a></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Buy Section -->
+  <section id="buy">
+    <h2>Buy My Photos</h2>
+    <a href="https://photofrog.co.za/sellers/igorrix" target="_blank">Shop Now on PhotoFrog</a>
+  </section>
+
+  <script>
+    // Lightbox logic
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = lightbox.querySelector('img');
+
+    document.querySelectorAll('#portfolio img').forEach(img => {
+      img.addEventListener('click', () => {
+        lightboxImg.src = img.src;
+        lightbox.style.display = 'flex';
+      });
+    });
+
+    lightbox.addEventListener('click', () => {
+      lightbox.style.display = 'none';
+    });
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') lightbox.style.display = 'none';
+    });
+  </script>
+</body>
+</html>
