@@ -302,6 +302,33 @@
       color: #111;
       box-shadow: 0 10px 25px rgba(255,255,255,0.5);
     }
+    .social-links {
+    margin-top: 25px;
+    display: flex;
+    gap: 25px;
+    justify-content: center;
+    align-items: center;
+    }
+
+    .social-icon {
+    color: #fff;
+    transition: transform 0.3s ease, color 0.3s ease, text-shadow 0.3s ease;
+    }
+
+    .social-icon:hover {
+    color: #ff4c4c;
+    transform: scale(1.2);
+    text-shadow: 0 0 10px #ff4c4c;
+    }
+
+    @media (max-width: 480px) {
+    .social-links {
+    gap: 15px;
+    }
+    .social-icon svg {
+    width: 26px;
+    height: 26px;
+    }
 
     /* Responsive */
     @media (max-width: 768px) {
@@ -343,9 +370,22 @@
 
   <!-- About Section -->
   <section id="about">
-    <h2>About Me</h2>
-    <p>Hello! I’m a passionate photographer who loves capturing motorsports and wildlife. Whether it’s in the bush or on the track, I strive to tell a story through my lens.</p>
-  </section>
+  <h2>About Me</h2>
+  <p>Hello! I’m a passionate photographer who loves capturing the beauty of life. Whether it’s landscapes, portraits, or street photography, I strive to tell a story through my lens.</p>
+
+  <div class="social-links">
+    <a href="https://www.instagram.com/YOUR_INSTAGRAM" target="_blank" aria-label="Instagram" class="social-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5A4.25 4.25 0 0 0 16.25 3.5h-8.5ZM12 7a5 5 0 1 1 0 10a5 5 0 0 1 0-10Zm0 1.5a3.5 3.5 0 1 0 0 7a3.5 3.5 0 0 0 0-7Zm4.75-.88a.88.88 0 1 1 0 1.75a.88.88 0 0 1 0-1.75Z"/>
+      </svg>
+    </a>
+    <a href="https://www.tiktok.com/@YOUR_TIKTOK" target="_blank" aria-label="TikTok" class="social-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M12.999 2c.169 3.83 2.025 6.019 5.356 6.248V10.8a8.47 8.47 0 0 1-4.353-1.19v6.413c0 7.623-8.241 9.23-11.094 3.323a5.568 5.568 0 0 1 5.473-8.173v2.889c-.306.027-.612.084-.913.176c-1.902.585-2.385 2.939-1.265 4.282c1.205 1.445 3.786 1.034 4.186-1.069c.07-.355.1-.727.1-1.135V2h2.51Z"/>
+      </svg>
+    </a>
+  </div>
+</section>
 
   <!-- Portfolio Section -->
   <section id="portfolio">
@@ -422,3 +462,4 @@
   </script>
 </body>
 </html>
+
