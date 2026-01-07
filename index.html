@@ -42,6 +42,7 @@ nav{
   z-index:1000;
   height:70px;
   gap:20px;
+  flex-wrap:wrap;
 }
 nav h1{
   color:#fff;
@@ -114,7 +115,6 @@ nav a:hover{
   transition:.4s;
 }
 .btn:hover::before{left:100%;}
-
 .btn:hover{
   transform:translateY(-5px) scale(1.05);
   box-shadow:0 0 20px var(--orange);
@@ -163,7 +163,7 @@ h2 span:last-child{
   margin:20px auto;
   font-size:1rem;
 }
-.home-sub img{
+.home-sub img, #track img{
   width:70%;
   max-width:500px;
   border-radius:25px;
@@ -172,15 +172,6 @@ h2 span:last-child{
   margin-left:auto;
   margin-right:auto;
   transition:transform 0.3s ease-out;
-}
-
-/* TRACK IMAGE */
-#track img{
-  width:100%;
-  height:auto;
-  max-width:1600px;
-  border-radius:25px;
-  margin-top:20px;
 }
 
 /* PRICING MODERN */
@@ -300,13 +291,6 @@ footer{
   opacity:.8;
 }
 
-/* MOBILE */
-@media(max-width:900px){
-  .about-dynamic{grid-template-columns:1fr;}
-  .home-sub img, .about-image img{width:100%; max-width:none;}
-  .contact{grid-template-columns:1fr;}
-}
-
 /* ANIMATIONS */
 @keyframes fadeDown{
   from{opacity:0;transform:translateY(-40px);}
@@ -315,6 +299,39 @@ footer{
 @keyframes fadeUp{
   from{opacity:0;transform:translateY(40px);}
   to{opacity:1;transform:translateY(0);}
+}
+
+/* MOBILE OPTIMIZATION */
+@media(max-width:900px){
+  body{font-size:0.95rem;}
+  nav{
+    padding:12px 5%;
+    flex-wrap:wrap;
+    height:auto;
+  }
+  nav h1{
+    font-size:1.5rem;
+    margin-bottom:8px;
+  }
+  nav a{
+    margin-left:10px;
+    font-size:0.95rem;
+  }
+
+  section{padding:120px 5% 80px 5%;}
+  .home-sub{margin-bottom:40px;}
+  .home-sub img, #track img{width:100%; max-width:none;}
+  .pricing-container{grid-template-columns:1fr; gap:20px;}
+  .pricing-card{padding:20px;}
+  .events{grid-template-columns:1fr; gap:20px;}
+  .about-dynamic{grid-template-columns:1fr; gap:30px;}
+  .about-card{padding:20px;}
+  .about-card h3{font-size:1.3rem;}
+  .contact{grid-template-columns:1fr; gap:20px;}
+  footer{padding:20px; font-size:0.9rem;}
+
+  /* Reduce scroll parallax for small screens */
+  .dynamic-img{transform: translateY(0px) !important;}
 }
 </style>
 </head>
@@ -340,10 +357,8 @@ footer{
 <!-- HOME -->
 <section id="home" class="show">
   <canvas id="dustCanvas" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;"></canvas>
-
   <div style="position:relative;z-index:2;width:100%;max-width:900px;margin:auto;text-align:center;">
 
-    <!-- Welcome -->
     <div class="home-sub">
       <h2>Welcome to the <span>Compound</span></h2>
       <p>
@@ -355,7 +370,6 @@ footer{
       <img src="https://i.postimg.cc/KYG36gnP/IMG_20251112_WA0108_1024x683.jpg" alt="Welcome Image" class="dynamic-img">
     </div>
 
-    <!-- TRACK -->
     <div class="home-sub" id="track">
       <h2>The <span>Track</span></h2>
       <p>
@@ -364,7 +378,6 @@ footer{
       <img src="https://i.postimg.cc/J44p3K6T/Chat-GPT-Image-Jan-7-2026-03-01-22-PM.png" alt="The Track Image">
     </div>
 
-    <!-- Experience -->
     <div class="home-sub">
       <h2>The <span>Experience</span></h2>
       <p>
@@ -375,7 +388,6 @@ footer{
       <img src="https://i.postimg.cc/k5TRqXcx/20240217042740_IMG_7973.jpg" alt="Experience Image" class="dynamic-img">
     </div>
 
-    <!-- Safety -->
     <div class="home-sub">
       <h2>Safety <span>First</span></h2>
       <p>
@@ -415,8 +427,6 @@ footer{
         <li>10 Bikes – R5000</li>
       </ul>
     </div>
-
-    <!-- Group Adventures with Safety Info -->
     <div class="pricing-card">
       <h3>Group <span>Adventures</span></h3>
       <p>
@@ -517,9 +527,7 @@ footer{
       <p><a href="mailto:rixcompound@gmail.com">rixcompound@gmail.com</a></p>
 
       <h3>Call / WhatsApp</h3>
-      <p>
-        <a href="https://wa.me/0768299919" target="_blank">0768299919</a>
-      </p>
+      <p><a href="https://wa.me/0768299919" target="_blank">0768299919</a></p>
     </div>
 
     <div>
@@ -543,7 +551,7 @@ footer{
 </footer>
 
 <script>
-// DUST CANVAS
+// Dust animation
 const canvas = document.getElementById("dustCanvas");
 const ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth;
@@ -575,7 +583,7 @@ function animateDust(){ctx.clearRect(0,0,canvas.width,canvas.height);particles.f
 animateDust();
 window.addEventListener('resize',()=>{canvas.width=window.innerWidth; canvas.height=window.innerHeight;});
 
-// Scroll reveal
+// Scroll reveal + parallax
 const sections=document.querySelectorAll("section");
 window.addEventListener("scroll",()=>{
   sections.forEach(sec=>{
