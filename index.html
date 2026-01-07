@@ -1,572 +1,594 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Igor Rix Photography</title>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      scroll-behavior: smooth;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rix Compound | Pit Bike Track</title>
 
-    body {
-      font-family: 'Montserrat', sans-serif;
-      background: #111;
-      color: #fff;
-      overflow-x: hidden;
-    }
-
-    a { color: inherit; text-decoration: none; }
-
-    section {
-      padding: 60px 30px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      position: relative;
-    }
-
-    h1, h2, h3 {
-      margin-bottom: 20px;
-      text-align: center;
-    }
-
-    /* Navbar */
-    nav {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      background: rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 10px 20px;
-      z-index: 10;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.4);
-      flex-wrap: wrap;
-    }
-
-    nav .pfp {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      margin-right: 20px;
-      object-fit: cover;
-      border: 2px solid #ff4c4c;
-      transition: transform 0.3s;
-    }
-
-    nav .pfp:hover { transform: scale(1.1) rotate(5deg); }
-
-    nav a {
-      margin: 8px 15px;
-      font-weight: bold;
-      letter-spacing: 1px;
-      transition: color 0.3s, text-shadow 0.3s;
-    }
-
-    nav a:hover {
-      color: #ff4c4c;
-      text-shadow: 0 0 10px #ff4c4c;
-    }
-
-    /* Hero Section */
-    #hero {
-      position: relative;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      overflow: hidden;
-      background: radial-gradient(circle at 50% 20%, #1a1a1a 0%, #000 80%);
-      color: #fff;
-    }
-
-    .wave-bg {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 300%;
-      height: 100%;
-      background: url('https://svgshare.com/i/12ZT.svg') repeat-x;
-      background-size: 50% 100%;
-      animation: waveLoop 20s linear infinite;
-      opacity: 0.25;
-      z-index: 0;
-    }
-
-    @keyframes waveLoop {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
-    }
-
-    #hero h1, #hero p {
-      position: relative;
-      z-index: 1;
-      animation: fadeInUp 1s ease forwards;
-    }
-
-    #hero h1 {
-      font-size: 4em;
-      font-weight: 700;
-      background: linear-gradient(90deg, #ff4c4c, #fff);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    #hero p {
-      font-size: 1.2em;
-      color: #ccc;
-      animation-delay: 0.5s;
-    }
-
-    @keyframes fadeInUp {
-      0% { opacity: 0; transform: translateY(50px); }
-      100% { opacity: 1; transform: translateY(0); }
-    }
-
-    .hero-decoration {
-      position: absolute;
-      bottom: 15%;
-      width: 80px;
-      height: 4px;
-      background: #fff;
-      border-radius: 2px;
-      animation: slide 2s infinite alternate;
-      z-index: 1;
-    }
-
-    @keyframes slide {
-      0% { transform: translateX(-50px); }
-      100% { transform: translateX(50px); }
-    }
-
-    .scroll-indicator {
-      position: absolute;
-      bottom: 30px;
-      width: 20px;
-      height: 20px;
-      border-left: 2px solid #fff;
-      border-bottom: 2px solid #fff;
-      transform: rotate(-45deg);
-      animation: bounce 1.5s infinite;
-      opacity: 0.6;
-      z-index: 1;
-    }
-
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0) rotate(-45deg); }
-      50% { transform: translateY(10px) rotate(-45deg); }
-    }
-
-    /* About Section */
-    #about {
-      text-align: center;
-      max-width: 800px;
-      animation: fadeIn 1s ease forwards;
-    }
-
-    @keyframes fadeIn {
-      0% { opacity: 0; }
-      100% { opacity: 1; }
-    }
-
-    /* Portfolio Section */
-    #portfolio {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-      width: 100%;
-      padding-top: 40px;
-    }
-
-    #portfolio img {
-      width: 100%;
-      border-radius: 20px;
-      transition: transform 0.5s, filter 0.5s, box-shadow 0.5s;
-      cursor: pointer;
-      box-shadow: 0 5px 15px rgba(255,255,255,0.1);
-      aspect-ratio: 2 / 3;
-      object-fit: cover;
-    }
-
-    #portfolio img:hover {
-      transform: scale(1.1) rotate(-2deg);
-      filter: brightness(1.3);
-      box-shadow: 0 10px 25px rgba(255,255,255,0.6);
-    }
-
-    /* Lightbox */
-    .lightbox {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(0,0,0,0.9);
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-    }
-
-    .lightbox img {
-      max-width: 90%;
-      max-height: 90%;
-      border-radius: 10px;
-      box-shadow: 0 0 30px rgba(255,255,255,0.2);
-      animation: zoomIn 0.3s ease;
-    }
-
-    @keyframes zoomIn {
-      0% { transform: scale(0.8); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
-    }
-
-    /* Gear Section */
-    #gear {
-      text-align: center;
-    }
-
-    .gear-list {
-      display: flex;
-      flex-direction: column;
-      gap: 25px;
-      margin-top: 30px;
-    }
-
-    .gear-item {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
-    .bullet {
-      width: 10px;
-      height: 10px;
-      background: #ff4c4c;
-      border-radius: 50%;
-      flex-shrink: 0;
-      animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.4); opacity: 0.6; }
-    }
-
-    #gear img {
-      width: 140px;
-      border-radius: 20px;
-      object-fit: cover;
-      box-shadow: 0 5px 15px rgba(255,255,255,0.2);
-      transition: transform 0.5s, box-shadow 0.5s;
-    }
-
-    #gear img:hover {
-      transform: rotate(5deg) scale(1.05);
-      box-shadow: 0 15px 35px rgba(255,255,255,0.6);
-    }
-
-    #gear p {
-      color: #fff;
-      font-weight: bold;
-      text-align: center;
-    }
-
-    /* Contact Section */
-#contact {
-  text-align: center;
-  background: radial-gradient(circle at 50% 30%, #1a1a1a 0%, #000 80%);
-  padding: 80px 50px;
+<style>
+:root{
+  --orange:#ff8c00;
+  --black:#0a0a0a;
+  --dark:#111;
+  --section-bg:#0a0a0a;
+  --section-alt:#111;
 }
 
-#contact h2 {
-  margin-bottom: 15px;
-  font-size: 2em;
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Segoe UI',Arial,sans-serif;
+  scroll-behavior:smooth;
 }
 
-#contact p {
-  color: #ccc;
-  max-width: 600px;
-  margin: 0 auto 40px;
-  line-height: 1.6;
+body{
+  background:var(--black);
+  color:#fff;
+  line-height:1.6;
 }
 
-.contact-form {
-  max-width: 600px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+/* NAVIGATION */
+nav{
+  position:fixed;
+  top:0;
+  width:100%;
+  background:rgba(0,0,0,.85);
+  backdrop-filter:blur(10px);
+  display:flex;
+  justify-content:flex-start;
+  align-items:center;
+  padding:15px 6%;
+  z-index:1000;
+  height:70px;
+  gap:20px;
+}
+nav h1{
+  color:#fff;
+  letter-spacing:2px;
+  font-size:1.8rem;
+}
+nav h1 span{
+  color:var(--orange);
+}
+nav a{
+  color:#fff;
+  text-decoration:none;
+  margin-left:20px;
+  position:relative;
+  transition:.3s ease;
+}
+nav a::after{
+  content:'';
+  position:absolute;
+  width:0;
+  height:2px;
+  background:var(--orange);
+  left:0;
+  bottom:-5px;
+  transition:.3s;
+}
+nav a:hover::after{width:100%;}
+nav a:hover{
+  color:var(--orange);
+  transform:scale(1.1);
+  text-shadow:0 0 10px var(--orange);
 }
 
-.form-group input,
-.form-group textarea {
-  width: 100%;
-  padding: 15px;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.2);
-  border-radius: 10px;
-  color: #fff;
-  font-size: 1em;
-  transition: all 0.3s ease;
+/* PROFILE PICTURE */
+#profile-container{
+  width:60px;
+  height:60px;
+  flex-shrink:0;
+}
+#profile-container img{
+  width:50px;
+  height:50px;
+  border-radius:50%;
+  object-fit:cover;
+  border:4px solid var(--orange);
 }
 
-.form-group input:focus,
-.form-group textarea:focus {
-  border-color: #ff4c4c;
-  box-shadow: 0 0 10px rgba(255,76,76,0.4);
-  outline: none;
+/* BUTTON */
+.btn{
+  margin-top:30px;
+  background:var(--orange);
+  color:#000;
+  border:none;
+  padding:15px 35px;
+  border-radius:40px;
+  font-weight:bold;
+  cursor:pointer;
+  position:relative;
+  overflow:hidden;
+  transition:.4s;
+}
+.btn::before{
+  content:'';
+  position:absolute;
+  top:0;
+  left:-100%;
+  width:100%;
+  height:100%;
+  background:rgba(255,255,255,.2);
+  transition:.4s;
+}
+.btn:hover::before{left:100%;}
+
+.btn:hover{
+  transform:translateY(-5px) scale(1.05);
+  box-shadow:0 0 20px var(--orange);
 }
 
-button[type="submit"] {
-  background: #ff4c4c;
-  border: none;
-  padding: 15px 30px;
-  border-radius: 50px;
-  color: #fff;
-  font-weight: bold;
-  font-size: 1.1em;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 5px 15px rgba(255,76,76,0.3);
+/* SECTIONS */
+section{
+  padding:180px 6% 120px 6%;
+  opacity:0;
+  transform:translateY(40px);
+  transition:1s ease;
+  background: var(--section-bg);
+  position:relative;
+}
+section::after{
+  content:'';
+  position:absolute;
+  bottom:0;
+  left:0;
+  width:100%;
+  height:80px;
+  background: linear-gradient(to bottom, rgba(10,10,10,0), var(--section-alt));
+  pointer-events:none;
+}
+section.show{
+  opacity:1;
+  transform:translateY(0);
+}
+h2{
+  font-size:clamp(2rem,5vw,2.6rem);
+  margin-bottom:30px;
+  text-transform:uppercase;
+  text-align:center;
+}
+h2 span:last-child{
+  color:var(--orange);
 }
 
-button[type="submit"]:hover {
-  background: #fff;
-  color: #111;
-  transform: scale(1.05);
-  box-shadow: 0 10px 25px rgba(255,255,255,0.5);
+/* HOME SUB-SECTIONS */
+.home-sub{
+  margin-bottom:60px;
+  position:relative;
+}
+.home-sub p{
+  max-width:700px;
+  margin:20px auto;
+  font-size:1rem;
+}
+.home-sub img{
+  width:70%;
+  max-width:500px;
+  border-radius:25px;
+  margin-top:20px;
+  display:block;
+  margin-left:auto;
+  margin-right:auto;
+  transition:transform 0.3s ease-out;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  #contact {
-    padding: 60px 25px;
-  }
-
-  #contact h2 {
-    font-size: 1.8em;
-  }
-
-  .contact-form {
-    width: 100%;
-  }
+/* TRACK IMAGE */
+#track img{
+  width:100%;
+  height:auto;
+  max-width:1600px;
+  border-radius:25px;
+  margin-top:20px;
 }
-    /* Buy Section */
-    #buy a {
-      display: inline-block;
-      padding: 15px 30px;
-      margin-top: 20px;
-      background: #ff4c4c;
-      color: #fff;
-      font-weight: bold;
-      border-radius: 50px;
-      transition: transform 0.3s, background 0.3s, box-shadow 0.3s;
-      box-shadow: 0 5px 15px rgba(255,76,76,0.4);
-    }
 
-    #buy a:hover {
-      transform: scale(1.1);
-      background: #fff;
-      color: #111;
-      box-shadow: 0 10px 25px rgba(255,255,255,0.5);
-    }
-    .social-links {
-    margin-top: 25px;
-    display: flex;
-    gap: 25px;
-    justify-content: center;
-    align-items: center;
-    }
+/* PRICING MODERN */
+.pricing-container{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:25px;
+  max-width:1200px;
+  margin:0 auto;
+}
+.pricing-card{
+  background:var(--dark);
+  border:2px solid #222;
+  border-radius:25px;
+  padding:25px;
+  transition:.4s;
+  position:relative;
+  overflow:hidden;
+}
+.pricing-card:hover{
+  transform:translateY(-12px) scale(1.03);
+  border-color:var(--orange);
+  box-shadow:0 0 25px var(--orange);
+}
+.pricing-card h3{
+  color:#fff;
+  margin-bottom:10px;
+}
+.pricing-card h3 span:last-child{
+  color:var(--orange);
+}
+.pricing-card p, .pricing-card small, .pricing-card ul li{
+  font-size:1rem;
+  margin:5px 0;
+  line-height:1.4;
+}
 
-    .social-icon {
-    color: #fff;
-    transition: transform 0.3s ease, color 0.3s ease, text-shadow 0.3s ease;
-    }
+/* EVENTS */
+.events{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  gap:25px;
+}
 
-    .social-icon:hover {
-    color: #ff4c4c;
-    transform: scale(1.2);
-    text-shadow: 0 0 10px #ff4c4c;
-    }
+/* DYNAMIC ABOUT SECTION */
+.about-dynamic{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+  gap:40px;
+  max-width:1200px;
+  margin:0 auto;
+  align-items:start;
+}
+.about-card{
+  background:var(--dark);
+  border-radius:25px;
+  padding:25px;
+  border:2px solid #222;
+  transition:.5s;
+}
+.about-card:hover{
+  transform:translateY(-10px) scale(1.02);
+  border-color:var(--orange);
+  box-shadow:0 0 25px var(--orange);
+}
+.about-card h3{
+  color:var(--orange);
+  margin-bottom:15px;
+  font-size:1.5rem;
+}
+.about-card p, .about-card ul li{
+  font-size:1rem;
+  margin-bottom:12px;
+  line-height:1.5;
+}
+.about-card ul{
+  list-style:none;
+  padding-left:0;
+}
+.about-card ul li::before{
+  content:"✔️";
+  margin-right:8px;
+}
+.about-image img{
+  width:100%;
+  border-radius:25px;
+  display:block;
+  margin:auto;
+}
 
-    @media (max-width: 480px) {
-    .social-links {
-    gap: 15px;
-    }
-    .social-icon svg {
-    width: 26px;
-    height: 26px;
-    }
+/* CONTACT */
+.contact{
+  background:var(--dark);
+  padding:35px;
+  border-radius:30px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:25px;
+}
+.contact div, .contact p{
+  margin-bottom:15px;
+}
+.contact h3{
+  margin-bottom:10px;
+  color:var(--orange);
+}
+.contact p a{
+  color:var(--orange);
+  text-decoration:none;
+}
 
-    /* Responsive */
-    @media (max-width: 768px) {
-      #hero h1 { font-size: 2.5em; }
-      #hero p { font-size: 1em; }
-      nav { padding: 10px 15px; }
-      nav a { margin: 6px 10px; }
-      #portfolio { padding: 20px; }
-      #gear img { width: 120px; }
-    }
+/* FOOTER */
+footer{
+  background:#000;
+  padding:30px;
+  text-align:center;
+  opacity:.8;
+}
 
-    @media (max-width: 480px) {
-      #hero h1 { font-size: 2em; }
-      #hero p { font-size: 0.9em; }
-      section { padding: 50px 20px; }
-    }
-  </style>
+/* MOBILE */
+@media(max-width:900px){
+  .about-dynamic{grid-template-columns:1fr;}
+  .home-sub img, .about-image img{width:100%; max-width:none;}
+  .contact{grid-template-columns:1fr;}
+}
+
+/* ANIMATIONS */
+@keyframes fadeDown{
+  from{opacity:0;transform:translateY(-40px);}
+  to{opacity:1;transform:translateY(0);}
+}
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(40px);}
+  to{opacity:1;transform:translateY(0);}
+}
+</style>
 </head>
+
 <body>
 
-  <!-- Navigation -->
-  <nav>
-    <img class="pfp" src="https://i.postimg.cc/3R2hbWZx/20251029-143504560-i-OS-1.jpg" alt="Profile Picture">
-    <a href="#hero">Home</a>
+<!-- NAV -->
+<nav>
+  <div id="profile-container">
+    <img src="https://i.postimg.cc/GhTnJcSP/social-cat-instagram-instagram-5.jpg" alt="Profile Picture">
+  </div>
+  <h1>Rix <span>Compound</span></h1>
+  <div>
+    <a href="#home">Home</a>
+    <a href="#track">The Track</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#events">Events</a>
     <a href="#about">About</a>
-    <a href="#portfolio">Portfolio</a>
-    <a href="#gear">Gear</a>
-	<a href="#contact">Contact me</a>
-    <a href="#buy">Buy</a>
-  </nav>
-
-  <!-- Hero Section -->
-  <section id="hero">
-    <div class="wave-bg"></div>
-    <h1>Igor Rix</h1>
-    <p>Capturing Moments, One Shutter at a Time</p>
-    <div class="hero-decoration"></div>
-    <div class="scroll-indicator"></div>
-  </section>
-
-  <!-- About Section -->
-  <section id="about">
-  <h2>About Me</h2>
-  <p>Hello! I’m a passionate photographer who loves capturing motorsports and wildlife. Whether it’s in the bush or on the track, I strive to tell a story through my lens.</p>
-
-  <div class="social-links">
-    <a href="https://www.instagram.com/_ir.photo_?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" aria-label="Instagram" class="social-icon">
-      <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" viewBox="0 0 24 24">
-        <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5A4.25 4.25 0 0 0 16.25 3.5h-8.5ZM12 7a5 5 0 1 1 0 10a5 5 0 0 1 0-10Zm0 1.5a3.5 3.5 0 1 0 0 7a3.5 3.5 0 0 0 0-7Zm4.75-.88a.88.88 0 1 1 0 1.75a.88.88 0 0 1 0-1.75Z"/>
-      </svg>
-    </a>
-    <a href="https://www.tiktok.com/@_ir.photo_?is_from_webapp=1&sender_device=pc" target="_blank" aria-label="TikTok" class="social-icon">
-      <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" viewBox="0 0 24 24">
-        <path d="M12.999 2c.169 3.83 2.025 6.019 5.356 6.248V10.8a8.47 8.47 0 0 1-4.353-1.19v6.413c0 7.623-8.241 9.23-11.094 3.323a5.568 5.568 0 0 1 5.473-8.173v2.889c-.306.027-.612.084-.913.176c-1.902.585-2.385 2.939-1.265 4.282c1.205 1.445 3.786 1.034 4.186-1.069c.07-.355.1-.727.1-1.135V2h2.51Z"/>
-      </svg>
-    </a>
+    <a href="#contact">Contact</a>
   </div>
-</section>
+</nav>
 
-  <!-- Portfolio Section -->
-  <section id="portfolio">
-    <h2 style="grid-column: 1/-1;">My Work</h2>
-    <img src="https://i.postimg.cc/htwh57ZV/IR-0723.jpg" alt="Photo 1">
-	<img src="https://i.postimg.cc/m2mP7nYb/1-IMG-0323.jpg" alt="Photo 2">
-	<img src="https://i.postimg.cc/XYhXzy1k/IR-1342.jpg" alt="Photo 3">
-	<img src="https://i.postimg.cc/BnytV17D/IR-1478.jpg" alt="Photo 4">
-	<img src="https://i.postimg.cc/MpXv5Y5Q/2-IR-1179.jpg" alt="Photo 5">
-	<img src="https://i.postimg.cc/g25rT6tr/2-IMG-0884.jpg" alt="Photo 6">
- </section>
+<!-- HOME -->
+<section id="home" class="show">
+  <canvas id="dustCanvas" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;"></canvas>
 
-  <!-- Lightbox Container -->
-  <div class="lightbox" id="lightbox">
-    <img src="" alt="Expanded Image">
-  </div>
+  <div style="position:relative;z-index:2;width:100%;max-width:900px;margin:auto;text-align:center;">
 
-  <!-- Gear Section -->
-  <section id="gear">
-  <h2>My Gear</h2>
-  <div class="gear-list">
-
-    <div class="gear-item">
-      <span class="bullet"></span>
-      <div class="gear-content">
-        <img src="https://i.postimg.cc/4xhJQGfN/sony-a6400.webp" alt="Sony a6400">
-        <p><a href="https://www.sony.com/za/interchangeable-lens-cameras/products/ilce-6400" target="_blank">Sony a6400</a></p>
-      </div>
+    <!-- Welcome -->
+    <div class="home-sub">
+      <h2>Welcome to the <span>Compound</span></h2>
+      <p>
+        A private pit bike & junior MX track in the Cape Winelands. Bring your bike,
+        bring your crew, and enjoy open days, weekend rides, and adrenaline-filled
+        sessions for all skill levels. Follow us for updates and ride highlights.
+        <strong>See you on the dirt!</strong>
+      </p>
+      <img src="https://i.postimg.cc/KYG36gnP/IMG_20251112_WA0108_1024x683.jpg" alt="Welcome Image" class="dynamic-img">
     </div>
 
-    <div class="gear-item">
-      <span class="bullet"></span>
-      <div class="gear-content">
-        <img src="https://i.postimg.cc/13CySzvC/16-50.png" alt="Sony 16-50mm Lens">
-        <p><a href="https://www.sony.com/za/electronics/interchangeable-lenses/selp16502" target="_blank">E PZ 16-50mm F3.5-5.6 OSS II</a></p>
-      </div>
+    <!-- TRACK -->
+    <div class="home-sub" id="track">
+      <h2>The <span>Track</span></h2>
+      <p>
+        Experience the thrill of our purpose-built pit bike track — perfect for riders of all levels.
+      </p>
+      <img src="https://i.postimg.cc/J44p3K6T/Chat-GPT-Image-Jan-7-2026-03-01-22-PM.png" alt="The Track Image">
     </div>
 
-    <div class="gear-item">
-      <span class="bullet"></span>
-      <div class="gear-content">
-        <img src="https://i.postimg.cc/zvck5KRS/tamron.png" alt="Tamron 70-300mm Lens">
-        <p><a href="https://www.tamron.com/global/consumer/lenses/a047/photo.html" target="_blank">Tamron 70-300mm F/4.5-6.3 Di III RXD</a></p>
-      </div>
+    <!-- Experience -->
+    <div class="home-sub">
+      <h2>The <span>Experience</span></h2>
+      <p>
+        Perfect for birthday parties, team-building events, and group rides for all
+        ages. We handle the bikes and gear — you bring the energy. Compact track,
+        safe and thrilling for everyone.
+      </p>
+      <img src="https://i.postimg.cc/k5TRqXcx/20240217042740_IMG_7973.jpg" alt="Experience Image" class="dynamic-img">
+    </div>
+
+    <!-- Safety -->
+    <div class="home-sub">
+      <h2>Safety <span>First</span></h2>
+      <p>
+        Safety comes first. Helmets, briefing, and bike checks included. Staff guide
+        everyone for confident, safe riding.
+      </p>
+      <img src="https://i.postimg.cc/vmYxJ6W9/IMG_20251112_WA0128_1024x683.jpg" alt="Safety Image" class="dynamic-img">
     </div>
 
   </div>
 </section>
 
-  <!-- Contact Section -->
+<!-- PRICING -->
+<section id="pricing">
+  <h2>Pricing & <span>Packages</span></h2>
+  <div class="pricing-container">
+    <div class="pricing-card">
+      <h3>Half-Day <span>Packages</span></h3>
+      <ul>
+        <li>5 Bikes – R8000</li>
+        <li>10 Bikes – R12000</li>
+      </ul>
+      <p>Includes stretch tent & braai facilities</p>
+      <small>50% deposit required • Riders 14+ • No drinking & driving</small>
+    </div>
+    <div class="pricing-card">
+      <h3>30-Minute <span>Rides</span></h3>
+      <ul>
+        <li>5 Bikes – R1750</li>
+        <li>10 Bikes – R3000</li>
+      </ul>
+    </div>
+    <div class="pricing-card">
+      <h3>60-Minute <span>Rides</span></h3>
+      <ul>
+        <li>5 Bikes – R3000</li>
+        <li>10 Bikes – R5000</li>
+      </ul>
+    </div>
+
+    <!-- Group Adventures with Safety Info -->
+    <div class="pricing-card">
+      <h3>Group <span>Adventures</span></h3>
+      <p>
+        At Rix Compound, your safety always comes first.
+      </p>
+      <p>
+        Every rental includes:<br>
+        ✔️ Protective gear (helmet)<br>
+        ✔️ A detailed safety briefing<br>
+        ✔️ A full equipment inspection before riding<br>
+        ✔️ Guidance on bike controls, track rules, and safe riding techniques
+      </p>
+      <p>
+        Whether you’re new to riding or already experienced, our trained team and well-maintained bikes ensure a smooth, safe, and exciting experience from start to finish.
+      </p>
+      <p>📲 Bookings essential • <a href="https://wa.me/0768299919" target="_blank">📞 Call/WhatsApp: 0768299919</a> • 📸 Follow us: @RixCompound</p>
+    </div>
+  </div>
+</section>
+
+<!-- EVENTS -->
+<section id="events">
+  <h2>Upcoming <span>Events</span></h2>
+  <div class="events">
+    <div class="card">
+      <h3>Open Practice <span>Day</span></h3>
+      <p>Every Saturday</p>
+    </div>
+    <div class="card">
+      <h3>Race <span>Night</span></h3>
+      <p>Monthly competition</p>
+    </div>
+    <div class="card">
+      <h3>Junior Rider <span>Day</span></h3>
+      <p>Safe fun for young riders</p>
+    </div>
+  </div>
+</section>
+
+<!-- DYNAMIC ABOUT SECTION -->
+<section id="about">
+  <h2>About <span>Rix Compound</span></h2>
+  <div class="about-dynamic">
+
+    <div class="about-card">
+      <h3>Where Every Ride Becomes an Adventure! 🏁🔥</h3>
+      <p>
+        Nestled in the heart of the Cape Winelands, Rix Compound is a private pit bike and junior MX track designed for riders of all ages and skill levels. 
+        Whether you’re hopping on a bike for the first time or you’re a seasoned rider craving dust and adrenaline, our track offers the perfect blend of fun, excitement, and challenge.
+      </p>
+      <p>
+        We host open days, weekend rides, and Sunday Funday sessions — grab your bike, bring your friends, and enjoy the thrill of the dirt. 
+        Follow our page for track updates, event announcements, and ride highlights. 🏍️🔥
+      </p>
+    </div>
+
+    <div class="about-card">
+      <h3>Looking for a Unique Day Out? 🎉</h3>
+      <p>
+        Break the routine and experience something unforgettable! Our pit bike rentals are perfect for families, groups of friends, parties, or team-building sessions. 
+        We provide everything you need for a safe and thrilling riding experience — just arrive ready to have fun!
+      </p>
+    </div>
+
+    <div class="about-card">
+      <h3>The Experience 🤝</h3>
+      <p>Our purpose-built compound is designed for pure enjoyment and group excitement. Perfect for:</p>
+      <ul>
+        <li>🎉 Birthday Parties packed with energy and laughter</li>
+        <li>🤝 Team-Building Events that inspire competition and camaraderie</li>
+        <li>👨‍👩‍👧‍👦 Group Outings for both kids and adults</li>
+      </ul>
+      <p>
+        We supply all the equipment — you just bring the energy. Our track is compact, controlled, and family-friendly, making it the ideal environment for kids learning to ride while adults enjoy the thrill. 
+        No big bikes allowed — just manageable, confidence-building fun for everyone.
+      </p>
+      <p>
+        We tailor our rental packages to suit any group size or occasion, providing an outdoor experience you’ll want to repeat.
+      </p>
+    </div>
+
+    <div class="about-card about-image">
+      <img src="https://i.postimg.cc/GpXTdhQx/RC-LOGO.jpg" alt="About Image" class="dynamic-img">
+    </div>
+
+  </div>
+</section>
+
+<!-- CONTACT -->
 <section id="contact">
-  <h2>Book a Private Shoot</h2>
-  <p>If you’d like to book me for a private photoshoot, event, or collaboration — reach out below!</p>
+  <h2>Contact <span>Us</span></h2>
+  <div class="contact">
+    <div>
+      <h3>Address</h3>
+      <p>Rix Compound Bottelary Road, Protea Farms, Cape Town.</p>
 
-  <form class="contact-form" action="https://formspree.io/f/xanljboz" method="POST">
-    <div class="form-group">
-      <input type="text" name="name" placeholder="Your Name" required>
+      <h3>Email</h3>
+      <p><a href="mailto:rixcompound@gmail.com">rixcompound@gmail.com</a></p>
+
+      <h3>Call / WhatsApp</h3>
+      <p>
+        <a href="https://wa.me/0768299919" target="_blank">0768299919</a>
+      </p>
     </div>
-    <div class="form-group">
-      <input type="email" name="email" placeholder="Your Email" required>
+
+    <div>
+      <h3>Business Hours</h3>
+      <p><strong>Book & Drive every Weekend:</strong><br>
+      Saturday: 9am – 6pm<br>
+      Sunday: 10am – 5pm</p>
+
+      <p><strong>Bookings During the Week:</strong><br>
+      Monday & Tuesday: Closed<br>
+      Wednesday to Friday: on request (Min 2hr booking)</p>
+
+      <p><strong>Booking Office:</strong><br>
+      Monday to Sunday: 8am – 5pm</p>
     </div>
-    <div class="form-group">
-      <textarea name="message" rows="5" placeholder="Your Message" required></textarea>
-    </div>
-    <button type="submit">Send Message</button>
-  </form>
+  </div>
 </section>
 
-  <!-- Buy Section -->
-  <section id="buy">
-    <h2>Buy My Photos</h2>
-    <a href="https://photofrog.co.za/sellers/igorrix" target="_blank">Shop Now on PhotoFrog</a>
-  </section>
+<footer>
+  © 2026 Rix Compound • Ride • Race • Repeat
+</footer>
 
-  <script>
-    // Lightbox logic
-    const lightbox = document.getElementById('lightbox');
-    const lightboxImg = lightbox.querySelector('img');
+<script>
+// DUST CANVAS
+const canvas = document.getElementById("dustCanvas");
+const ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 
-    document.querySelectorAll('#portfolio img').forEach(img => {
-      img.addEventListener('click', () => {
-        lightboxImg.src = img.src;
-        lightbox.style.display = 'flex';
-      });
-    });
+class DirtParticle{
+  constructor(){
+    this.x=Math.random()*canvas.width;
+    this.y=Math.random()*canvas.height;
+    this.radius=Math.random()*1+0.5;
+    this.speed=Math.random()*2+1;
+    this.angle=Math.random()*2*Math.PI;
+    this.color="rgba(139,69,19,"+(Math.random()*0.15+0.05)+")";
+  }
+  update(){
+    this.x+=Math.cos(this.angle)*this.speed;
+    this.y+=Math.sin(this.angle)*this.speed;
+    if(this.x>canvas.width)this.x=0;
+    if(this.x<0)this.x=canvas.width;
+    if(this.y>canvas.height)this.y=0;
+    if(this.y<0)this.y=canvas.height;
+  }
+  draw(){ctx.beginPath();ctx.arc(this.x,this.y,this.radius,0,Math.PI*2);ctx.fillStyle=this.color;ctx.fill();}
+}
 
-    lightbox.addEventListener('click', () => {
-      lightbox.style.display = 'none';
-    });
+const particles=[];
+for(let i=0;i<100;i++)particles.push(new DirtParticle());
+function animateDust(){ctx.clearRect(0,0,canvas.width,canvas.height);particles.forEach(p=>{p.update();p.draw();});requestAnimationFrame(animateDust);}
+animateDust();
+window.addEventListener('resize',()=>{canvas.width=window.innerWidth; canvas.height=window.innerHeight;});
 
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') lightbox.style.display = 'none';
-    });
-  </script>
+// Scroll reveal
+const sections=document.querySelectorAll("section");
+window.addEventListener("scroll",()=>{
+  sections.forEach(sec=>{
+    const top=sec.getBoundingClientRect().top;
+    if(top<window.innerHeight-100) sec.classList.add("show");
+  });
+  document.querySelectorAll('.dynamic-img').forEach(img=>{
+    const rect = img.getBoundingClientRect();
+    const offset = rect.top / window.innerHeight;
+    img.style.transform = `translateY(${offset * 20}px)`; 
+  });
+});
+</script>
+
 </body>
 </html>
-
-
-
-
-
-
-
