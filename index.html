@@ -44,14 +44,22 @@ nav{
   gap:20px;
   flex-wrap:wrap;
 }
-nav h1{
-  color:#fff;
-  letter-spacing:2px;
-  font-size:1.8rem;
+nav h1 {
+  color: #fff;
+  letter-spacing: 2px;
+  font-size: 5rem
+  font-weight: bold;
+  margin-left: 15px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  text-shadow: none;
 }
-nav h1 span{
-  color:var(--orange);
+
+nav h1 span {
+  color: var(--orange); /* keep the orange part */
 }
+
 nav a{
   color:#fff;
   text-decoration:none;
@@ -76,30 +84,7 @@ nav a:hover{
   text-shadow:0 0 10px var(--orange);
 }
 
-/* Nav title animation */
-@keyframes slideGlow {
-  0% {
-    transform: translateY(-30px);
-    opacity: 0;
-    text-shadow: 0 0 0px var(--orange);
-  }
-  50% {
-    text-shadow: 0 0 15px var(--orange);
-  }
-  100% {
-    transform: translateY(0);
-    opacity: 1;
-    text-shadow: 0 0 8px var(--orange);
-  }
-}
 
-nav h1 {
-  color: #fff;
-  letter-spacing: 2px;
-  font-size: 2.5rem;
-  font-weight: bold;
-  animation: slideGlow 1.5s ease forwards; /* apply animation */
-}
 
 /* PROFILE PICTURE */
 #profile-container{
@@ -360,7 +345,7 @@ footer{
     height:auto;
   }
   nav h1{
-    font-size:1.5rem;
+    font-size:3rem;
     margin-bottom:8px;
   }
   nav a{
@@ -659,7 +644,6 @@ footer{
 
 <!-- HOME -->
 <section id="home" class="show">
-  <canvas id="dustCanvas" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;"></canvas>
   <div style="position:relative;z-index:2;width:100%;max-width:900px;margin:auto;text-align:center;">
 
     <div class="home-sub">
@@ -885,38 +869,6 @@ footer{
 </footer>
 
 <script>
-// Dust animation
-const canvas = document.getElementById("dustCanvas");
-const ctx = canvas.getContext("2d");
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-
-class DirtParticle{
-  constructor(){
-    this.x=Math.random()*canvas.width;
-    this.y=Math.random()*canvas.height;
-    this.radius=Math.random()*1+0.5;
-    this.speed=Math.random()*2+1;
-    this.angle=Math.random()*2*Math.PI;
-    this.color="rgba(139,69,19,"+(Math.random()*0.15+0.05)+")";
-  }
-  update(){
-    this.x+=Math.cos(this.angle)*this.speed;
-    this.y+=Math.sin(this.angle)*this.speed;
-    if(this.x>canvas.width)this.x=0;
-    if(this.x<0)this.x=canvas.width;
-    if(this.y>canvas.height)this.y=0;
-    if(this.y<0)this.y=canvas.height;
-  }
-  draw(){ctx.beginPath();ctx.arc(this.x,this.y,this.radius,0,Math.PI*2);ctx.fillStyle=this.color;ctx.fill();}
-}
-
-const particles=[];
-for(let i=0;i<100;i++)particles.push(new DirtParticle());
-function animateDust(){ctx.clearRect(0,0,canvas.width,canvas.height);particles.forEach(p=>{p.update();p.draw();});requestAnimationFrame(animateDust);}
-animateDust();
-window.addEventListener('resize',()=>{canvas.width=window.innerWidth; canvas.height=window.innerHeight;});
-
 // Scroll reveal + parallax
 const sections=document.querySelectorAll("section");
 window.addEventListener("scroll",()=>{
@@ -962,7 +914,7 @@ document.getElementById("waForm").addEventListener("submit", function(e){
   }
 
   // Correct WhatsApp number in international format (no +)
-  const phone = "27619280584"; 
+  const phone = "27768299919"; 
   const text = `Hello! My name is ${name} (${email}).\n\n${message}`;
   const waURL = `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
 
