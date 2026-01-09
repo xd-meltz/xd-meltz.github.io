@@ -76,18 +76,68 @@ nav a:hover{
   text-shadow:0 0 10px var(--orange);
 }
 
+/* Nav title animation */
+@keyframes slideGlow {
+  0% {
+    transform: translateY(-30px);
+    opacity: 0;
+    text-shadow: 0 0 0px var(--orange);
+  }
+  50% {
+    text-shadow: 0 0 15px var(--orange);
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+    text-shadow: 0 0 8px var(--orange);
+  }
+}
+
+nav h1 {
+  color: #fff;
+  letter-spacing: 2px;
+  font-size: 2.5rem;
+  font-weight: bold;
+  animation: slideGlow 1.5s ease forwards; /* apply animation */
+}
+
 /* PROFILE PICTURE */
 #profile-container{
   width:60px;
   height:60px;
   flex-shrink:0;
+  position:relative;
 }
+
 #profile-container img{
   width:50px;
   height:50px;
   border-radius:50%;
   object-fit:cover;
   border:4px solid var(--orange);
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  z-index:2;
+}
+
+/* Wheel overlay */
+.wheel-overlay{
+  position:absolute;
+  top:50%;
+  left:50%;
+  width:55px;
+  height:55px;
+  transform-origin:50% 50%;
+  transform:translate(-50%,-50%);
+  z-index:1;
+  animation:spinWheel 3s linear infinite;
+}
+
+@keyframes spinWheel{
+  from{transform:translate(-50%,-50%) rotate(0deg);}
+  to{transform:translate(-50%,-50%) rotate(360deg);}
 }
 
 /* BUTTON */
@@ -549,6 +599,27 @@ footer{
   text-align:center;
 }
 
+/* Upcoming Events Image */
+.event-image-container{
+  text-align:center;
+  margin-top:20px;
+}
+
+.event-image-container img{
+  width:90%;
+  max-width:800px;
+  border-radius:25px;
+  border:2px solid var(--orange); /* Thin orange border added */
+  box-shadow:0 0 25px rgba(255,140,0,0.5);
+  transition:transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.event-image-container img:hover{
+  transform:scale(1.03);
+  box-shadow:0 0 40px rgba(255,140,0,0.7);
+  border-color:var(--orange); /* Keeps border visible on hover */
+}
+
 
 
 </style>
@@ -559,8 +630,11 @@ footer{
 <!-- NAV -->
 <nav>
   <div id="profile-container">
-    <img src="https://i.postimg.cc/GhTnJcSP/social-cat-instagram-instagram-5.jpg" alt="Profile Picture">
-  </div>
+  <img src="https://i.postimg.cc/GhTnJcSP/social-cat-instagram-instagram-5.jpg" alt="Profile Picture">
+  <svg class="wheel-overlay" viewBox="0 0 60 60">
+    <circle cx="30" cy="30" r="28" fill="none" stroke="var(--orange)" stroke-width="4" stroke-dasharray="4 8"/>
+  </svg>
+</div>
 
   <h1>Rix <span>Compound</span></h1>
 
@@ -578,7 +652,7 @@ footer{
     <a href="#pricing">Pricing</a>
     <a href="#events">Events</a>
     <a href="#about">About</a>
-    <a href="#contact">Contact</a>
+    <a href="#contact">Contact/Booking</a>
   </div>
 </nav>
 
@@ -699,19 +773,12 @@ footer{
 <section id="events">
   <h2>Upcoming <span>Events</span></h2>
   <div class="events">
-    <div class="card">
-      <h3>Open Practice <span>Day</span></h3>
-      <p>Every Saturday</p>
-    </div>
-    <div class="card">
-      <h3>Race <span>Night</span></h3>
-      <p>Monthly competition</p>
-    </div>
-    <div class="card">
-      <h3>Junior Rider <span>Day</span></h3>
-      <p>Safe fun for young riders</p>
-    </div>
+  <div class="event-image-container">
+    <img src="https://i.postimg.cc/SsjHj6nd/Save-the-dates-frame-at-0m3s.jpg" alt="Save the Dates" class="dynamic-img">
   </div>
+</div>
+
+
 </section>
 
 <!-- DYNAMIC ABOUT SECTION -->
@@ -767,7 +834,16 @@ footer{
 <section id="contact">
   <h2>Contact <span>Us</span></h2>
   <div class="contact">
-    <div>
+   <div class="whatsapp-form">
+  <h3>Book Now</h3>
+  <form id="waForm">
+    <input type="text" id="waName" placeholder="Your Name" required>
+    <input type="email" id="waEmail" placeholder="Your Email" required>
+    <textarea id="waMessage" placeholder="Your Booking" required></textarea>
+    <button type="submit" class="btn">Send via WhatsApp</button>
+  </form>
+</div>
+   <div>
       <h3>Address</h3>
       <p>Rix Compound Bottelary Road, Protea Farms, Cape Town.</p>
 
@@ -787,15 +863,6 @@ footer{
       <p><a href="https://wa.me/0768299919" target="_blank">0768299919</a></p>
     </div>
 
-<div class="whatsapp-form">
-  <h3>Send Us a Message</h3>
-  <form id="waForm">
-    <input type="text" id="waName" placeholder="Your Name" required>
-    <input type="email" id="waEmail" placeholder="Your Email" required>
-    <textarea id="waMessage" placeholder="Your Message" required></textarea>
-    <button type="submit" class="btn">Send via WhatsApp</button>
-  </form>
-</div>
 
     <div>
       <h3>Business Hours</h3>
@@ -894,14 +961,15 @@ document.getElementById("waForm").addEventListener("submit", function(e){
     return;
   }
 
-  // WhatsApp URL
-  const phone = "0619280584"; // your WhatsApp number
+  // Correct WhatsApp number in international format (no +)
+  const phone = "27619280584"; 
   const text = `Hello! My name is ${name} (${email}).\n\n${message}`;
   const waURL = `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
 
   // Open WhatsApp in new tab
   window.open(waURL, "_blank");
 });
+
 
 </script>
 
