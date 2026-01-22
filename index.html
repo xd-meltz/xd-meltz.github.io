@@ -168,16 +168,26 @@
     }
 
     /* About Section */
-    #about {
-      text-align: center;
-      max-width: 800px;
-      animation: fadeIn 1s ease forwards;
-    }
+#about {
+  min-height: 100vh;               
+  display: flex;
+  flex-direction: column;
+  justify-content: center;         
+  align-items: center;          
 
-    @keyframes fadeIn {
-      0% { opacity: 0; }
-      100% { opacity: 1; }
-    }
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
+
+  animation: fadeIn 1s ease forwards;
+}
+
+#about p {
+  font-size: 1.1em;
+  line-height: 1.7;
+  color: #ccc;
+}
+
 
     /* Portfolio Section */
 #portfolio {
@@ -474,8 +484,8 @@ button[type="submit"]:hover {
 
   <!-- About Section -->
   <section id="about">
-   <center><h2>About Me</h2>
- <p>Hello! I’m a passionate photographer who loves capturing motorsports and wildlife. Whether it’s in the bush or on the track, I strive to tell a story through my lens.</p></center>
+ <h2>About Me</h2>
+ <p>Hello! I’m a passionate photographer who loves capturing motorsports and wildlife. Whether it’s in the bush or on the track, I strive to tell a story through my lens.</p>
 
   <div class="social-links">
     <a href="https://www.instagram.com/_ir.photo_?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" aria-label="Instagram" class="social-icon">
@@ -588,6 +598,7 @@ button[type="submit"]:hover {
   </script>
 </body>
 </html>
+
 
 
 
