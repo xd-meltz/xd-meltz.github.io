@@ -173,7 +173,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;         
-  align-items: center;          
+  align-items: center;             
 
   text-align: center;
   max-width: 800px;
@@ -458,6 +458,28 @@ button[type="submit"]:hover {
       #hero p { font-size: 0.9em; }
       section { padding: 50px 20px; }
     }
+	
+	
+	/* WhatsApp confirmation animation */
+button.success {
+  background: #25D366 !important;
+  color: #fff !important;
+  box-shadow: 0 0 25px rgba(37, 211, 102, 0.8);
+  transform: scale(1.08);
+  pointer-events: none;
+}
+
+button.success::after {
+  content: " ✔";
+  font-size: 1.2em;
+  animation: pop 0.4s ease;
+}
+
+@keyframes pop {
+  0% { transform: scale(0.5); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
   </style>
 </head>
 <body>
@@ -484,8 +506,8 @@ button[type="submit"]:hover {
 
   <!-- About Section -->
   <section id="about">
- <h2>About Me</h2>
- <p>Hello! I’m a passionate photographer who loves capturing motorsports and wildlife. Whether it’s in the bush or on the track, I strive to tell a story through my lens.</p>
+  <h2>About Me</h2>
+  <p>Hello! I’m a passionate photographer who loves capturing motorsports and wildlife. Whether it’s in the bush or on the track, I strive to tell a story through my lens.</p>
 
   <div class="social-links">
     <a href="https://www.instagram.com/_ir.photo_?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" aria-label="Instagram" class="social-icon">
@@ -556,18 +578,19 @@ button[type="submit"]:hover {
   <h2>Book a Private Shoot</h2>
   <p>If you’d like to book me for a private photoshoot, event, or collaboration — reach out below!</p>
 
-  <form class="contact-form" action="https://formspree.io/f/xanljboz" method="POST">
-    <div class="form-group">
-      <input type="text" name="name" placeholder="Your Name" required>
-    </div>
-    <div class="form-group">
-      <input type="email" name="email" placeholder="Your Email" required>
-    </div>
-    <div class="form-group">
-      <textarea name="message" rows="5" placeholder="Your Message" required></textarea>
-    </div>
-    <button type="submit">Send Message</button>
-  </form>
+  <form class="contact-form" id="whatsappForm">
+  <div class="form-group">
+    <input type="text" name="name" placeholder="Your Name" required>
+  </div>
+  <div class="form-group">
+    <input type="email" name="email" placeholder="Your Email" required>
+  </div>
+  <div class="form-group">
+    <textarea name="message" rows="5" placeholder="Your Message" required></textarea>
+  </div>
+  <button type="submit" id="whatsappBtn">Send WhatsApp</button>
+</form>
+
 </section>
 
   <!-- Buy Section -->
@@ -594,12 +617,51 @@ button[type="submit"]:hover {
 
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape') lightbox.style.display = 'none';
-    });
+	  
   </script>
+  
+  <script>
+document.addEventListener("DOMContentLoaded", () => {
+
+  const form = document.getElementById("whatsappForm");
+  const button = document.getElementById("whatsappBtn");
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const name = form.name.value.trim();
+    const email = form.email.value.trim();
+    const message = form.message.value.trim();
+
+    const phoneNumber = "27619280584";
+
+    const text =
+      `Hi Igor, I’d like to book a private shoot.\n\n` +
+      `Name: ${name}\n` +
+      `Email: ${email}\n\n` +
+      `Message:\n${message}`;
+
+    const encoded = encodeURIComponent(text);
+
+    const url = `https://wa.me/${phoneNumber}?text=${encoded}`;
+
+    button.classList.add("success");
+    button.textContent = "Opening WhatsApp…";
+
+    window.open(url, "_blank");
+
+    setTimeout(() => {
+      button.classList.remove("success");
+      button.textContent = "Send via WhatsApp";
+      form.reset();
+    }, 3000);
+  });
+});
+</script>
+
+
 </body>
 </html>
-
-
 
 
 
