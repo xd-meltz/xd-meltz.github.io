@@ -1,373 +1,673 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coffee Cruiser | Mobile Espresso</title>
-    <script src="https://unpkg.com/scrollreveal"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --cream: #FDFBF7;       /* The Foam */
-            --latte: #F5EBE0;       /* Light Coffee */
-            --espresso: #3D2B1F;    /* Deep Coffee */
-            --accent: #967155;      /* Roasted Bean */
-            --glass: rgba(255, 255, 255, 0.4);
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--cream);
-            color: var(--espresso);
-            overflow-x: hidden;
-            line-height: 1.6;
-        }
-
-        /* --- Apple-Style Blurred Nav --- */
-        nav {
-        position: fixed;
-        top: 0; width: 100%;
-        min-height: 50px;
-        background: rgba(253, 251, 247, 0.8);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        z-index: 1000;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        border-bottom: 1px solid rgba(61, 43, 31, 0.08);
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Igor Rix Photography</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      scroll-behavior: smooth;
     }
 
-    .nav-container {
-        width: 100%;
-        max-width: 1100px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 10px 20px;
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: #111;
+      color: #fff;
+      overflow-x: hidden;
     }
 
-    .nav-links {
-        display: flex;
-        gap: 20px;
+    a { color: inherit; text-decoration: none; }
+
+    section {
+      padding: 60px 30px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
     }
 
-    .nav-links a {
-        color: var(--espresso);
-        text-decoration: none;
-        font-size: 13px;
-        font-weight: 500;
-        opacity: 0.7;
-        transition: opacity 0.3s;
+    h1, h2, h3 {
+      margin-bottom: 20px;
+      text-align: center;
     }
 
-    .nav-btn {
-        background: var(--espresso);
-        color: var(--cream) !important;
-        padding: 8px 18px;
-        border-radius: 980px;
-        font-size: 12px !important;
-        font-weight: 600;
-        text-decoration: none;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        white-space: nowrap; /* Prevents text from wrapping */
+    /* Navbar */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 20px;
+      z-index: 10;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+      flex-wrap: wrap;
     }
 
-    /* --- Mobile Fixes --- */
-    @media (max-width: 600px) {
-        .nav-container {
-            padding: 8px 15px;
-        }
-        .nav-links {
-            gap: 12px;
-        }
-        .nav-links a {
-            font-size: 11px;
-        }
-        .nav-btn {
-            padding: 6px 12px;
-            font-size: 11px !important;
-        }
+    nav .pfp {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      margin-right: 20px;
+      object-fit: cover;
+      border: 2px solid #ff4c4c;
+      transition: transform 0.3s;
     }
 
-    /* --- Form Success Animation --- */
-    .btn-loading {
-        background: var(--accent) !important;
-        transform: scale(0.95);
-        opacity: 0.8;
+    nav .pfp:hover { transform: scale(1.1) rotate(5deg); }
+
+    nav a {
+      margin: 8px 15px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      transition: color 0.3s, text-shadow 0.3s;
     }
 
-    /* Smooth Scrolling for the whole page */
-    html {
-        scroll-behavior: smooth;
+    nav a:hover {
+      color: #ff4c4c;
+      text-shadow: 0 0 10px #ff4c4c;
     }
 
-    /* Adjust for mobile */
-    @media (max-width: 600px) {
-        nav a { margin: 0 10px; font-size: 11px; }
-        .nav-btn { padding: 5px 12px; }
+    /* Hero Section */
+    #hero {
+      position: relative;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      overflow: hidden;
+      background: radial-gradient(circle at 50% 20%, #1a1a1a 0%, #000 80%);
+      color: #fff;
     }
-        /* --- Hero Section --- */
-        .hero {
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            background: linear-gradient(to bottom, #FDFBF7 0%, #F5EBE0 100%);
-            padding: 20px;
-        }
-        .hero h1 {
-            font-size: clamp(3.5rem, 10vw, 7rem);
-            font-weight: 800;
-            letter-spacing: -0.04em;
-            line-height: 0.9;
-            margin-bottom: 20px;
-            color: var(--espresso);
-        }
-        .hero p {
-            font-size: 1.5rem;
-            color: var(--accent);
-            max-width: 600px;
-            font-weight: 400;
-        }
 
-        /* --- Content Sections --- */
-        .section {
-            padding: 120px 5%;
-            max-width: 1300px;
-            margin: 0 auto;
-        }
-
-        .bento-grid {
-            display: grid;
-            grid-template-columns: repeat(12, 1fr);
-            gap: 25px;
-            margin-top: 50px;
-        }
-
-        .card {
-            background: var(--latte);
-            border-radius: 40px;
-            padding: 50px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            border: 1px solid rgba(61, 43, 31, 0.03);
-            transition: transform 0.6s cubic-bezier(0.2, 1, 0.2, 1);
-        }
-
-        .card:hover {
-            transform: scale(1.01);
-        }
-
-        .card-large { grid-column: span 8; height: 500px; }
-        .card-small { grid-column: span 4; height: 500px; }
-        .card-full { grid-column: span 12; min-height: 400px; text-align: center; }
-
-        h2 { font-size: 3rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 15px; }
-        
-        .pill-label {
-            background: var(--espresso);
-            color: var(--cream);
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            width: fit-content;
-            margin-bottom: 20px;
-        }
-
-        /* --- Image Placeholder Style --- */
-        .img-placeholder {
-            width: 100%;
-            height: 100%;
-            background: rgba(61, 43, 31, 0.05);
-            border-radius: 20px;
-            margin-top: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--accent);
-            font-weight: 500;
-        }
-
-        /* --- Footer --- */
-        footer {
-            padding: 80px 0;
-            text-align: center;
-            background: var(--espresso);
-            color: var(--cream);
-        }
-
-        @media (max-width: 768px) {
-            .card-large, .card-small { grid-column: span 12; height: auto; }
-        }
-		   /* New Button Style for the Form */
-    .btn-apple {
-        background: var(--espresso);
-        color: var(--cream);
-        padding: 18px;
-        border-radius: 15px;
-        border: none;
-        font-weight: 600;
-        font-size: 16px;
-        transition: all 0.3s ease;
+    .wave-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 300%;
+      height: 100%;
+      background: url('https://svgshare.com/i/12ZT.svg') repeat-x;
+      background-size: 50% 100%;
+      animation: waveLoop 20s linear infinite;
+      opacity: 0.25;
+      z-index: 0;
     }
-    .btn-apple:hover {
-        background: var(--accent);
-        transform: translateY(-2px);
-        box-shadow: 0 10px 20px rgba(61, 43, 31, 0.1);
+
+    @keyframes waveLoop {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
     }
-    input:focus, textarea:focus {
-        outline: 2px solid var(--accent);
-        border-color: transparent;
+
+    #hero h1, #hero p {
+      position: relative;
+      z-index: 1;
+      animation: fadeInUp 1s ease forwards;
     }
-    </style>
+
+    #hero h1 {
+      font-size: 4em;
+      font-weight: 700;
+      background: linear-gradient(90deg, #ff4c4c, #fff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    #hero p {
+      font-size: 1.2em;
+      color: #ccc;
+      animation-delay: 0.5s;
+    }
+
+    @keyframes fadeInUp {
+      0% { opacity: 0; transform: translateY(50px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-decoration {
+      position: absolute;
+      bottom: 15%;
+      width: 80px;
+      height: 4px;
+      background: #fff;
+      border-radius: 2px;
+      animation: slide 2s infinite alternate;
+      z-index: 1;
+    }
+
+    @keyframes slide {
+      0% { transform: translateX(-50px); }
+      100% { transform: translateX(50px); }
+    }
+
+    .scroll-indicator {
+      position: absolute;
+      bottom: 30px;
+      width: 20px;
+      height: 20px;
+      border-left: 2px solid #fff;
+      border-bottom: 2px solid #fff;
+      transform: rotate(-45deg);
+      animation: bounce 1.5s infinite;
+      opacity: 0.6;
+      z-index: 1;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0) rotate(-45deg); }
+      50% { transform: translateY(10px) rotate(-45deg); }
+    }
+
+    /* About Section */
+#about {
+  min-height: 100vh;               
+  display: flex;
+  flex-direction: column;
+  justify-content: center;         
+  align-items: center;             
+
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
+
+  animation: fadeIn 1s ease forwards;
+}
+
+#about p {
+  font-size: 1.1em;
+  line-height: 1.7;
+  color: #ccc;
+}
+
+
+    /* Portfolio Section */
+#portfolio {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 40px 20px;
+
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* Desktop default */
+  gap: 20px;
+}
+
+/* Tablet */
+@media (max-width: 1024px) {
+  #portfolio {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  #portfolio {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+}
+
+#portfolio img {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+
+  border-radius: 16px;
+  cursor: pointer;
+
+  transition: transform 0.4s ease, box-shadow 0.4s ease, filter 0.4s ease;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+}
+
+#portfolio img:hover {
+  transform: scale(1.05);
+  filter: brightness(1.15);
+  box-shadow: 0 12px 30px rgba(255,255,255,0.35);
+}
+
+
+    /* Lightbox */
+    .lightbox {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.9);
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+
+    .lightbox img {
+      max-width: 90%;
+      max-height: 90%;
+      border-radius: 10px;
+      box-shadow: 0 0 30px rgba(255,255,255,0.2);
+      animation: zoomIn 0.3s ease;
+    }
+
+    @keyframes zoomIn {
+      0% { transform: scale(0.8); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* Gear Section */
+    #gear {
+      text-align: center;
+    }
+
+    .gear-list {
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+      margin-top: 30px;
+    }
+
+    .gear-item {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .bullet {
+      width: 10px;
+      height: 10px;
+      background: #ff4c4c;
+      border-radius: 50%;
+      flex-shrink: 0;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.4); opacity: 0.6; }
+    }
+
+    #gear img {
+      width: 140px;
+      border-radius: 20px;
+      object-fit: cover;
+      box-shadow: 0 5px 15px rgba(255,255,255,0.2);
+      transition: transform 0.5s, box-shadow 0.5s;
+    }
+
+    #gear img:hover {
+      transform: rotate(5deg) scale(1.05);
+      box-shadow: 0 15px 35px rgba(255,255,255,0.6);
+    }
+
+    #gear p {
+      color: #fff;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    /* Contact Section */
+#contact {
+  text-align: center;
+  background: radial-gradient(circle at 50% 30%, #1a1a1a 0%, #000 80%);
+  padding: 80px 50px;
+}
+
+#contact h2 {
+  margin-bottom: 15px;
+  font-size: 2em;
+}
+
+#contact p {
+  color: #ccc;
+  max-width: 600px;
+  margin: 0 auto 40px;
+  line-height: 1.6;
+}
+
+.contact-form {
+  max-width: 600px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 15px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 10px;
+  color: #fff;
+  font-size: 1em;
+  transition: all 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: #ff4c4c;
+  box-shadow: 0 0 10px rgba(255,76,76,0.4);
+  outline: none;
+}
+
+button[type="submit"] {
+  background: #ff4c4c;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 50px;
+  color: #fff;
+  font-weight: bold;
+  font-size: 1.1em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 15px rgba(255,76,76,0.3);
+}
+
+button[type="submit"]:hover {
+  background: #fff;
+  color: #111;
+  transform: scale(1.05);
+  box-shadow: 0 10px 25px rgba(255,255,255,0.5);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  #contact {
+    padding: 60px 25px;
+  }
+
+  #contact h2 {
+    font-size: 1.8em;
+  }
+
+  .contact-form {
+    width: 100%;
+  }
+}
+    /* Buy Section */
+    #buy a {
+      display: inline-block;
+      padding: 15px 30px;
+      margin-top: 20px;
+      background: #ff4c4c;
+      color: #fff;
+      font-weight: bold;
+      border-radius: 50px;
+      transition: transform 0.3s, background 0.3s, box-shadow 0.3s;
+      box-shadow: 0 5px 15px rgba(255,76,76,0.4);
+    }
+
+    #buy a:hover {
+      transform: scale(1.1);
+      background: #fff;
+      color: #111;
+      box-shadow: 0 10px 25px rgba(255,255,255,0.5);
+    }
+    .social-links {
+    margin-top: 25px;
+    display: flex;
+    gap: 25px;
+    justify-content: center;
+    align-items: center;
+    }
+
+    .social-icon {
+    color: #fff;
+    transition: transform 0.3s ease, color 0.3s ease, text-shadow 0.3s ease;
+    }
+
+    .social-icon:hover {
+    color: #ff4c4c;
+    transform: scale(1.2);
+    text-shadow: 0 0 10px #ff4c4c;
+    }
+
+    @media (max-width: 480px) {
+  .social-links {
+    gap: 15px;
+  }
+  .social-icon svg {
+    width: 26px;
+    height: 26px;
+  }
+}
+
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      #hero h1 { font-size: 2.5em; }
+      #hero p { font-size: 1em; }
+      nav { padding: 10px 15px; }
+      nav a { margin: 6px 10px; }
+      #portfolio { padding: 20px; }
+      #gear img { width: 120px; }
+    }
+
+    @media (max-width: 480px) {
+      #hero h1 { font-size: 2em; }
+      #hero p { font-size: 0.9em; }
+      section { padding: 50px 20px; }
+    }
+	
+	
+	/* WhatsApp confirmation animation */
+button.success {
+  background: #25D366 !important;
+  color: #fff !important;
+  box-shadow: 0 0 25px rgba(37, 211, 102, 0.8);
+  transform: scale(1.08);
+  pointer-events: none;
+}
+
+button.success::after {
+  content: " ✔";
+  font-size: 1.2em;
+  animation: pop 0.4s ease;
+}
+
+@keyframes pop {
+  0% { transform: scale(0.5); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+  </style>
 </head>
 <body>
 
-    <nav>
-    <div class="nav-container">
-        <div class="nav-links">
-            <a href="#about">Cruiser</a>
-            <a href="#menu">Menu</a>
-            <a href="#find">Find</a>
-        </div>
-        <a href="#booking" class="nav-btn">Book Now</a>
-    </div>
-</nav>
+  <!-- Navigation -->
+  <nav>
+    <img class="pfp" src="https://i.postimg.cc/3R2hbWZx/20251029-143504560-i-OS-1.jpg" alt="Profile Picture">
+    <a href="#hero">Home</a>
+    <a href="#about">About</a>
+    <a href="#portfolio">Portfolio</a>
+    <a href="#gear">Gear</a>
+	<a href="#contact">Contact me</a>
+    <a href="#buy">Buy</a>
+  </nav>
 
-    <section class="hero">
-        <h1 class="reveal">Coffee<br>Cruiser.</h1>
-        <p class="reveal">Stellenbosch, freshly pressed.</p>
-    </section>
+  <!-- Hero Section -->
+  <section id="hero">
+    <div class="wave-bg"></div>
+    <h1>Igor Rix</h1>
+    <p>Capturing Moments, One Shutter at a Time</p>
+    <div class="hero-decoration"></div>
+    <div class="scroll-indicator"></div>
+  </section>
 
-    <section class="section">
-        <div class="bento-grid">
-            <div class="card card-large reveal" id="about">
-                <div>
-                    <span class="pill-label">The Ride</span>
-                    <h2>Engineered for Flavor.</h2>
-                    <p>Our custom cruiser brings the world's best beans directly to the streets of Stellies.</p>
-                </div>
-                <div class="https://i.postimg.cc/bv2XKVdQ/What-a-day-We-had-the-best-time-serving-coffee-at-the-market-today-Huge-thank-you-to-everyone.jpg">Cruiser Photo Area</div>
-            </div>
+  <!-- About Section -->
+  <section id="about">
+  <h2>About Me</h2>
+  <p>Hello! I’m a passionate photographer who loves capturing motorsports and wildlife. Whether it’s in the bush or on the track, I strive to tell a story through my lens.</p>
 
-            <div class="card card-small reveal">
-                <div>
-                    <span class="pill-label">The Roast</span>
-                    <h2>100% Arabica.</h2>
-                    <p>Ethically sourced, locally roasted, perfectly pulled.</p>
-                </div>
-            </div>
-
-            <div class="card card-full reveal" id="menu">
-                <span class="pill-label">The Menu</span>
-                <h2>Crafted with Care.</h2>
-                <div class="bento-grid" style="margin-top: 30px; width: 100%;">
-                    <div style="grid-column: span 4;">
-                        <h3>Cortado</h3>
-                        <p>Equal parts espresso and steam.</p>
-                    </div>
-                    <div style="grid-column: span 4;">
-                        <h3>Vanilla Latte</h3>
-                        <p>A touch of sweetness for the walk.</p>
-                    </div>
-                    <div style="grid-column: span 4;">
-                        <h3>Cold Brew</h3>
-                        <p>12-hour steeped energy.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="hero" id="find" style="height: 80vh; background: var(--cream);">
-        <span class="pill-label reveal">Live Location</span>
-        <h2 class="reveal" style="font-size: 4rem;">Find the Cruiser.</h2>
-        <p class="reveal">Today: <b>Ryneveld Street</b> (Near the Library)</p>
-        <p class="reveal">08:00 — 16:00</p>
-    </section>
-
-<section class="section" id="booking">
-    <div class="card card-full reveal">
-        <div style="max-width: 600px; margin: 0 auto;">
-            <span class="pill-label" style="margin: 0 auto 20px;">Private Events</span>
-            <h2>Book the Cruiser.</h2>
-            <p style="margin-bottom: 40px;">Weddings, corporate launches, or private parties in Stellenbosch. We bring the machine, the beans, and the vibe.</p>
-            
-            <form id="bookingForm" style="text-align: left;">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
-                    <input type="text" id="name" placeholder="Your Name" required 
-                           style="padding: 15px; border-radius: 12px; border: 1px solid rgba(61,43,31,0.1); background: var(--cream);">
-                    <input type="text" id="event" placeholder="Event Type (e.g. Wedding)" required
-                           style="padding: 15px; border-radius: 12px; border: 1px solid rgba(61,43,31,0.1); background: var(--cream);">
-                </div>
-                <input type="date" id="date" required 
-                       style="width: 100%; padding: 15px; border-radius: 12px; border: 1px solid rgba(61,43,31,0.1); background: var(--cream); margin-bottom: 15px;">
-                
-                <textarea id="message" placeholder="Tell us more about your event..." rows="4" 
-                          style="width: 100%; padding: 15px; border-radius: 12px; border: 1px solid rgba(61,43,31,0.1); background: var(--cream); margin-bottom: 25px; font-family: inherit;"></textarea>
-                
-                <button type="submit" class="btn-apple" style="width: 100%; cursor: pointer;">
-                    Request Booking via WhatsApp
-                </button>
-            </form>
-        </div>
-    </div>
+  <div class="social-links">
+    <a href="https://www.instagram.com/_ir.photo_?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" aria-label="Instagram" class="social-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5A4.25 4.25 0 0 0 16.25 3.5h-8.5ZM12 7a5 5 0 1 1 0 10a5 5 0 0 1 0-10Zm0 1.5a3.5 3.5 0 1 0 0 7a3.5 3.5 0 0 0 0-7Zm4.75-.88a.88.88 0 1 1 0 1.75a.88.88 0 0 1 0-1.75Z"/>
+      </svg>
+    </a>
+    <a href="https://www.tiktok.com/@_ir.photo_?is_from_webapp=1&sender_device=pc" target="_blank" aria-label="TikTok" class="social-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M12.999 2c.169 3.83 2.025 6.019 5.356 6.248V10.8a8.47 8.47 0 0 1-4.353-1.19v6.413c0 7.623-8.241 9.23-11.094 3.323a5.568 5.568 0 0 1 5.473-8.173v2.889c-.306.027-.612.084-.913.176c-1.902.585-2.385 2.939-1.265 4.282c1.205 1.445 3.786 1.034 4.186-1.069c.07-.355.1-.727.1-1.135V2h2.51Z"/>
+      </svg>
+    </a>
+  </div>
 </section>
 
+  <!-- Portfolio Section -->
+  <section id="portfolio">
+    <h2 style="grid-column: 1/-1;">My Work</h2>
+    <img src="https://i.postimg.cc/htwh57ZV/IR-0723.jpg" alt="Photo 1">
+	<img src="https://i.postimg.cc/m2mP7nYb/1-IMG-0323.jpg" alt="Photo 2">
+	<img src="https://i.postimg.cc/XYhXzy1k/IR-1342.jpg" alt="Photo 3">
+	<img src="https://i.postimg.cc/BnytV17D/IR-1478.jpg" alt="Photo 4">
+	<img src="https://i.postimg.cc/MpXv5Y5Q/2-IR-1179.jpg" alt="Photo 5">
+	<img src="https://i.postimg.cc/g25rT6tr/2-IMG-0884.jpg" alt="Photo 6">
+	<img src="https://i.postimg.cc/dQGhN0Q6/1_IR_2367.jpg" alt="Photo 7">
+	<img src="https://i.postimg.cc/CMbRrKM6/2_IR_2160.jpg" alt="Photo 8">
+ </section>
 
-    <footer>
-        <p>&copy; 2026 Coffee Cruiser. Stay Caffeinated.</p>
-    </footer>
+  <!-- Lightbox Container -->
+  <div class="lightbox" id="lightbox">
+    <img src="" alt="Expanded Image">
+  </div>
 
-    <script>
-	// Update your existing script with this "Success" feedback
-document.getElementById('bookingForm').addEventListener('submit', function(e) {
+  <!-- Gear Section -->
+  <section id="gear">
+  <h2>My Gear</h2>
+  <div class="gear-list">
+
+    <div class="gear-item">
+      <span class="bullet"></span>
+      <div class="gear-content">
+        <a href="https://www.sony.com/za/interchangeable-lens-cameras/products/ilce-6400" target="_blank"><img src="https://i.postimg.cc/4xhJQGfN/sony-a6400.webp" alt="Sony a6400">
+        <p>Sony a6400</a></p>
+      </div>
+    </div>
+
+    <div class="gear-item">
+      <span class="bullet"></span>
+      <div class="gear-content">
+        <a href="https://www.sony.com/za/electronics/interchangeable-lenses/selp16502" target="_blank"><img src="https://i.postimg.cc/13CySzvC/16-50.png" alt="Sony 16-50mm Lens">
+        <p>E PZ 16-50mm F3.5-5.6 OSS II</a></p>
+      </div>
+    </div>
+
+    <div class="gear-item">
+      <span class="bullet"></span>
+      <div class="gear-content">
+        <a href="https://www.tamron.com/global/consumer/lenses/a047/photo.html" target="_blank"><img src="https://i.postimg.cc/zvck5KRS/tamron.png" alt="Tamron 70-300mm Lens">
+        <p>Tamron 70-300mm F/4.5-6.3 Di III RXD</a></p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+  <!-- Contact Section -->
+<section id="contact">
+  <h2>Book a Private Shoot</h2>
+  <p>If you’d like to book me for a private photoshoot, event, or collaboration — reach out below!</p>
+
+  <form class="contact-form" id="whatsappForm">
+  <div class="form-group">
+    <input type="text" name="name" placeholder="Your Name" required>
+  </div>
+  <div class="form-group">
+    <input type="email" name="email" placeholder="Your Email" required>
+  </div>
+  <div class="form-group">
+    <textarea name="message" rows="5" placeholder="Your Message" required></textarea>
+  </div>
+  <button type="submit" id="whatsappBtn">Send WhatsApp</button>
+</form>
+
+</section>
+
+  <!-- Buy Section -->
+  <section id="buy">
+    <h2>Buy My Photos</h2>
+    <a href="https://photofrog.co.za/sellers/igorrix" target="_blank">Shop Now on PhotoFrog</a>
+  </section>
+
+  <script>
+    // Lightbox logic
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = lightbox.querySelector('img');
+
+    document.querySelectorAll('#portfolio img').forEach(img => {
+      img.addEventListener('click', () => {
+        lightboxImg.src = img.src;
+        lightbox.style.display = 'flex';
+      });
+    });
+
+    lightbox.addEventListener('click', () => {
+      lightbox.style.display = 'none';
+    });
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') lightbox.style.display = 'none';
+	  
+  </script>
+  
+  <script>
+document.addEventListener("DOMContentLoaded", () => {
+
+  const form = document.getElementById("whatsappForm");
+  const button = document.getElementById("whatsappBtn");
+
+  form.addEventListener("submit", (e) => {
     e.preventDefault();
-    const btn = e.target.querySelector('button');
-    
-    // Visual feedback
-    btn.innerHTML = "Opening WhatsApp...";
-    btn.classList.add('btn-loading');
 
-    const name = document.getElementById('name').value;
-    const eventType = document.getElementById('event').value;
-    const date = document.getElementById('date').value;
-    const message = document.getElementById('message').value;
+    const name = form.name.value.trim();
+    const email = form.email.value.trim();
+    const message = form.message.value.trim();
 
-    const phone = "27619280584"; 
-    const text = `Hi Coffee Cruiser! ☕️ %0A%0A` +
-                 `*Name:* ${name}%0A` +
-                 `*Event:* ${eventType}%0A` +
-                 `*Date:* ${date}%0A` +
-                 `*Details:* ${message}`;
+    const phoneNumber = "27619280584";
+
+    const text =
+      `Hi Igor, I’d like to book a private shoot.\n\n` +
+      `Name: ${name}\n` +
+      `Email: ${email}\n\n` +
+      `Message:\n${message}`;
+
+    const encoded = encodeURIComponent(text);
+
+    const url = `https://wa.me/${phoneNumber}?text=${encoded}`;
+
+    button.classList.add("success");
+    button.textContent = "Opening WhatsApp…";
+
+    window.open(url, "_blank");
 
     setTimeout(() => {
-        window.location.href = `https://wa.me/${phone}?text=${text}`;
-        // Reset button after a delay
-        setTimeout(() => {
-            btn.innerHTML = "Request Booking via WhatsApp";
-            btn.classList.remove('btn-loading');
-        }, 2000);
-    }, 600);
+      button.classList.remove("success");
+      button.textContent = "Send via WhatsApp";
+      form.reset();
+    }, 3000);
+  });
 });
-        // Highly dynamic Apple-style reveal
-        // 'reset: true' makes it animate EVERY time you scroll up or down
-        ScrollReveal().reveal('.reveal', {
-            distance: '60px',
-            duration: 1200,
-            easing: 'cubic-bezier(0.2, 1, 0.2, 1)',
-            interval: 150,
-            opacity: 0,
-            origin: 'bottom',
-            reset: true 
-        });
-    </script>
+</script>
+
+
 </body>
 </html>
+
+
+
+
+
+
+
+
+
