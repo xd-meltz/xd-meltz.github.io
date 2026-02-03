@@ -27,59 +27,76 @@
 
         /* --- Apple-Style Blurred Nav --- */
         nav {
-            position: fixed;
-            top: 0; width: 100%;
-            height: 60px;
-            background: rgba(253, 251, 247, 0.7);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            z-index: 1000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-bottom: 1px solid rgba(61, 43, 31, 0.05);
-        }
-        nav a {
-            color: var(--espresso);
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 500;
-            margin: 0 25px;
-            opacity: 0.7;
-            transition: opacity 0.3s;
-        }
-        nav a:hover { opacity: 1; }
-.nav-container {
+        position: fixed;
+        top: 0; width: 100%;
+        min-height: 50px;
+        background: rgba(253, 251, 247, 0.8);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        z-index: 1000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-bottom: 1px solid rgba(61, 43, 31, 0.08);
+    }
+
+    .nav-container {
         width: 100%;
-        max-width: 1200px;
+        max-width: 1100px;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 0 20px;
+        padding: 10px 20px;
     }
 
     .nav-links {
         display: flex;
-        flex: 1;
-        justify-content: center;
+        gap: 20px;
     }
 
-    /* The Nav Button */
+    .nav-links a {
+        color: var(--espresso);
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 500;
+        opacity: 0.7;
+        transition: opacity 0.3s;
+    }
+
     .nav-btn {
         background: var(--espresso);
         color: var(--cream) !important;
-        padding: 6px 16px;
+        padding: 8px 18px;
         border-radius: 980px;
         font-size: 12px !important;
         font-weight: 600;
         text-decoration: none;
-        transition: transform 0.2s ease, background 0.2s ease;
-        opacity: 1 !important; /* Always visible */
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        white-space: nowrap; /* Prevents text from wrapping */
     }
 
-    .nav-btn:hover {
-        background: var(--accent);
-        transform: scale(1.05);
+    /* --- Mobile Fixes --- */
+    @media (max-width: 600px) {
+        .nav-container {
+            padding: 8px 15px;
+        }
+        .nav-links {
+            gap: 12px;
+        }
+        .nav-links a {
+            font-size: 11px;
+        }
+        .nav-btn {
+            padding: 6px 12px;
+            font-size: 11px !important;
+        }
+    }
+
+    /* --- Form Success Animation --- */
+    .btn-loading {
+        background: var(--accent) !important;
+        transform: scale(0.95);
+        opacity: 0.8;
     }
 
     /* Smooth Scrolling for the whole page */
@@ -189,6 +206,26 @@
         @media (max-width: 768px) {
             .card-large, .card-small { grid-column: span 12; height: auto; }
         }
+		   /* New Button Style for the Form */
+    .btn-apple {
+        background: var(--espresso);
+        color: var(--cream);
+        padding: 18px;
+        border-radius: 15px;
+        border: none;
+        font-weight: 600;
+        font-size: 16px;
+        transition: all 0.3s ease;
+    }
+    .btn-apple:hover {
+        background: var(--accent);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(61, 43, 31, 0.1);
+    }
+    input:focus, textarea:focus {
+        outline: 2px solid var(--accent);
+        border-color: transparent;
+    }
     </style>
 </head>
 <body>
@@ -196,9 +233,9 @@
     <nav>
     <div class="nav-container">
         <div class="nav-links">
-            <a href="#about">The Cruiser</a>
+            <a href="#about">Cruiser</a>
             <a href="#menu">Menu</a>
-            <a href="#find">Find Us</a>
+            <a href="#find">Find</a>
         </div>
         <a href="#booking" class="nav-btn">Book Now</a>
     </div>
@@ -217,7 +254,7 @@
                     <h2>Engineered for Flavor.</h2>
                     <p>Our custom cruiser brings the world's best beans directly to the streets of Stellies.</p>
                 </div>
-                <div class="img-placeholder">Cruiser Photo Area</div>
+                <div class="https://i.postimg.cc/bv2XKVdQ/What-a-day-We-had-the-best-time-serving-coffee-at-the-market-today-Huge-thank-you-to-everyone.jpg">Cruiser Photo Area</div>
             </div>
 
             <div class="card card-small reveal">
@@ -284,62 +321,42 @@
     </div>
 </section>
 
-<style>
-    /* New Button Style for the Form */
-    .btn-apple {
-        background: var(--espresso);
-        color: var(--cream);
-        padding: 18px;
-        border-radius: 15px;
-        border: none;
-        font-weight: 600;
-        font-size: 16px;
-        transition: all 0.3s ease;
-    }
-    .btn-apple:hover {
-        background: var(--accent);
-        transform: translateY(-2px);
-        box-shadow: 0 10px 20px rgba(61, 43, 31, 0.1);
-    }
-    input:focus, textarea:focus {
-        outline: 2px solid var(--accent);
-        border-color: transparent;
-    }
-</style>
-
-<script>
-    // WhatsApp Integration Logic
-    document.getElementById('bookingForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-
-        // Get values from form
-        const name = document.getElementById('name').value;
-        const eventType = document.getElementById('event').value;
-        const date = document.getElementById('date').value;
-        const message = document.getElementById('message').value;
-
-        // The WhatsApp Number (International format without +)
-        const phone = "27619280584"; 
-
-        // Construct the message
-        const text = `Hi Coffee Cruiser! ☕️ %0A%0AI'd like to book you for an event:%0A%0A` +
-                     `*Name:* ${name}%0A` +
-                     `*Event:* ${eventType}%0A` +
-                     `*Date:* ${date}%0A` +
-                     `*Details:* ${message}`;
-
-        // Redirect to WhatsApp
-        window.location.href = `https://wa.me/${phone}?text=${text}`;
-    });
-
-    // Don't forget to keep your existing ScrollReveal script here!
-</script>
 
     <footer>
         <p>&copy; 2026 Coffee Cruiser. Stay Caffeinated.</p>
     </footer>
 
     <script>
+	// Update your existing script with this "Success" feedback
+document.getElementById('bookingForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const btn = e.target.querySelector('button');
+    
+    // Visual feedback
+    btn.innerHTML = "Opening WhatsApp...";
+    btn.classList.add('btn-loading');
+
+    const name = document.getElementById('name').value;
+    const eventType = document.getElementById('event').value;
+    const date = document.getElementById('date').value;
+    const message = document.getElementById('message').value;
+
+    const phone = "27619280584"; 
+    const text = `Hi Coffee Cruiser! ☕️ %0A%0A` +
+                 `*Name:* ${name}%0A` +
+                 `*Event:* ${eventType}%0A` +
+                 `*Date:* ${date}%0A` +
+                 `*Details:* ${message}`;
+
+    setTimeout(() => {
+        window.location.href = `https://wa.me/${phone}?text=${text}`;
+        // Reset button after a delay
+        setTimeout(() => {
+            btn.innerHTML = "Request Booking via WhatsApp";
+            btn.classList.remove('btn-loading');
+        }, 2000);
+    }, 600);
+});
         // Highly dynamic Apple-style reveal
         // 'reset: true' makes it animate EVERY time you scroll up or down
         ScrollReveal().reveal('.reveal', {
