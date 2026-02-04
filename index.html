@@ -1,673 +1,943 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Igor Rix Photography</title>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      scroll-behavior: smooth;
-    }
-
-    body {
-      font-family: 'Montserrat', sans-serif;
-      background: #111;
-      color: #fff;
-      overflow-x: hidden;
-    }
-
-    a { color: inherit; text-decoration: none; }
-
-    section {
-      padding: 60px 30px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      position: relative;
-    }
-
-    h1, h2, h3 {
-      margin-bottom: 20px;
-      text-align: center;
-    }
-
-    /* Navbar */
-    nav {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      background: rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 10px 20px;
-      z-index: 10;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.4);
-      flex-wrap: wrap;
-    }
-
-    nav .pfp {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      margin-right: 20px;
-      object-fit: cover;
-      border: 2px solid #ff4c4c;
-      transition: transform 0.3s;
-    }
-
-    nav .pfp:hover { transform: scale(1.1) rotate(5deg); }
-
-    nav a {
-      margin: 8px 15px;
-      font-weight: bold;
-      letter-spacing: 1px;
-      transition: color 0.3s, text-shadow 0.3s;
-    }
-
-    nav a:hover {
-      color: #ff4c4c;
-      text-shadow: 0 0 10px #ff4c4c;
-    }
-
-    /* Hero Section */
-    #hero {
-      position: relative;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      overflow: hidden;
-      background: radial-gradient(circle at 50% 20%, #1a1a1a 0%, #000 80%);
-      color: #fff;
-    }
-
-    .wave-bg {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 300%;
-      height: 100%;
-      background: url('https://svgshare.com/i/12ZT.svg') repeat-x;
-      background-size: 50% 100%;
-      animation: waveLoop 20s linear infinite;
-      opacity: 0.25;
-      z-index: 0;
-    }
-
-    @keyframes waveLoop {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
-    }
-
-    #hero h1, #hero p {
-      position: relative;
-      z-index: 1;
-      animation: fadeInUp 1s ease forwards;
-    }
-
-    #hero h1 {
-      font-size: 4em;
-      font-weight: 700;
-      background: linear-gradient(90deg, #ff4c4c, #fff);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    #hero p {
-      font-size: 1.2em;
-      color: #ccc;
-      animation-delay: 0.5s;
-    }
-
-    @keyframes fadeInUp {
-      0% { opacity: 0; transform: translateY(50px); }
-      100% { opacity: 1; transform: translateY(0); }
-    }
-
-    .hero-decoration {
-      position: absolute;
-      bottom: 15%;
-      width: 80px;
-      height: 4px;
-      background: #fff;
-      border-radius: 2px;
-      animation: slide 2s infinite alternate;
-      z-index: 1;
-    }
-
-    @keyframes slide {
-      0% { transform: translateX(-50px); }
-      100% { transform: translateX(50px); }
-    }
-
-    .scroll-indicator {
-      position: absolute;
-      bottom: 30px;
-      width: 20px;
-      height: 20px;
-      border-left: 2px solid #fff;
-      border-bottom: 2px solid #fff;
-      transform: rotate(-45deg);
-      animation: bounce 1.5s infinite;
-      opacity: 0.6;
-      z-index: 1;
-    }
-
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0) rotate(-45deg); }
-      50% { transform: translateY(10px) rotate(-45deg); }
-    }
-
-    /* About Section */
-#about {
-  min-height: 100vh;               
-  display: flex;
-  flex-direction: column;
-  justify-content: center;         
-  align-items: center;             
-
-  text-align: center;
-  max-width: 800px;
-  margin: 0 auto;
-
-  animation: fadeIn 1s ease forwards;
-}
-
-#about p {
-  font-size: 1.1em;
-  line-height: 1.7;
-  color: #ccc;
-}
-
-
-    /* Portfolio Section */
-#portfolio {
-  width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 40px 20px;
-
-  display: grid;
-  grid-template-columns: repeat(4, 1fr); /* Desktop default */
-  gap: 20px;
-}
-
-/* Tablet */
-@media (max-width: 1024px) {
-  #portfolio {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-/* Mobile */
-@media (max-width: 600px) {
-  #portfolio {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-  }
-}
-
-#portfolio img {
-  width: 100%;
-  aspect-ratio: 3 / 4;
-  object-fit: cover;
-
-  border-radius: 16px;
-  cursor: pointer;
-
-  transition: transform 0.4s ease, box-shadow 0.4s ease, filter 0.4s ease;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.4);
-}
-
-#portfolio img:hover {
-  transform: scale(1.05);
-  filter: brightness(1.15);
-  box-shadow: 0 12px 30px rgba(255,255,255,0.35);
-}
-
-
-    /* Lightbox */
-    .lightbox {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(0,0,0,0.9);
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-    }
-
-    .lightbox img {
-      max-width: 90%;
-      max-height: 90%;
-      border-radius: 10px;
-      box-shadow: 0 0 30px rgba(255,255,255,0.2);
-      animation: zoomIn 0.3s ease;
-    }
-
-    @keyframes zoomIn {
-      0% { transform: scale(0.8); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
-    }
-
-    /* Gear Section */
-    #gear {
-      text-align: center;
-    }
-
-    .gear-list {
-      display: flex;
-      flex-direction: column;
-      gap: 25px;
-      margin-top: 30px;
-    }
-
-    .gear-item {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
-    .bullet {
-      width: 10px;
-      height: 10px;
-      background: #ff4c4c;
-      border-radius: 50%;
-      flex-shrink: 0;
-      animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.4); opacity: 0.6; }
-    }
-
-    #gear img {
-      width: 140px;
-      border-radius: 20px;
-      object-fit: cover;
-      box-shadow: 0 5px 15px rgba(255,255,255,0.2);
-      transition: transform 0.5s, box-shadow 0.5s;
-    }
-
-    #gear img:hover {
-      transform: rotate(5deg) scale(1.05);
-      box-shadow: 0 15px 35px rgba(255,255,255,0.6);
-    }
-
-    #gear p {
-      color: #fff;
-      font-weight: bold;
-      text-align: center;
-    }
-
-    /* Contact Section */
-#contact {
-  text-align: center;
-  background: radial-gradient(circle at 50% 30%, #1a1a1a 0%, #000 80%);
-  padding: 80px 50px;
-}
-
-#contact h2 {
-  margin-bottom: 15px;
-  font-size: 2em;
-}
-
-#contact p {
-  color: #ccc;
-  max-width: 600px;
-  margin: 0 auto 40px;
-  line-height: 1.6;
-}
-
-.contact-form {
-  max-width: 600px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.form-group input,
-.form-group textarea {
-  width: 100%;
-  padding: 15px;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.2);
-  border-radius: 10px;
-  color: #fff;
-  font-size: 1em;
-  transition: all 0.3s ease;
-}
-
-.form-group input:focus,
-.form-group textarea:focus {
-  border-color: #ff4c4c;
-  box-shadow: 0 0 10px rgba(255,76,76,0.4);
-  outline: none;
-}
-
-button[type="submit"] {
-  background: #ff4c4c;
-  border: none;
-  padding: 15px 30px;
-  border-radius: 50px;
-  color: #fff;
-  font-weight: bold;
-  font-size: 1.1em;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 5px 15px rgba(255,76,76,0.3);
-}
-
-button[type="submit"]:hover {
-  background: #fff;
-  color: #111;
-  transform: scale(1.05);
-  box-shadow: 0 10px 25px rgba(255,255,255,0.5);
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  #contact {
-    padding: 60px 25px;
-  }
-
-  #contact h2 {
-    font-size: 1.8em;
-  }
-
-  .contact-form {
-    width: 100%;
-  }
-}
-    /* Buy Section */
-    #buy a {
-      display: inline-block;
-      padding: 15px 30px;
-      margin-top: 20px;
-      background: #ff4c4c;
-      color: #fff;
-      font-weight: bold;
-      border-radius: 50px;
-      transition: transform 0.3s, background 0.3s, box-shadow 0.3s;
-      box-shadow: 0 5px 15px rgba(255,76,76,0.4);
-    }
-
-    #buy a:hover {
-      transform: scale(1.1);
-      background: #fff;
-      color: #111;
-      box-shadow: 0 10px 25px rgba(255,255,255,0.5);
-    }
-    .social-links {
-    margin-top: 25px;
-    display: flex;
-    gap: 25px;
-    justify-content: center;
-    align-items: center;
-    }
-
-    .social-icon {
-    color: #fff;
-    transition: transform 0.3s ease, color 0.3s ease, text-shadow 0.3s ease;
-    }
-
-    .social-icon:hover {
-    color: #ff4c4c;
-    transform: scale(1.2);
-    text-shadow: 0 0 10px #ff4c4c;
-    }
-
-    @media (max-width: 480px) {
-  .social-links {
-    gap: 15px;
-  }
-  .social-icon svg {
-    width: 26px;
-    height: 26px;
-  }
-}
-
-
-    /* Responsive */
-    @media (max-width: 768px) {
-      #hero h1 { font-size: 2.5em; }
-      #hero p { font-size: 1em; }
-      nav { padding: 10px 15px; }
-      nav a { margin: 6px 10px; }
-      #portfolio { padding: 20px; }
-      #gear img { width: 120px; }
-    }
-
-    @media (max-width: 480px) {
-      #hero h1 { font-size: 2em; }
-      #hero p { font-size: 0.9em; }
-      section { padding: 50px 20px; }
-    }
-	
-	
-	/* WhatsApp confirmation animation */
-button.success {
-  background: #25D366 !important;
-  color: #fff !important;
-  box-shadow: 0 0 25px rgba(37, 211, 102, 0.8);
-  transform: scale(1.08);
-  pointer-events: none;
-}
-
-button.success::after {
-  content: " ✔";
-  font-size: 1.2em;
-  animation: pop 0.4s ease;
-}
-
-@keyframes pop {
-  0% { transform: scale(0.5); opacity: 0; }
-  100% { transform: scale(1); opacity: 1; }
-}
-
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Igor Rix | Photographic Art</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-color: #000000;
+            --surface-color: #111111;
+            --surface-glass: rgba(20, 20, 20, 0.6);
+            --accent-color: #ff4c4c;
+            --accent-glow: rgba(255, 76, 76, 0.4);
+            --text-primary: #ffffff;
+            --text-secondary: #86868b; /* Apple's classic grey */
+            --easing: cubic-bezier(0.165, 0.84, 0.44, 1);
+            --font-stack: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        /* --------------------------------------------------
+           RESET & GLOBAL
+           -------------------------------------------------- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-family: var(--font-stack);
+            overflow-x: hidden;
+            width: 100vw;
+        }
+
+        /* Custom Scrollbar for Webkit */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-color);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-color);
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+            cursor: pointer;
+        }
+
+        /* --------------------------------------------------
+           TYPOGRAPHY & ANIMATIONS
+           -------------------------------------------------- */
+        h1, h2, h3 {
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+        }
+
+        .flow-text {
+            background: linear-gradient(90deg, #fff, #888, #fff);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: flowGradient 5s linear infinite;
+        }
+
+        @keyframes flowGradient {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
+        }
+
+        .fade-up {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 1s var(--easing), transform 1s var(--easing);
+        }
+
+        .fade-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --------------------------------------------------
+           NAVIGATION (Floating Pill)
+           -------------------------------------------------- */
+        .nav-wrapper {
+            position: fixed;
+            top: 20px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            z-index: 1000;
+            pointer-events: none; /* Let clicks pass through around the pill */
+        }
+
+        nav {
+            pointer-events: auto;
+            background: rgba(28, 28, 30, 0.65);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 12px 24px;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            transition: transform 0.3s var(--easing), width 0.3s;
+            max-width: 90%;
+        }
+
+        nav .pfp {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--accent-color);
+            transition: transform 0.5s var(--easing);
+        }
+
+        nav .pfp:hover {
+            transform: rotate(360deg) scale(1.1);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 5px;
+        }
+
+        .nav-links a {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: all 0.3s var(--easing);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-links a:hover {
+            color: #fff;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .nav-links a.active {
+            color: var(--accent-color);
+            background: rgba(255, 76, 76, 0.1);
+        }
+
+        /* Mobile Nav Toggles */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none; /* Hidden by default on mobile */
+                position: absolute;
+                top: 70px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(20,20,20,0.95);
+                backdrop-filter: blur(30px);
+                flex-direction: column;
+                padding: 20px;
+                border-radius: 24px;
+                border: 1px solid rgba(255,255,255,0.1);
+                width: 200px;
+                text-align: center;
+                opacity: 0;
+                pointer-events: none;
+                transition: opacity 0.3s ease;
+            }
+
+            .nav-links.open {
+                display: flex;
+                opacity: 1;
+                pointer-events: auto;
+            }
+
+            .mobile-toggle {
+                display: block;
+                color: #fff;
+                font-size: 1.5rem;
+                margin-left: 10px;
+                cursor: pointer;
+            }
+        }
+        @media (min-width: 769px) {
+            .mobile-toggle { display: none; }
+        }
+
+        /* --------------------------------------------------
+           HERO SECTION (Dynamic Background)
+           -------------------------------------------------- */
+        #hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        /* Dynamic Orb Background */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: 0;
+            opacity: 0.6;
+            animation: orbFloat 10s infinite alternate var(--easing);
+        }
+
+        .orb-1 { width: 300px; height: 300px; background: #ff4c4c; top: 20%; left: 20%; animation-delay: 0s; }
+        .orb-2 { width: 400px; height: 400px; background: #3c0000; bottom: 10%; right: 10%; animation-delay: -5s; }
+
+        @keyframes orbFloat {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(30px, 50px) scale(1.2); }
+        }
+
+        .hero-content {
+            z-index: 1;
+            padding: 0 20px;
+        }
+
+        #hero h1 {
+            font-size: clamp(3rem, 10vw, 8rem); /* Massive responsive text */
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 20px rgba(0,0,0,0.5));
+            opacity: 0;
+            animation: heroTextReveal 1.5s var(--easing) forwards 0.5s;
+        }
+
+        #hero p {
+            font-size: clamp(1rem, 2vw, 1.5rem);
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+            opacity: 0;
+            animation: heroTextReveal 1.5s var(--easing) forwards 1s;
+        }
+
+        @keyframes heroTextReveal {
+            from { transform: translateY(50px) scale(0.9); opacity: 0; }
+            to { transform: translateY(0) scale(1); opacity: 1; }
+        }
+
+        .scroll-pill {
+            position: absolute;
+            bottom: 40px;
+            width: 30px;
+            height: 50px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 20px;
+            z-index: 2;
+            opacity: 0;
+            animation: fadeIn 1s ease forwards 2s;
+        }
+
+        .scroll-pill::before {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            width: 4px;
+            height: 8px;
+            background: #fff;
+            border-radius: 2px;
+            transform: translateX(-50%);
+            animation: scrollWheel 2s infinite;
+        }
+
+        @keyframes scrollWheel {
+            0% { top: 8px; opacity: 1; }
+            100% { top: 25px; opacity: 0; }
+        }
+
+        /* --------------------------------------------------
+           ABOUT SECTION (Apple Style Reveal)
+           -------------------------------------------------- */
+        #about {
+            padding: 150px 20px;
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        #about p {
+            font-size: clamp(1.5rem, 4vw, 3rem);
+            font-weight: 600;
+            line-height: 1.4;
+            color: #444; /* Start dim */
+            transition: color 0.5s;
+        }
+        
+        /* The span trick for scroll revealing text */
+        .reveal-text span {
+            color: #444;
+            transition: color 0.3s ease;
+        }
+        .reveal-text span.active {
+            color: #fff;
+            text-shadow: 0 0 15px rgba(255,255,255,0.3);
+        }
+
+        .social-row {
+            margin-top: 50px;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+        }
+
+        .social-icon {
+            color: #fff;
+            transition: transform 0.4s var(--easing), color 0.3s;
+        }
+        .social-icon:hover {
+            color: var(--accent-color);
+            transform: scale(1.3) rotate(5deg);
+        }
+
+        /* --------------------------------------------------
+           PORTFOLIO (Card Stacking Effect)
+           -------------------------------------------------- */
+        #portfolio {
+            padding: 100px 0;
+            position: relative;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 80px;
+            font-size: 3rem;
+            color: var(--text-primary);
+        }
+
+        /* This creates the stack context */
+        .gallery-wrapper {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+        }
+
+        /* Individual Card Container */
+        .card-container {
+            position: sticky;
+            top: 100px; /* Offset from top */
+            height: 80vh; /* Viewport height for the card area */
+            margin-bottom: 100px; /* Space between cards */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 1000px;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            max-height: 700px;
+            position: relative;
+            border-radius: 30px;
+            overflow: hidden;
+            transform-origin: center top;
+            transition: transform 0.5s ease;
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
+            background: #000;
+        }
+
+        .card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.8s var(--easing);
+            cursor: pointer;
+        }
+
+        .card:hover img {
+            transform: scale(1.05);
+        }
+
+        .card-overlay {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            padding: 40px;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.4s ease;
+        }
+
+        .card:hover .card-overlay {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Dynamic offsets for stacking logic calculated in CSS */
+        .card-container:nth-child(1) { top: 120px; z-index: 1; }
+        .card-container:nth-child(2) { top: 140px; z-index: 2; }
+        .card-container:nth-child(3) { top: 160px; z-index: 3; }
+        .card-container:nth-child(4) { top: 180px; z-index: 4; }
+        .card-container:nth-child(5) { top: 200px; z-index: 5; }
+        .card-container:nth-child(6) { top: 220px; z-index: 6; }
+        .card-container:nth-child(7) { top: 240px; z-index: 7; }
+        .card-container:nth-child(8) { top: 260px; z-index: 8; }
+
+        /* --------------------------------------------------
+           GEAR SECTION (Floating 3D Cards)
+           -------------------------------------------------- */
+        #gear {
+            padding: 100px 20px;
+            background: radial-gradient(circle at 50% 50%, #1a1a1a 0%, #000 100%);
+        }
+
+        .gear-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: 50px auto;
+        }
+
+        .gear-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 24px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.4s var(--easing);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .gear-card:hover {
+            transform: translateY(-15px) scale(1.02);
+            background: rgba(255,255,255,0.06);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            border-color: var(--accent-color);
+        }
+
+        .gear-card img {
+            width: 80%;
+            height: auto;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));
+            transition: transform 0.4s ease;
+        }
+
+        .gear-card:hover img {
+            transform: scale(1.1) rotate(2deg);
+        }
+
+        .gear-card h3 {
+            font-size: 1.1rem;
+            color: #fff;
+            margin-top: 10px;
+        }
+
+        /* --------------------------------------------------
+           CONTACT & FORM
+           -------------------------------------------------- */
+        #contact {
+            padding: 150px 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .contact-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(20,20,20,0.8);
+            backdrop-filter: blur(20px);
+            padding: 40px;
+            border-radius: 30px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .form-group {
+            position: relative;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .form-group input, 
+        .form-group textarea {
+            width: 100%;
+            padding: 20px;
+            background: rgba(255,255,255,0.05);
+            border: none;
+            border-radius: 16px;
+            color: #fff;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus, 
+        .form-group textarea:focus {
+            outline: none;
+            background: rgba(255,255,255,0.1);
+            transform: scale(1.01);
+            box-shadow: 0 0 0 2px var(--accent-color);
+        }
+
+        /* Magnetic Button */
+        .magnetic-btn {
+            display: inline-block;
+            background: var(--accent-color);
+            color: #fff;
+            font-weight: 700;
+            padding: 20px 40px;
+            border-radius: 50px;
+            border: none;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: transform 0.2s cubic-bezier(0.33, 1, 0.68, 1), background 0.3s;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .magnetic-btn::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: 0.5s;
+        }
+        
+        .magnetic-btn:hover::after {
+            left: 100%;
+        }
+
+        .magnetic-btn.success {
+            background: #25D366;
+            transform: scale(0.98);
+        }
+
+        /* --------------------------------------------------
+           BUY SECTION
+           -------------------------------------------------- */
+        #buy {
+            padding: 80px 20px;
+            text-align: center;
+        }
+
+        .buy-link {
+            display: inline-block;
+            padding: 18px 36px;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            transition: all 0.4s var(--easing);
+            background: rgba(255,255,255,0.05);
+        }
+
+        .buy-link:hover {
+            background: #fff;
+            color: #000;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(255,255,255,0.2);
+        }
+
+        /* --------------------------------------------------
+           LIGHTBOX
+           -------------------------------------------------- */
+        .lightbox {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(10px);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .lightbox.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .lightbox img {
+            max-width: 90%;
+            max-height: 85vh;
+            border-radius: 12px;
+            box-shadow: 0 0 50px rgba(0,0,0,0.8);
+            transform: scale(0.8);
+            transition: transform 0.4s var(--easing);
+        }
+
+        .lightbox.active img {
+            transform: scale(1);
+        }
+
+        .close-lb {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            color: #fff;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .close-lb:hover { transform: rotate(90deg); }
+
+        footer {
+            padding: 40px;
+            text-align: center;
+            font-size: 0.8rem;
+            color: #555;
+            border-top: 1px solid #1a1a1a;
+        }
+
+    </style>
 </head>
 <body>
 
-  <!-- Navigation -->
-  <nav>
-    <img class="pfp" src="https://i.postimg.cc/3R2hbWZx/20251029-143504560-i-OS-1.jpg" alt="Profile Picture">
-    <a href="#hero">Home</a>
-    <a href="#about">About</a>
-    <a href="#portfolio">Portfolio</a>
-    <a href="#gear">Gear</a>
-	<a href="#contact">Contact me</a>
-    <a href="#buy">Buy</a>
-  </nav>
+    <div class="nav-wrapper">
+        <nav>
+            <img class="pfp" src="https://i.postimg.cc/3R2hbWZx/20251029-143504560-i-OS-1.jpg" alt="Profile">
+            
+            <div class="nav-links" id="navLinks">
+                <a href="#hero" class="active">Home</a>
+                <a href="#about">Philosophy</a>
+                <a href="#portfolio">Work</a>
+                <a href="#gear">Arsenal</a>
+                <a href="#contact">Contact</a>
+                <a href="#buy" style="color: var(--accent-color);">Store</a>
+            </div>
 
-  <!-- Hero Section -->
-  <section id="hero">
-    <div class="wave-bg"></div>
-    <h1>Igor Rix</h1>
-    <p>Capturing Moments, One Shutter at a Time</p>
-    <div class="hero-decoration"></div>
-    <div class="scroll-indicator"></div>
-  </section>
-
-  <!-- About Section -->
-  <section id="about">
-  <h2>About Me</h2>
-  <p>Hello! I’m a passionate photographer who loves capturing motorsports and wildlife. Whether it’s in the bush or on the track, I strive to tell a story through my lens.</p>
-
-  <div class="social-links">
-    <a href="https://www.instagram.com/_ir.photo_?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" aria-label="Instagram" class="social-icon">
-      <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" viewBox="0 0 24 24">
-        <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5A4.25 4.25 0 0 0 16.25 3.5h-8.5ZM12 7a5 5 0 1 1 0 10a5 5 0 0 1 0-10Zm0 1.5a3.5 3.5 0 1 0 0 7a3.5 3.5 0 0 0 0-7Zm4.75-.88a.88.88 0 1 1 0 1.75a.88.88 0 0 1 0-1.75Z"/>
-      </svg>
-    </a>
-    <a href="https://www.tiktok.com/@_ir.photo_?is_from_webapp=1&sender_device=pc" target="_blank" aria-label="TikTok" class="social-icon">
-      <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" viewBox="0 0 24 24">
-        <path d="M12.999 2c.169 3.83 2.025 6.019 5.356 6.248V10.8a8.47 8.47 0 0 1-4.353-1.19v6.413c0 7.623-8.241 9.23-11.094 3.323a5.568 5.568 0 0 1 5.473-8.173v2.889c-.306.027-.612.084-.913.176c-1.902.585-2.385 2.939-1.265 4.282c1.205 1.445 3.786 1.034 4.186-1.069c.07-.355.1-.727.1-1.135V2h2.51Z"/>
-      </svg>
-    </a>
-  </div>
-</section>
-
-  <!-- Portfolio Section -->
-  <section id="portfolio">
-    <h2 style="grid-column: 1/-1;">My Work</h2>
-    <img src="https://i.postimg.cc/htwh57ZV/IR-0723.jpg" alt="Photo 1">
-	<img src="https://i.postimg.cc/m2mP7nYb/1-IMG-0323.jpg" alt="Photo 2">
-	<img src="https://i.postimg.cc/XYhXzy1k/IR-1342.jpg" alt="Photo 3">
-	<img src="https://i.postimg.cc/BnytV17D/IR-1478.jpg" alt="Photo 4">
-	<img src="https://i.postimg.cc/MpXv5Y5Q/2-IR-1179.jpg" alt="Photo 5">
-	<img src="https://i.postimg.cc/g25rT6tr/2-IMG-0884.jpg" alt="Photo 6">
-	<img src="https://i.postimg.cc/dQGhN0Q6/1_IR_2367.jpg" alt="Photo 7">
-	<img src="https://i.postimg.cc/CMbRrKM6/2_IR_2160.jpg" alt="Photo 8">
- </section>
-
-  <!-- Lightbox Container -->
-  <div class="lightbox" id="lightbox">
-    <img src="" alt="Expanded Image">
-  </div>
-
-  <!-- Gear Section -->
-  <section id="gear">
-  <h2>My Gear</h2>
-  <div class="gear-list">
-
-    <div class="gear-item">
-      <span class="bullet"></span>
-      <div class="gear-content">
-        <a href="https://www.sony.com/za/interchangeable-lens-cameras/products/ilce-6400" target="_blank"><img src="https://i.postimg.cc/4xhJQGfN/sony-a6400.webp" alt="Sony a6400">
-        <p>Sony a6400</a></p>
-      </div>
+            <div class="mobile-toggle" id="menuBtn">
+                &#9776;
+            </div>
+        </nav>
     </div>
 
-    <div class="gear-item">
-      <span class="bullet"></span>
-      <div class="gear-content">
-        <a href="https://www.sony.com/za/electronics/interchangeable-lenses/selp16502" target="_blank"><img src="https://i.postimg.cc/13CySzvC/16-50.png" alt="Sony 16-50mm Lens">
-        <p>E PZ 16-50mm F3.5-5.6 OSS II</a></p>
-      </div>
+    <section id="hero">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        
+        <div class="hero-content">
+            <h1 class="flow-text">Igor Rix</h1>
+            <p>Capturing the adrenaline of motorsports and the silence of nature.</p>
+        </div>
+
+        <div class="scroll-pill"></div>
+    </section>
+
+    <section id="about">
+        <h2 class="fade-up flow-text">The Philosophy</h2>
+        <br>
+        <p class="reveal-text" id="revealText">
+            Photography is not about the camera. It is about freezing a split second of time that will never happen again. From the roar of an engine on the track to the quiet gaze of a predator in the bush, I strive to tell stories without words.
+        </p>
+        
+        <div class="social-row fade-up">
+            <a href="https://www.instagram.com/_ir.photo_?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" class="social-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" viewBox="0 0 24 24"><path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5A4.25 4.25 0 0 0 16.25 3.5h-8.5ZM12 7a5 5 0 1 1 0 10a5 5 0 0 1 0-10Zm0 1.5a3.5 3.5 0 1 0 0 7a3.5 3.5 0 0 0 0-7Zm4.75-.88a.88.88 0 1 1 0 1.75a.88.88 0 0 1 0-1.75Z"/></svg>
+            </a>
+            <a href="https://www.tiktok.com/@_ir.photo_?is_from_webapp=1&sender_device=pc" target="_blank" class="social-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" viewBox="0 0 24 24"><path d="M12.999 2c.169 3.83 2.025 6.019 5.356 6.248V10.8a8.47 8.47 0 0 1-4.353-1.19v6.413c0 7.623-8.241 9.23-11.094 3.323a5.568 5.568 0 0 1 5.473-8.173v2.889c-.306.027-.612.084-.913.176c-1.902.585-2.385 2.939-1.265 4.282c1.205 1.445 3.786 1.034 4.186-1.069c.07-.355.1-.727.1-1.135V2h2.51Z"/></svg>
+            </a>
+        </div>
+    </section>
+
+    <section id="portfolio">
+        <h2 class="section-header flow-text fade-up">Selected Works</h2>
+        <div class="gallery-wrapper">
+            
+            <div class="card-container fade-up">
+                <div class="card">
+                    <img src="https://i.postimg.cc/htwh57ZV/IR-0723.jpg" alt="Work 1">
+                    <div class="card-overlay"><h3>Wildlife Portraiture</h3></div>
+                </div>
+            </div>
+
+            <div class="card-container fade-up">
+                <div class="card">
+                    <img src="https://i.postimg.cc/m2mP7nYb/1-IMG-0323.jpg" alt="Work 2">
+                </div>
+            </div>
+
+            <div class="card-container fade-up">
+                <div class="card">
+                    <img src="https://i.postimg.cc/XYhXzy1k/IR-1342.jpg" alt="Work 3">
+                </div>
+            </div>
+
+            <div class="card-container fade-up">
+                <div class="card">
+                    <img src="https://i.postimg.cc/BnytV17D/IR-1478.jpg" alt="Work 4">
+                </div>
+            </div>
+            
+            <div class="card-container fade-up">
+                <div class="card">
+                    <img src="https://i.postimg.cc/MpXv5Y5Q/2-IR-1179.jpg" alt="Work 5">
+                </div>
+            </div>
+
+            <div class="card-container fade-up">
+                <div class="card">
+                    <img src="https://i.postimg.cc/g25rT6tr/2-IMG-0884.jpg" alt="Work 6">
+                </div>
+            </div>
+
+            <div class="card-container fade-up">
+                <div class="card">
+                    <img src="https://i.postimg.cc/dQGhN0Q6/1_IR_2367.jpg" alt="Work 7">
+                </div>
+            </div>
+
+            <div class="card-container fade-up">
+                <div class="card">
+                    <img src="https://i.postimg.cc/CMbRrKM6/2_IR_2160.jpg" alt="Work 8">
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <section id="gear">
+        <h2 class="fade-up flow-text">The Arsenal</h2>
+        <div class="gear-grid">
+            
+            <div class="gear-card fade-up">
+                <a href="https://www.sony.com/za/interchangeable-lens-cameras/products/ilce-6400" target="_blank">
+                    <img src="https://i.postimg.cc/4xhJQGfN/sony-a6400.webp" alt="Sony a6400">
+                    <h3>Sony a6400 Body</h3>
+                </a>
+            </div>
+
+            <div class="gear-card fade-up">
+                <a href="https://www.sony.com/za/electronics/interchangeable-lenses/selp16502" target="_blank">
+                    <img src="https://i.postimg.cc/13CySzvC/16-50.png" alt="Lens">
+                    <h3>E PZ 16-50mm F3.5-5.6</h3>
+                </a>
+            </div>
+
+            <div class="gear-card fade-up">
+                <a href="https://www.tamron.com/global/consumer/lenses/a047/photo.html" target="_blank">
+                    <img src="https://i.postimg.cc/zvck5KRS/tamron.png" alt="Lens">
+                    <h3>Tamron 70-300mm RXD</h3>
+                </a>
+            </div>
+
+        </div>
+    </section>
+
+    <section id="contact">
+        <h2 class="fade-up flow-text">Collaborate</h2>
+        <p style="color: #888; margin-bottom: 40px;" class="fade-up">Book a private shoot, event coverage, or print commission.</p>
+        
+        <div class="contact-container fade-up">
+            <form id="whatsappForm">
+                <div class="form-group">
+                    <input type="text" name="name" placeholder="Name" required>
+                </div>
+                <div class="form-group">
+                    <input type="email" name="email" placeholder="Email Address" required>
+                </div>
+                <div class="form-group">
+                    <textarea name="message" rows="5" placeholder="Tell me about your vision..." required></textarea>
+                </div>
+                <button type="submit" id="whatsappBtn" class="magnetic-btn">Initiate via WhatsApp</button>
+            </form>
+        </div>
+    </section>
+
+    <section id="buy">
+        <h2 class="flow-text" style="margin-bottom: 30px;">Own a Print</h2>
+        <a href="https://photofrog.co.za/sellers/igorrix" target="_blank" class="buy-link fade-up">
+            Browse Gallery Store
+        </a>
+    </section>
+
+    <footer>
+        &copy; 2025 Igor Rix Photography. Designed with Precision.
+    </footer>
+
+    <div class="lightbox" id="lightbox">
+        <div class="close-lb">&times;</div>
+        <img src="" alt="Expanded View">
     </div>
 
-    <div class="gear-item">
-      <span class="bullet"></span>
-      <div class="gear-content">
-        <a href="https://www.tamron.com/global/consumer/lenses/a047/photo.html" target="_blank"><img src="https://i.postimg.cc/zvck5KRS/tamron.png" alt="Tamron 70-300mm Lens">
-        <p>Tamron 70-300mm F/4.5-6.3 Di III RXD</a></p>
-      </div>
-    </div>
+    <script>
+        // 1. SCROLL OBSERVER (Animations on Scroll)
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: "0px 0px -50px 0px"
+        };
 
-  </div>
-</section>
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
 
-  <!-- Contact Section -->
-<section id="contact">
-  <h2>Book a Private Shoot</h2>
-  <p>If you’d like to book me for a private photoshoot, event, or collaboration — reach out below!</p>
+        document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
 
-  <form class="contact-form" id="whatsappForm">
-  <div class="form-group">
-    <input type="text" name="name" placeholder="Your Name" required>
-  </div>
-  <div class="form-group">
-    <input type="email" name="email" placeholder="Your Email" required>
-  </div>
-  <div class="form-group">
-    <textarea name="message" rows="5" placeholder="Your Message" required></textarea>
-  </div>
-  <button type="submit" id="whatsappBtn">Send WhatsApp</button>
-</form>
+        // 2. TEXT REVEAL EFFECT (Word by Word Opacity)
+        const textElement = document.getElementById('revealText');
+        if(textElement) {
+            const words = textElement.innerText.split(' ');
+            textElement.innerHTML = '';
+            words.forEach(word => {
+                const span = document.createElement('span');
+                span.textContent = word + ' ';
+                textElement.appendChild(span);
+            });
 
-</section>
+            window.addEventListener('scroll', () => {
+                const spans = textElement.querySelectorAll('span');
+                const scrollPos = window.scrollY;
+                const sectionTop = document.getElementById('about').offsetTop;
+                const sectionHeight = document.getElementById('about').offsetHeight;
+                
+                // Calculate percentage through the section
+                let percentage = (scrollPos - sectionTop + 300) / (sectionHeight);
+                
+                let activeCount = Math.floor(percentage * spans.length);
+                
+                spans.forEach((span, index) => {
+                    if (index < activeCount) {
+                        span.classList.add('active');
+                    } else {
+                        span.classList.remove('active');
+                    }
+                });
+            });
+        }
 
-  <!-- Buy Section -->
-  <section id="buy">
-    <h2>Buy My Photos</h2>
-    <a href="https://photofrog.co.za/sellers/igorrix" target="_blank">Shop Now on PhotoFrog</a>
-  </section>
+        // 3. MAGNETIC BUTTONS
+        const btns = document.querySelectorAll('.magnetic-btn');
+        btns.forEach(btn => {
+            btn.addEventListener('mousemove', function(e) {
+                const pos = btn.getBoundingClientRect();
+                const x = e.clientX - pos.left - pos.width / 2;
+                const y = e.clientY - pos.top - pos.height / 2;
+                
+                btn.style.transform = `translate(${x * 0.3}px, ${y * 0.3}px)`;
+            });
 
-  <script>
-    // Lightbox logic
-    const lightbox = document.getElementById('lightbox');
-    const lightboxImg = lightbox.querySelector('img');
+            btn.addEventListener('mouseleave', function() {
+                btn.style.transform = 'translate(0px, 0px)';
+            });
+        });
 
-    document.querySelectorAll('#portfolio img').forEach(img => {
-      img.addEventListener('click', () => {
-        lightboxImg.src = img.src;
-        lightbox.style.display = 'flex';
-      });
-    });
+        // 4. MOBILE MENU TOGGLE
+        const menuBtn = document.getElementById('menuBtn');
+        const navLinks = document.getElementById('navLinks');
+        
+        menuBtn.addEventListener('click', () => {
+            navLinks.classList.toggle('open');
+            // Animate hamburger to X (simple implementation)
+            menuBtn.innerHTML = navLinks.classList.contains('open') ? '&times;' : '&#9776;';
+        });
 
-    lightbox.addEventListener('click', () => {
-      lightbox.style.display = 'none';
-    });
+        // 5. LIGHTBOX LOGIC
+        const lightbox = document.getElementById('lightbox');
+        const lbImg = lightbox.querySelector('img');
+        const closeLb = lightbox.querySelector('.close-lb');
+        const cards = document.querySelectorAll('.card img');
 
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') lightbox.style.display = 'none';
-	  
-  </script>
-  
-  <script>
-document.addEventListener("DOMContentLoaded", () => {
+        cards.forEach(img => {
+            img.addEventListener('click', () => {
+                lbImg.src = img.src;
+                lightbox.classList.add('active');
+                document.body.style.overflow = 'hidden'; // Stop scrolling
+            });
+        });
 
-  const form = document.getElementById("whatsappForm");
-  const button = document.getElementById("whatsappBtn");
+        const closeLightbox = () => {
+            lightbox.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
 
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
+        closeLb.addEventListener('click', closeLightbox);
+        lightbox.addEventListener('click', (e) => {
+            if(e.target === lightbox) closeLightbox();
+        });
 
-    const name = form.name.value.trim();
-    const email = form.email.value.trim();
-    const message = form.message.value.trim();
+        // 6. WHATSAPP FORM LOGIC (Preserved)
+        const form = document.getElementById("whatsappForm");
+        const button = document.getElementById("whatsappBtn");
 
-    const phoneNumber = "27619280584";
+        form.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const name = form.name.value.trim();
+            const email = form.email.value.trim();
+            const message = form.message.value.trim();
+            const phoneNumber = "27619280584";
 
-    const text =
-      `Hi Igor, I’d like to book a private shoot.\n\n` +
-      `Name: ${name}\n` +
-      `Email: ${email}\n\n` +
-      `Message:\n${message}`;
+            const text = `Hi Igor, I’d like to book a private shoot.\n\nName: ${name}\nEmail: ${email}\n\nMessage:\n${message}`;
+            const encoded = encodeURIComponent(text);
+            const url = `https://wa.me/${phoneNumber}?text=${encoded}`;
 
-    const encoded = encodeURIComponent(text);
+            button.classList.add("success");
+            button.textContent = "Opening WhatsApp...";
 
-    const url = `https://wa.me/${phoneNumber}?text=${encoded}`;
+            window.open(url, "_blank");
 
-    button.classList.add("success");
-    button.textContent = "Opening WhatsApp…";
+            setTimeout(() => {
+                button.classList.remove("success");
+                button.textContent = "Initiate via WhatsApp";
+                form.reset();
+            }, 3000);
+        });
 
-    window.open(url, "_blank");
-
-    setTimeout(() => {
-      button.classList.remove("success");
-      button.textContent = "Send via WhatsApp";
-      form.reset();
-    }, 3000);
-  });
-});
-</script>
-
-
+    </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
