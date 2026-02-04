@@ -1,659 +1,673 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AquaVale Lawns | Premium Farm Supply</title>
-    <style>
-        :root {
-            --apple-black: #1d1d1f;
-            --apple-gray: #f5f5f7;
-            --forest-green: #1b4332;
-            --accent-green: #2d6a4f;
-            --system-green: #34c759;
-            --system-red: #ff3b30;
-            --white: #ffffff;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
-            background-color: var(--white);
-            color: var(--apple-black);
-            scroll-behavior: smooth;
-            line-height: 1.5;
-            overflow-x: hidden;
-        }
-
-        /* --- NEW ANIMATION KEYFRAMES --- */
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes pulseGreen {
-            0% { box-shadow: 0 0 0 0 rgba(52, 199, 89, 0.7); }
-            70% { box-shadow: 0 0 0 10px rgba(52, 199, 89, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(52, 199, 89, 0); }
-        }
-
-        @keyframes shine {
-            100% { left: 125%; }
-        }
-
-        /* Reveal on Scroll Class */
-        .reveal {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.8s cubic-bezier(0.15, 0, 0.15, 1);
-        }
-
-        .reveal.active {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* Navigation */
-        nav {
-            padding: 0 5%;
-            height: 70px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(255,255,255,0.85);
-            backdrop-filter: blur(20px);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-        }
-        .logo-wrap { display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit; }
-        .logo-icon { width: 32px; height: 32px; background: var(--forest-green); border-radius: 8px; transition: transform 0.3s ease; }
-        .logo-wrap:hover .logo-icon { transform: rotate(15deg) scale(1.1); }
-        .brand-name { font-weight: 700; font-size: 1.2rem; letter-spacing: -0.02em; }
-        
-        .nav-links { display: flex; gap: 25px; }
-        .nav-links a { text-decoration: none; color: var(--apple-black); font-size: 0.9rem; font-weight: 500; transition: 0.2s; position: relative; }
-        .nav-links a::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -5px; left: 0; background: var(--accent-green); transition: width 0.3s; }
-        .nav-links a:hover::after { width: 100%; }
-
-/* Mobile Menu Toggle Button */
-    .menu-toggle {
-        display: none;
-        flex-direction: column;
-        gap: 6px;
-        cursor: pointer;
-        z-index: 2000;
-        padding: 10px;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Igor Rix Photography</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      scroll-behavior: smooth;
     }
 
-    .line {
-        width: 28px;
-        height: 2px;
-        background-color: var(--apple-black);
-        transition: 0.3s cubic-bezier(0.15, 0, 0.15, 1);
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: #111;
+      color: #fff;
+      overflow-x: hidden;
     }
 
-    /* Mobile Overlay Menu */
-    .mobile-overlay {
-        position: fixed;
-        top: 0;
-        right: -100%; /* Hidden by default */
-        width: 100%;
-        height: 100vh;
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(25px);
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        gap: 30px;
-        transition: 0.5s cubic-bezier(0.15, 0, 0.15, 1);
-        z-index: 1500;
+    a { color: inherit; text-decoration: none; }
+
+    section {
+      padding: 60px 30px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
     }
 
-    .mobile-overlay.active {
-        right: 0;
+    h1, h2, h3 {
+      margin-bottom: 20px;
+      text-align: center;
     }
 
-    .mobile-overlay a {
-        text-decoration: none;
-        color: var(--apple-black);
-        font-size: 1.8rem;
-        font-weight: 600;
-        opacity: 0;
-        transform: translateY(20px);
-        transition: 0.4s ease;
+    /* Navbar */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 20px;
+      z-index: 10;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+      flex-wrap: wrap;
     }
 
-    .mobile-overlay.active a {
-        opacity: 1;
-        transform: translateY(0);
+    nav .pfp {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      margin-right: 20px;
+      object-fit: cover;
+      border: 2px solid #ff4c4c;
+      transition: transform 0.3s;
     }
 
-    /* Staggered animation for links */
-    .mobile-overlay.active a:nth-child(1) { transition-delay: 0.1s; }
-    .mobile-overlay.active a:nth-child(2) { transition-delay: 0.2s; }
-    .mobile-overlay.active a:nth-child(3) { transition-delay: 0.3s; }
+    nav .pfp:hover { transform: scale(1.1) rotate(5deg); }
 
-    /* Cross Animation for Toggle */
-    .menu-toggle.active .line:nth-child(1) { transform: translateY(8px) rotate(45deg); }
-    .menu-toggle.active .line:nth-child(2) { opacity: 0; }
-    .menu-toggle.active .line:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+    nav a {
+      margin: 8px 15px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      transition: color 0.3s, text-shadow 0.3s;
+    }
 
-    /* RESPONSIVE TRIGGER */
+    nav a:hover {
+      color: #ff4c4c;
+      text-shadow: 0 0 10px #ff4c4c;
+    }
+
+    /* Hero Section */
+    #hero {
+      position: relative;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      overflow: hidden;
+      background: radial-gradient(circle at 50% 20%, #1a1a1a 0%, #000 80%);
+      color: #fff;
+    }
+
+    .wave-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 300%;
+      height: 100%;
+      background: url('https://svgshare.com/i/12ZT.svg') repeat-x;
+      background-size: 50% 100%;
+      animation: waveLoop 20s linear infinite;
+      opacity: 0.25;
+      z-index: 0;
+    }
+
+    @keyframes waveLoop {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    #hero h1, #hero p {
+      position: relative;
+      z-index: 1;
+      animation: fadeInUp 1s ease forwards;
+    }
+
+    #hero h1 {
+      font-size: 4em;
+      font-weight: 700;
+      background: linear-gradient(90deg, #ff4c4c, #fff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    #hero p {
+      font-size: 1.2em;
+      color: #ccc;
+      animation-delay: 0.5s;
+    }
+
+    @keyframes fadeInUp {
+      0% { opacity: 0; transform: translateY(50px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-decoration {
+      position: absolute;
+      bottom: 15%;
+      width: 80px;
+      height: 4px;
+      background: #fff;
+      border-radius: 2px;
+      animation: slide 2s infinite alternate;
+      z-index: 1;
+    }
+
+    @keyframes slide {
+      0% { transform: translateX(-50px); }
+      100% { transform: translateX(50px); }
+    }
+
+    .scroll-indicator {
+      position: absolute;
+      bottom: 30px;
+      width: 20px;
+      height: 20px;
+      border-left: 2px solid #fff;
+      border-bottom: 2px solid #fff;
+      transform: rotate(-45deg);
+      animation: bounce 1.5s infinite;
+      opacity: 0.6;
+      z-index: 1;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0) rotate(-45deg); }
+      50% { transform: translateY(10px) rotate(-45deg); }
+    }
+
+    /* About Section */
+#about {
+  min-height: 100vh;               
+  display: flex;
+  flex-direction: column;
+  justify-content: center;         
+  align-items: center;             
+
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
+
+  animation: fadeIn 1s ease forwards;
+}
+
+#about p {
+  font-size: 1.1em;
+  line-height: 1.7;
+  color: #ccc;
+}
+
+
+    /* Portfolio Section */
+#portfolio {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 40px 20px;
+
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* Desktop default */
+  gap: 20px;
+}
+
+/* Tablet */
+@media (max-width: 1024px) {
+  #portfolio {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  #portfolio {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+}
+
+#portfolio img {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+
+  border-radius: 16px;
+  cursor: pointer;
+
+  transition: transform 0.4s ease, box-shadow 0.4s ease, filter 0.4s ease;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+}
+
+#portfolio img:hover {
+  transform: scale(1.05);
+  filter: brightness(1.15);
+  box-shadow: 0 12px 30px rgba(255,255,255,0.35);
+}
+
+
+    /* Lightbox */
+    .lightbox {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.9);
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+
+    .lightbox img {
+      max-width: 90%;
+      max-height: 90%;
+      border-radius: 10px;
+      box-shadow: 0 0 30px rgba(255,255,255,0.2);
+      animation: zoomIn 0.3s ease;
+    }
+
+    @keyframes zoomIn {
+      0% { transform: scale(0.8); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* Gear Section */
+    #gear {
+      text-align: center;
+    }
+
+    .gear-list {
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+      margin-top: 30px;
+    }
+
+    .gear-item {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .bullet {
+      width: 10px;
+      height: 10px;
+      background: #ff4c4c;
+      border-radius: 50%;
+      flex-shrink: 0;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.4); opacity: 0.6; }
+    }
+
+    #gear img {
+      width: 140px;
+      border-radius: 20px;
+      object-fit: cover;
+      box-shadow: 0 5px 15px rgba(255,255,255,0.2);
+      transition: transform 0.5s, box-shadow 0.5s;
+    }
+
+    #gear img:hover {
+      transform: rotate(5deg) scale(1.05);
+      box-shadow: 0 15px 35px rgba(255,255,255,0.6);
+    }
+
+    #gear p {
+      color: #fff;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    /* Contact Section */
+#contact {
+  text-align: center;
+  background: radial-gradient(circle at 50% 30%, #1a1a1a 0%, #000 80%);
+  padding: 80px 50px;
+}
+
+#contact h2 {
+  margin-bottom: 15px;
+  font-size: 2em;
+}
+
+#contact p {
+  color: #ccc;
+  max-width: 600px;
+  margin: 0 auto 40px;
+  line-height: 1.6;
+}
+
+.contact-form {
+  max-width: 600px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 15px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 10px;
+  color: #fff;
+  font-size: 1em;
+  transition: all 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: #ff4c4c;
+  box-shadow: 0 0 10px rgba(255,76,76,0.4);
+  outline: none;
+}
+
+button[type="submit"] {
+  background: #ff4c4c;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 50px;
+  color: #fff;
+  font-weight: bold;
+  font-size: 1.1em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 15px rgba(255,76,76,0.3);
+}
+
+button[type="submit"]:hover {
+  background: #fff;
+  color: #111;
+  transform: scale(1.05);
+  box-shadow: 0 10px 25px rgba(255,255,255,0.5);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  #contact {
+    padding: 60px 25px;
+  }
+
+  #contact h2 {
+    font-size: 1.8em;
+  }
+
+  .contact-form {
+    width: 100%;
+  }
+}
+    /* Buy Section */
+    #buy a {
+      display: inline-block;
+      padding: 15px 30px;
+      margin-top: 20px;
+      background: #ff4c4c;
+      color: #fff;
+      font-weight: bold;
+      border-radius: 50px;
+      transition: transform 0.3s, background 0.3s, box-shadow 0.3s;
+      box-shadow: 0 5px 15px rgba(255,76,76,0.4);
+    }
+
+    #buy a:hover {
+      transform: scale(1.1);
+      background: #fff;
+      color: #111;
+      box-shadow: 0 10px 25px rgba(255,255,255,0.5);
+    }
+    .social-links {
+    margin-top: 25px;
+    display: flex;
+    gap: 25px;
+    justify-content: center;
+    align-items: center;
+    }
+
+    .social-icon {
+    color: #fff;
+    transition: transform 0.3s ease, color 0.3s ease, text-shadow 0.3s ease;
+    }
+
+    .social-icon:hover {
+    color: #ff4c4c;
+    transform: scale(1.2);
+    text-shadow: 0 0 10px #ff4c4c;
+    }
+
+    @media (max-width: 480px) {
+  .social-links {
+    gap: 15px;
+  }
+  .social-icon svg {
+    width: 26px;
+    height: 26px;
+  }
+}
+
+
+    /* Responsive */
     @media (max-width: 768px) {
-        .nav-links { display: none; } /* Hide desktop links */
-        .menu-toggle { display: flex; } /* Show hamburger */
+      #hero h1 { font-size: 2.5em; }
+      #hero p { font-size: 1em; }
+      nav { padding: 10px 15px; }
+      nav a { margin: 6px 10px; }
+      #portfolio { padding: 20px; }
+      #gear img { width: 120px; }
+    }
+
+    @media (max-width: 480px) {
+      #hero h1 { font-size: 2em; }
+      #hero p { font-size: 0.9em; }
+      section { padding: 50px 20px; }
     }
 	
-        /* Hero */
-        .hero {
-            padding: 120px 5% 80px;
-            text-align: center;
-            background: linear-gradient(180deg, #f2f7f2 0%, #ffffff 100%);
-            animation: fadeInUp 1s ease-out;
-        }
-        .slogan { color: var(--accent-green); text-transform: uppercase; font-size: 0.8rem; font-weight: 700; letter-spacing: 2px; margin-bottom: 15px; display: block; }
-        h1 { font-size: clamp(2.5rem, 6vw, 4.5rem); font-weight: 700; letter-spacing: -0.04em; line-height: 1.1; }
-
-        /* Variety Section */
-        .variety-focus { padding: 80px 5%; max-width: 1400px; margin: auto; }
-        .big-card {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            background: var(--apple-gray);
-            border-radius: 40px;
-            margin-bottom: 60px;
-            overflow: hidden;
-            align-items: center;
-            transition: transform 0.4s cubic-bezier(0.15, 0, 0.15, 1), box-shadow 0.4s ease;
-        }
-        .big-card:hover { transform: scale(1.01); box-shadow: 0 30px 60px rgba(0,0,0,0.1); }
-        .card-img { width: 100%; height: 100%; min-height: 400px; object-fit: cover; transition: transform 0.6s ease; }
-        .big-card:hover .card-img { transform: scale(1.05); }
-        .card-info { padding: 60px; }
-        
-        .status { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; font-size: 0.75rem; background: white; padding: 8px 16px; border-radius: 20px; margin-bottom: 25px; text-transform: uppercase; }
-        .dot { width: 8px; height: 8px; border-radius: 50%; }
-        /* Dynamic pulse for in-stock items */
-        .dot.pulse { animation: pulseGreen 2s infinite; }
-
-        .specs { margin: 25px 0; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; border-top: 1px solid rgba(0,0,0,0.1); padding-top: 25px; }
-        .spec-item { font-size: 0.85rem; }
-        .spec-item span { display: block; font-weight: 700; color: var(--accent-green); }
-
-        /* Order Section */
-        #order-section { padding: 80px 5%; max-width: 1400px; margin: auto; }
-        .order-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 40px;
-        }
-
-        .calc-wrapper {
-            background: var(--forest-green);
-            border-radius: 40px;
-            padding: 60px 40px;
-            color: white;
-            position: relative;
-            transition: transform 0.3s ease;
-        }
-
-        #sold-out-overlay {
-            display: none;
-            text-align: center;
-            padding: 40px 0;
-        }
-
-        label { display: block; margin-bottom: 10px; font-size: 0.85rem; font-weight: 600; opacity: 0.8; }
-
-        .calc-field {
-            background: rgba(255,255,255,0.12);
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 18px;
-            border-radius: 16px;
-            color: white;
-            font-size: 1.1rem;
-            width: 100%;
-            margin-bottom: 25px;
-            outline: none;
-            transition: 0.3s;
-        }
-        .calc-field:focus { background: rgba(255,255,255,0.2); border-color: var(--system-green); transform: translateY(-2px); }
-        .calc-field option { color: black; }
-
-        #total-price { font-size: 4.5rem; font-weight: 700; color: var(--system-green); display: block; text-align: center; margin: 20px 0; transition: all 0.3s ease; }
-
-        .wa-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            background: #25D366;
-            color: white;
-            text-decoration: none;
-            padding: 22px;
-            border-radius: 24px;
-            font-weight: 700;
-            width: 100%;
-            position: relative;
-            overflow: hidden;
-            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        /* Shine effect */
-        .wa-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 50%;
-            height: 100%;
-            background: linear-gradient(to right, transparent, rgba(255,255,255,0.3), transparent);
-            transform: skewX(-25deg);
-            transition: 0s;
-        }
-        .wa-btn:hover::before {
-            animation: shine 0.75s;
-        }
-        .wa-btn:hover { transform: translateY(-5px) scale(1.02); box-shadow: 0 15px 30px rgba(37, 211, 102, 0.4); }
-
-        .map-wrapper {
-            background: var(--apple-gray);
-            border-radius: 40px;
-            overflow: hidden;
-            min-height: 500px;
-            transition: transform 0.3s ease;
-        }
-
-        footer { padding: 80px 5%; text-align: center; color: #86868b; font-size: 0.9rem; border-top: 1px solid var(--apple-gray); }
-
-        /* Admin Styles */
-        #adminPanel {
-            display: none;
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: white;
-            padding: 30px;
-            border-radius: 30px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.25);
-            z-index: 9999;
-            width: 340px;
-            border: 1px solid #eee;
-            animation: fadeInUp 0.4s ease;
-        }
-        .admin-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .admin-btn { padding: 10px 18px; border: none; border-radius: 12px; cursor: pointer; font-weight: 700; font-size: 0.8rem; transition: 0.2s; }
-        
-        @media (max-width: 768px) {
-            .nav-links { display: none; }
-            h1 { font-size: 2.8rem; }
-            .card-info { padding: 40px 30px; }
-        }
-		
-		.main-logo {
-    height: 50px; /* Slightly bigger to account for the zoom */
-    width: 50px;
-    object-fit: cover;
-    
-    /* This creates a 'window' that ignores the outer white space */
-    clip-path: circle(26% at 50.5% 51%); 
-    
-    /* Zoom in more to make the green circle fill the window */
-    transform: scale(1.6); 
-    
-    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    display: block;
+	
+	/* WhatsApp confirmation animation */
+button.success {
+  background: #25D366 !important;
+  color: #fff !important;
+  box-shadow: 0 0 25px rgba(37, 211, 102, 0.8);
+  transform: scale(1.08);
+  pointer-events: none;
 }
 
-.logo-wrap {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    /* This hides any 'overflow' from the zoomed-in logo */
-    overflow: hidden; 
-    height: 70px;
+button.success::after {
+  content: " ✔";
+  font-size: 1.2em;
+  animation: pop 0.4s ease;
 }
 
-.logo-wrap:hover .main-logo {
-    /* Keeps the crop but adds the hover pop */
-    transform: scale(1.7) rotate(5deg);
-}
-/* Gallery Section */
-.gallery-section {
-    padding: 60px 5%;
-    max-width: 1400px;
-    margin: auto;
+@keyframes pop {
+  0% { transform: scale(0.5); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
 }
 
-.gallery-grid {
-    display: grid;
-    /* This force-maintains 2 columns even on mobile */
-    grid-template-columns: 1fr 1fr; 
-    gap: 15px;
-}
-
-.gallery-item {
-    aspect-ratio: 1 / 1; /* Makes them perfect squares */
-    overflow: hidden;
-    border-radius: 24px;
-    background: var(--apple-gray);
-}
-
-.gallery-item img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.5s cubic-bezier(0.15, 0, 0.15, 1);
-}
-
-/* Hover effect for a premium feel */
-.gallery-item:hover img {
-    transform: scale(1.1);
-}
-
-@media (min-width: 768px) {
-    .gallery-grid {
-        gap: 25px; /* More space on desktop */
-    }
-}
-    </style>
+  </style>
 </head>
 <body>
 
-<nav>
-    <a href="#" class="logo-wrap">
-    <img src="https://i.postimg.cc/V69hxS9f/Gemini-Generated-Image-luw5zcluw5zcluw5.png" alt="AquaVale Lawns Logo" class="main-logo">
-    <span class="brand-name">AquaVale Lawns</span>
-</a>
-    
- <div class="nav-links">
-        <a href="#varieties">Varieties</a>
-        <a href="#gallery">Gallery</a> <a href="#order-section">Order Now</a>
-        <a href="#location">Location</a>
-    </div>
+  <!-- Navigation -->
+  <nav>
+    <img class="pfp" src="https://i.postimg.cc/3R2hbWZx/20251029-143504560-i-OS-1.jpg" alt="Profile Picture">
+    <a href="#hero">Home</a>
+    <a href="#about">About</a>
+    <a href="#portfolio">Portfolio</a>
+    <a href="#gear">Gear</a>
+	<a href="#contact">Contact me</a>
+    <a href="#buy">Buy</a>
+  </nav>
 
-    <div class="menu-toggle" id="mobile-menu" onclick="toggleMenu()">
-        <div class="line"></div>
-        <div class="line"></div>
-        <div class="line"></div>
-    </div>
+  <!-- Hero Section -->
+  <section id="hero">
+    <div class="wave-bg"></div>
+    <h1>Igor Rix</h1>
+    <p>Capturing Moments, One Shutter at a Time</p>
+    <div class="hero-decoration"></div>
+    <div class="scroll-indicator"></div>
+  </section>
 
-    <div class="mobile-overlay" id="mobile-overlay">
-        <a href="#varieties" onclick="toggleMenu()">Varieties</a>
-        <a href="#gallery" onclick="toggleMenu()">Gallery</a> <a href="#order-section" onclick="toggleMenu()">Order Now</a>
-        <a href="#location" onclick="toggleMenu()">Location</a>
-    </div>
-</nav>
+  <!-- About Section -->
+  <section id="about">
+  <h2>About Me</h2>
+  <p>Hello! I’m a passionate photographer who loves capturing motorsports and wildlife. Whether it’s in the bush or on the track, I strive to tell a story through my lens.</p>
 
-<header class="hero">
-    <span class="slogan">we only supply grass, no deliveries</span>
-    <h1>Aquavale<font color="green">Lawns</font></h1>
-</header>
-
-<section id="varieties" class="variety-focus">
-    <div class="big-card reveal">
-        <img src="https://i.postimg.cc/qvhQytFH/LM_Barea.webp" alt="LM Berea" class="card-img">
-        <div class="card-info">
-            <div class="status" id="status-LM_Berea">
-                <span class="dot"></span> 
-                <span class="status-text">Checking...</span>
-            </div>
-            <h2 style="font-size: 2.5rem; margin-bottom: 10px;">LM Berea</h2>
-            <p style="font-size: 1.2rem; font-weight: 600; color: var(--accent-green);">R80 per m²</p>
-            <p style="margin-top: 15px; color: #424245;">A indigenous South African favorite. Known for its soft texture and incredible ability to thrive in semi-shaded areas where other grasses struggle.</p>
-            
-            <div class="specs">
-                <div class="spec-item"><span>Best For</span>Shady Gardens</div>
-                <div class="spec-item"><span>Watering</span>Moderate</div>
-                <div class="spec-item"><span>Texture</span>Soft & Lush</div>
-                <div class="spec-item"><span>Growth</span>Creeping</div>
-            </div>
-        </div>
-    </div>
-
-    <div class="big-card reveal">
-        <img src="https://i.postimg.cc/zXP0yw09/Kikuyu.webp" alt="Kikuyu" class="card-img">
-        <div class="card-info">
-            <div class="status" id="status-Kikuyu">
-                <span class="dot"></span> 
-                <span class="status-text">Checking...</span>
-            </div>
-            <h2 style="font-size: 2.5rem; margin-bottom: 10px;">Kikuyu</h2>
-            <p style="font-size: 1.2rem; font-weight: 600; color: var(--accent-green);">R75 per m²</p>
-            <p style="margin-top: 15px; color: #424245;">The powerhouse of lawns. Highly durable, fast-growing, and perfect for large open spaces, kids, and pets. It loves the South African sun.</p>
-            
-            <div class="specs">
-                <div class="spec-item"><span>Best For</span>Full Sun / High Traffic</div>
-                <div class="spec-item"><span>Watering</span>High</div>
-                <div class="spec-item"><span>Texture</span>Dense & Hardy</div>
-                <div class="spec-item"><span>Recovery</span>Very Fast</div>
-            </div>
-        </div>
-    </div>
+  <div class="social-links">
+    <a href="https://www.instagram.com/_ir.photo_?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" aria-label="Instagram" class="social-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5A4.25 4.25 0 0 0 16.25 3.5h-8.5ZM12 7a5 5 0 1 1 0 10a5 5 0 0 1 0-10Zm0 1.5a3.5 3.5 0 1 0 0 7a3.5 3.5 0 0 0 0-7Zm4.75-.88a.88.88 0 1 1 0 1.75a.88.88 0 0 1 0-1.75Z"/>
+      </svg>
+    </a>
+    <a href="https://www.tiktok.com/@_ir.photo_?is_from_webapp=1&sender_device=pc" target="_blank" aria-label="TikTok" class="social-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M12.999 2c.169 3.83 2.025 6.019 5.356 6.248V10.8a8.47 8.47 0 0 1-4.353-1.19v6.413c0 7.623-8.241 9.23-11.094 3.323a5.568 5.568 0 0 1 5.473-8.173v2.889c-.306.027-.612.084-.913.176c-1.902.585-2.385 2.939-1.265 4.282c1.205 1.445 3.786 1.034 4.186-1.069c.07-.355.1-.727.1-1.135V2h2.51Z"/>
+      </svg>
+    </a>
+  </div>
 </section>
 
-<section id="gallery" class="gallery-section reveal">
-    <h2 style="margin-bottom: 30px; font-size: 2rem; letter-spacing: -0.02em;">Farm Gallery</h2>
-    <div class="gallery-grid">
-        <div class="gallery-item">
-            <img src="https://images.unsplash.com/photo-1589923188900-85dae523342b?auto=format&fit=crop&w=800" alt="Lush Grass 1">
-        </div>
-        <div class="gallery-item">
-            <img src="https://images.unsplash.com/photo-1533460004989-cef01064af7c?auto=format&fit=crop&w=800" alt="Lush Grass 2">
-        </div>
-        <div class="gallery-item">
-            <img src="https://images.unsplash.com/photo-1592150621344-82454a99d7b4?auto=format&fit=crop&w=800" alt="Lush Grass 3">
-        </div>
-        <div class="gallery-item">
-            <img src="https://images.unsplash.com/photo-1558449197-27a3cb550021?auto=format&fit=crop&w=800" alt="Lush Grass 4">
-        </div>
+  <!-- Portfolio Section -->
+  <section id="portfolio">
+    <h2 style="grid-column: 1/-1;">My Work</h2>
+    <img src="https://i.postimg.cc/htwh57ZV/IR-0723.jpg" alt="Photo 1">
+	<img src="https://i.postimg.cc/m2mP7nYb/1-IMG-0323.jpg" alt="Photo 2">
+	<img src="https://i.postimg.cc/XYhXzy1k/IR-1342.jpg" alt="Photo 3">
+	<img src="https://i.postimg.cc/BnytV17D/IR-1478.jpg" alt="Photo 4">
+	<img src="https://i.postimg.cc/MpXv5Y5Q/2-IR-1179.jpg" alt="Photo 5">
+	<img src="https://i.postimg.cc/g25rT6tr/2-IMG-0884.jpg" alt="Photo 6">
+	<img src="https://i.postimg.cc/dQGhN0Q6/1_IR_2367.jpg" alt="Photo 7">
+	<img src="https://i.postimg.cc/CMbRrKM6/2_IR_2160.jpg" alt="Photo 8">
+ </section>
+
+  <!-- Lightbox Container -->
+  <div class="lightbox" id="lightbox">
+    <img src="" alt="Expanded Image">
+  </div>
+
+  <!-- Gear Section -->
+  <section id="gear">
+  <h2>My Gear</h2>
+  <div class="gear-list">
+
+    <div class="gear-item">
+      <span class="bullet"></span>
+      <div class="gear-content">
+        <a href="https://www.sony.com/za/interchangeable-lens-cameras/products/ilce-6400" target="_blank"><img src="https://i.postimg.cc/4xhJQGfN/sony-a6400.webp" alt="Sony a6400">
+        <p>Sony a6400</a></p>
+      </div>
     </div>
+
+    <div class="gear-item">
+      <span class="bullet"></span>
+      <div class="gear-content">
+        <a href="https://www.sony.com/za/electronics/interchangeable-lenses/selp16502" target="_blank"><img src="https://i.postimg.cc/13CySzvC/16-50.png" alt="Sony 16-50mm Lens">
+        <p>E PZ 16-50mm F3.5-5.6 OSS II</a></p>
+      </div>
+    </div>
+
+    <div class="gear-item">
+      <span class="bullet"></span>
+      <div class="gear-content">
+        <a href="https://www.tamron.com/global/consumer/lenses/a047/photo.html" target="_blank"><img src="https://i.postimg.cc/zvck5KRS/tamron.png" alt="Tamron 70-300mm Lens">
+        <p>Tamron 70-300mm F/4.5-6.3 Di III RXD</a></p>
+      </div>
+    </div>
+
+  </div>
 </section>
 
-<section id="order-section" class="reveal">
-    <div class="order-container">
-        <div class="calc-wrapper">
-            <div id="calc-content">
-                <h2 style="text-align: center; margin-bottom: 30px;">Quick Quote</h2>
-                
-                <label>Select Variety</label>
-                <select id="lawnType" class="calc-field" onchange="updateCalc()">
-                    </select>
-                
-                <label>Quantity (m²)</label>
-                <input type="number" id="sqm" class="calc-field" placeholder="How many square meters?" oninput="updateCalc()">
+  <!-- Contact Section -->
+<section id="contact">
+  <h2>Book a Private Shoot</h2>
+  <p>If you’d like to book me for a private photoshoot, event, or collaboration — reach out below!</p>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <div>
-                        <label>Collection Date</label>
-                        <input type="date" id="pickupDate" class="calc-field" onchange="updateCalc()">
-                    </div>
-                    <div>
-                        <label>Approx. Time</label>
-                        <input type="time" id="pickupTime" class="calc-field" onchange="updateCalc()">
-                    </div>
-                </div>
+  <form class="contact-form" id="whatsappForm">
+  <div class="form-group">
+    <input type="text" name="name" placeholder="Your Name" required>
+  </div>
+  <div class="form-group">
+    <input type="email" name="email" placeholder="Your Email" required>
+  </div>
+  <div class="form-group">
+    <textarea name="message" rows="5" placeholder="Your Message" required></textarea>
+  </div>
+  <button type="submit" id="whatsappBtn">Send WhatsApp</button>
+</form>
 
-                <span id="total-price">R0</span>
-
-                <a href="#" id="waLink" target="_blank" class="wa-btn">
-                    Place Order via WhatsApp
-                </a>
-            </div>
-
-            <div id="sold-out-overlay">
-                <h2 style="font-size: 2rem; margin-bottom: 15px;">Currently Sold Out</h2>
-                <p>We are busy harvesting the next batch. Please check back later or contact us for future bookings.</p>
-                <br>
-                <a href="https://wa.me/27619280584" class="wa-btn">Enquire About Next Batch</a>
-            </div>
-        </div>
-
-        <div id="location" class="map-wrapper reveal">
-            <iframe 
-                width="100%" height="100%" style="border:0" 
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d11175.7645224345!2d18.845!3d-33.933!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzPCsDU2JzAwLjAiUyAxOMKwNTAnNDguMCJF!5e0!3m2!1sen!2sza!4v1700000000000!5m2!1sen!2sza" 
-                allowfullscreen loading="lazy">
-            </iframe>
-        </div>
-    </div>
 </section>
 
-<footer>
-    <p><strong>AquaVale Lawns Farm</strong></p>
-    <p>Open Mon-Sat: 07:00 - 17:00</p>
-    <p>061 928 0584 • South Africa</p>
-</footer>
+  <!-- Buy Section -->
+  <section id="buy">
+    <h2>Buy My Photos</h2>
+    <a href="https://photofrog.co.za/sellers/igorrix" target="_blank">Shop Now on PhotoFrog</a>
+  </section>
 
-<div id="adminPanel">
-    <h3 style="margin-bottom:20px;">Stock Management</h3>
-    
-    <div class="admin-row">
-        <span>LM Berea</span>
-        <div>
-            <button class="admin-btn" style="background:var(--system-green); color:white;" onclick="toggleStock('LM_Berea', true)">In</button>
-            <button class="admin-btn" style="background:var(--system-red); color:white;" onclick="toggleStock('LM_Berea', false)">Out</button>
-        </div>
-    </div>
+  <script>
+    // Lightbox logic
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = lightbox.querySelector('img');
 
-    <div class="admin-row">
-        <span>Kikuyu</span>
-        <div>
-            <button class="admin-btn" style="background:var(--system-green); color:white;" onclick="toggleStock('Kikuyu', true)">In</button>
-            <button class="admin-btn" style="background:var(--system-red); color:white;" onclick="toggleStock('Kikuyu', false)">Out</button>
-        </div>
-    </div>
+    document.querySelectorAll('#portfolio img').forEach(img => {
+      img.addEventListener('click', () => {
+        lightboxImg.src = img.src;
+        lightbox.style.display = 'flex';
+      });
+    });
 
-    <button onclick="closeAdmin()" style="width:100%; background:var(--apple-gray); border:none; padding:15px; border-radius:15px; cursor:pointer; font-weight:700;">Save & Close</button>
-</div>
+    lightbox.addEventListener('click', () => {
+      lightbox.style.display = 'none';
+    });
 
-<div onclick="showAdmin()" style="height: 60px; cursor: default; opacity:0;">.</div>
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') lightbox.style.display = 'none';
+	  
+  </script>
+  
+  <script>
+document.addEventListener("DOMContentLoaded", () => {
 
-<script>
-    // --- SCROLL REVEAL LOGIC ---
-    function reveal() {
-        var reveals = document.querySelectorAll(".reveal");
-        for (var i = 0; i < reveals.length; i++) {
-            var windowHeight = window.innerHeight;
-            var elementTop = reveals[i].getBoundingClientRect().top;
-            var elementVisible = 150;
-            if (elementTop < windowHeight - elementVisible) {
-                reveals[i].classList.add("active");
-            }
-        }
-    }
-    window.addEventListener("scroll", reveal);
+  const form = document.getElementById("whatsappForm");
+  const button = document.getElementById("whatsappBtn");
 
-    // --- DATABASE MOCK (LOCAL STORAGE) ---
-    function showAdmin() {
-        if (prompt("Password:") === "1234") {
-            document.getElementById('adminPanel').style.display = 'block';
-        }
-    }
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
 
-    function toggleStock(id, status) {
-        localStorage.setItem(id + '_stock', status);
-        alert(id + " status updated!");
-    }
+    const name = form.name.value.trim();
+    const email = form.email.value.trim();
+    const message = form.message.value.trim();
 
-    function closeAdmin() {
-        location.reload();
-    }
+    const phoneNumber = "27619280584";
 
-    function syncUI() {
-        const varieties = [
-            { id: 'LM_Berea', name: 'LM Berea', price: 80 },
-            { id: 'Kikuyu', name: 'Kikuyu', price: 75 }
-        ];
+    const text =
+      `Hi Igor, I’d like to book a private shoot.\n\n` +
+      `Name: ${name}\n` +
+      `Email: ${email}\n\n` +
+      `Message:\n${message}`;
 
-        const dropdown = document.getElementById('lawnType');
-        dropdown.innerHTML = ""; 
-        let availableCount = 0;
+    const encoded = encodeURIComponent(text);
 
-        varieties.forEach(v => {
-            const isStocked = localStorage.getItem(v.id + '_stock') !== 'false';
-            const statusContainer = document.getElementById('status-' + v.id);
-            const dot = statusContainer.querySelector('.dot');
-            const text = statusContainer.querySelector('.status-text');
+    const url = `https://wa.me/${phoneNumber}?text=${encoded}`;
 
-            if (isStocked) {
-                dot.style.background = 'var(--system-green)';
-                dot.classList.add('pulse'); // Add pulse animation
-                text.innerText = 'In Stock';
-                availableCount++;
-                
-                let opt = document.createElement('option');
-                opt.value = v.price;
-                opt.text = `${v.name} (R${v.price})`;
-                opt.setAttribute('data-name', v.name);
-                dropdown.appendChild(opt);
-            } else {
-                dot.style.background = 'var(--system-red)';
-                dot.classList.remove('pulse');
-                text.innerText = 'Sold Out';
-                text.style.color = 'var(--system-red)';
-            }
-        });
+    button.classList.add("success");
+    button.textContent = "Opening WhatsApp…";
 
-        if (availableCount === 0) {
-            document.getElementById('calc-content').style.display = 'none';
-            document.getElementById('sold-out-overlay').style.display = 'block';
-        }
-    }
+    window.open(url, "_blank");
 
-    function updateCalc() {
-        const select = document.getElementById('lawnType');
-        if (!select.options[select.selectedIndex]) return;
-
-        const price = select.value;
-        const grassName = select.options[select.selectedIndex].getAttribute('data-name');
-        const meters = document.getElementById('sqm').value;
-        const date = document.getElementById('pickupDate').value;
-        const time = document.getElementById('pickupTime').value;
-        const display = document.getElementById('total-price');
-        const waLink = document.getElementById('waLink');
-        
-        if (meters > 0) {
-            const total = price * meters;
-            display.innerText = 'R' + total.toLocaleString();
-            display.style.transform = "scale(1.1)";
-            setTimeout(() => display.style.transform = "scale(1)", 200);
-
-            let msg = `Hello AquaVale,%0A%0AI want to order:%0A- ${meters}sqm of ${grassName}%0A- Total: R${total.toLocaleString()}%0A- Date: ${date || 'TBC'}%0A- Time: ${time || 'TBC'}`;
-            waLink.href = `https://wa.me/27619280584?text=${msg}`;
-        } else {
-            display.innerText = 'R0';
-            waLink.href = "#";
-        }
-    }
-	function toggleMenu() {
-        const menu = document.getElementById('mobile-menu');
-        const overlay = document.getElementById('mobile-overlay');
-        menu.classList.toggle('active');
-        overlay.classList.toggle('active');
-        
-        // Prevent scrolling when menu is open
-        if (overlay.classList.contains('active')) {
-            document.body.style.overflow = 'hidden';
-        } else {
-            document.body.style.overflow = 'auto';
-        }
-    }
-
-    window.onload = function() {
-        // Set min date to today
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('pickupDate').setAttribute('min', today);
-        
-        syncUI();
-        updateCalc();
-        reveal(); // Initial check for visible elements
-    };
-	
+    setTimeout(() => {
+      button.classList.remove("success");
+      button.textContent = "Send via WhatsApp";
+      form.reset();
+    }, 3000);
+  });
+});
 </script>
+
 
 </body>
 </html>
+
+
+
+
+
+
+
+
+
