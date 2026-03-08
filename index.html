@@ -24,11 +24,36 @@
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
         
-        body { 
-            background: #000; 
+        html, body { 
+            background: var(--bg) !important; 
             font-family: 'Montserrat', sans-serif; 
             overflow-x: hidden; 
             color: var(--primary); 
+            width: 100%;
+        }
+
+        /* THE FIX: Independent Background Layer */
+        .fixed-bg-container {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+            background: var(--bg);
+        }
+
+        .bg-moving-text {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            display: block;
+            font-size: clamp(30vw, 22vw, 20vw);
+            font-weight: 900;
+            color: rgba(27, 48, 34, 0.08); 
+            white-space: nowrap;
+            text-transform: uppercase;
+            line-height: 1;
+            text-align: center;
+            will-change: transform;
         }
 
         #page-wrapper {
@@ -41,35 +66,15 @@
             opacity: 0;
             filter: blur(15px);
             border-radius: 40px;
+            /* No overflow:hidden to keep scrolling smooth */
         }
 
-        .app-bg {
+        /* Restoring your original background feel */
+        .app-content-bg {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg);
-            z-index: -2;
-        }
-
-        .bg-text-container {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none;
+            background: transparent; /* Let the fixed text show through */
             z-index: -1;
-        }
-
-        .bg-moving-text {
-            position: sticky;
-            top: 50%;
-            transform: translateY(-50%);
-            display: block;
-            font-size: clamp(30vw, 22vw, 20vw); /* Bigger on mobile for impact */
-            font-weight: 900;
-            color: rgba(27, 48, 34, 0.08); 
-            white-space: nowrap;
-            text-transform: uppercase;
-            line-height: 1;
-            text-align: center;
-            will-change: transform;
         }
 
         header {
@@ -104,6 +109,7 @@
             padding: 40px 30px; 
             border-radius: 30px; 
             border: 1px solid rgba(255,255,255,0.5);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
         }
 
         .about-list { list-style: none; margin-top: 15px; }
@@ -124,43 +130,16 @@
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1); text-decoration: none; color: #25D366; font-size: 1.3rem; z-index: 1001;
         }
-	:root {
-    --ios-glass: rgba(255, 255, 255, 0.75);
-    --ios-blur: blur(25px);
-    --primary: #1b3022;
-    --accent: #c5a059;
-    --bg: #f2f2f7; /* Matching the app color */
-}
-
-html, body { 
-    /* We change the body color to light grey so no black appears */
-    background: var(--bg) !important; 
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    /* These two are the secret to stopping the diagonal pull */
-    overflow-x: hidden;
-    position: relative;
-}
-
-#page-wrapper {
-    width: 100%;
-    min-height: 100vh;
-    transform-origin: center center;
-    position: relative;
-    z-index: 1;
-    overflow: hidden; /* Clips any horizontal 'leaks' */
-    /* Remove touch-action: pan-y; if you added it earlier */
-}
     </style>
 </head>
 <body>
 
+    <div class="fixed-bg-container">
+        <div class="bg-moving-text" id="scrollText">TACK&TAIL</div>
+    </div>
+
     <div id="page-wrapper">
-        <div class="app-bg"></div>
-        <div class="bg-text-container">
-            <div class="bg-moving-text" id="scrollText">TACK&TAIL</div>
-        </div>
+        <div class="app-content-bg"></div>
 
         <header>
             <a href="#" class="logo">TACK & TAIL</a>
@@ -208,7 +187,7 @@ html, body {
                     </div>
                 </div>
                 <div class="map-box">
-                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3314.283103239843!2d18.7845!3d-33.8236!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzPCsDQ5JzI1LjAiUyAxOMKwNDcnMDQuMiJF!5e0!3m2!1sen!2sza!4v1700000000000" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3312.457850849!2d18.718!3d-33.824!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzPCsDQ5JzI2LjQiUyAxOMKwNDMnMDQuOCJF!5e0!3m2!1sen!2sza!4v1700000000000!5m2!1sen!2sza" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
                 </div>
                 <p style="text-align: center; margin-top: 30px; opacity: 0.3; font-size: 0.6rem; letter-spacing: 1px;">© 2024 TACK AND TAIL</p>
             </div>
@@ -236,6 +215,17 @@ html, body {
             });
         });
 
+        // TEXT MOVEMENT: Corrected to trigger on BODY scroll
+        gsap.to("#scrollText", {
+            x: -600, 
+            scrollTrigger: {
+                trigger: "body",
+                start: "top top",
+                end: "bottom bottom",
+                scrub: 1.5
+            }
+        });
+
         function navigateInternal(target) {
             const tl = gsap.timeline();
             tl.to("#page-wrapper", { scale: 0.94, borderRadius: "25px", duration: 0.5, ease: "power2.inOut" })
@@ -249,16 +239,6 @@ html, body {
                 onComplete: () => { window.location.href = "shop.html"; }
             });
         }
-
-        gsap.to("#scrollText", {
-            x: -600, 
-            scrollTrigger: {
-                trigger: "body",
-                start: "top top",
-                end: "bottom bottom",
-                scrub: 1.5
-            }
-        });
 
         gsap.utils.toArray('.reveal').forEach(card => {
             gsap.from(card, {
