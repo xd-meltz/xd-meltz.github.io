@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover">
     <title>Tack and Tail | Equestrian Excellence</title>
     
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -124,25 +124,33 @@
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1); text-decoration: none; color: #25D366; font-size: 1.3rem; z-index: 1001;
         }
-		
-		html, body {
-    /* Prevents the 'diagonal' pull */
-    overflow-x: hidden; 
-    /* Ensures the body is the same color as the app so if it leaks, it matches */
-    background: var(--bg); 
-    /* Fixes height issues on mobile Safari */
-    height: -webkit-fill-available;
-    position: relative;
+	:root {
+    --ios-glass: rgba(255, 255, 255, 0.75);
+    --ios-blur: blur(25px);
+    --primary: #1b3022;
+    --accent: #c5a059;
+    --bg: #f2f2f7; /* Matching the app color */
+}
+
+html, body { 
+    /* We change the body color to light grey so no black appears */
+    background: var(--bg) !important; 
+    margin: 0;
+    padding: 0;
     width: 100%;
+    /* These two are the secret to stopping the diagonal pull */
+    overflow-x: hidden;
+    position: relative;
 }
 
 #page-wrapper {
-    /* ... keep your existing styles, but add these: */
-    width: 100vw;
-    overflow-x: hidden;
+    width: 100%;
+    min-height: 100vh;
+    transform-origin: center center;
     position: relative;
-    /* This stops the 'sliding' behavior on mobile */
-    touch-action: pan-y; 
+    z-index: 1;
+    overflow: hidden; /* Clips any horizontal 'leaks' */
+    /* Remove touch-action: pan-y; if you added it earlier */
 }
     </style>
 </head>
