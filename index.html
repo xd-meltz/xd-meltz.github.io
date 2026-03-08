@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Tack and Tail | Equestrian Excellence</title>
     
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -124,6 +124,26 @@
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1); text-decoration: none; color: #25D366; font-size: 1.3rem; z-index: 1001;
         }
+		
+		html, body {
+    /* Prevents the 'diagonal' pull */
+    overflow-x: hidden; 
+    /* Ensures the body is the same color as the app so if it leaks, it matches */
+    background: var(--bg); 
+    /* Fixes height issues on mobile Safari */
+    height: -webkit-fill-available;
+    position: relative;
+    width: 100%;
+}
+
+#page-wrapper {
+    /* ... keep your existing styles, but add these: */
+    width: 100vw;
+    overflow-x: hidden;
+    position: relative;
+    /* This stops the 'sliding' behavior on mobile */
+    touch-action: pan-y; 
+}
     </style>
 </head>
 <body>
