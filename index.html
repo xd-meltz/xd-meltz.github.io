@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Tack and Tail | Equestrian Excellence</title>
     
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -16,7 +16,7 @@
     <style>
         :root {
             --ios-glass: rgba(255, 255, 255, 0.75);
-            --ios-blur: blur(30px);
+            --ios-blur: blur(25px);
             --primary: #1b3022;
             --accent: #c5a059;
             --bg: #f2f2f7;
@@ -62,9 +62,9 @@
             top: 50%;
             transform: translateY(-50%);
             display: block;
-            font-size: 22vw;
+            font-size: clamp(30vw, 22vw, 20vw); /* Bigger on mobile for impact */
             font-weight: 900;
-            color: rgba(27, 48, 34, 0.1); 
+            color: rgba(27, 48, 34, 0.08); 
             white-space: nowrap;
             text-transform: uppercase;
             line-height: 1;
@@ -74,52 +74,55 @@
 
         header {
             position: fixed; top: 0; left: 0; width: 100%;
-            padding: 20px 5%; display: flex; justify-content: space-between;
+            padding: 15px 5%; display: flex; justify-content: space-between;
             align-items: center; z-index: 1000;
             background: linear-gradient(to bottom, rgba(242,242,247,0.8), transparent);
             backdrop-filter: blur(10px);
         }
-        .logo { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 600; letter-spacing: 2px; text-decoration: none; color: var(--primary); }
+        .logo { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 600; letter-spacing: 2px; text-decoration: none; color: var(--primary); }
 
         nav {
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            width: 90%; max-width: 450px; padding: 12px 30px;
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            width: 85%; max-width: 400px; padding: 10px 20px;
             background: var(--ios-glass); backdrop-filter: var(--ios-blur);
-            border-radius: 40px; border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 30px; border: 1px solid rgba(255,255,255,0.3);
             display: flex; justify-content: space-around; align-items: center;
-            z-index: 1000; box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
-        nav a { cursor: pointer; text-decoration: none; color: var(--primary); font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        nav a { cursor: pointer; text-decoration: none; color: var(--primary); font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
 
-        .hero { height: 100vh; display: flex; align-items: center; padding: 0 10%; position: relative; }
-        .hero-card { width: 100%; height: 80vh; border-radius: 40px; overflow: hidden; position: relative; box-shadow: 0 30px 60px rgba(0,0,0,0.2); }
+        .hero { height: 100vh; display: flex; align-items: center; padding: 0 5%; position: relative; }
+        .hero-card { width: 100%; height: 75vh; border-radius: 30px; overflow: hidden; position: relative; box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
         .hero-img { width: 100%; height: 100%; object-fit: cover; }
-        .hero-overlay { position: absolute; bottom: 60px; left: 60px; color: white; }
-        .hero-overlay h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(3rem, 8vw, 6rem); line-height: 0.9; }
+        .hero-overlay { position: absolute; bottom: 30px; left: 30px; color: white; padding-right: 20px; }
+        .hero-overlay h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(2.5rem, 10vw, 5rem); line-height: 1; }
 
-        section { padding: 60px 10%; position: relative; }
+        section { padding: 40px 5%; position: relative; }
         .glass-card { 
             background: var(--ios-glass); 
             backdrop-filter: var(--ios-blur); 
-            padding: 60px; 
-            border-radius: 40px; 
+            padding: 40px 30px; 
+            border-radius: 30px; 
             border: 1px solid rgba(255,255,255,0.5);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.05);
         }
 
-        /* Small Island Info Box */
-        footer#info { padding-bottom: 150px; }
-        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px; margin-bottom: 40px; }
-        .map-box { height: 300px; border-radius: 25px; overflow: hidden; filter: grayscale(1); border: 1px solid rgba(0,0,0,0.05); }
+        .about-list { list-style: none; margin-top: 15px; }
+        .about-list li { margin-bottom: 10px; font-size: 0.95rem; opacity: 0.8; display: flex; align-items: center; }
+        .about-list li::before { content: "•"; color: var(--accent); margin-right: 10px; font-weight: bold; }
 
-        .social-links { margin-top: 20px; display: flex; gap: 20px; }
-        .social-links a { color: var(--primary); font-size: 1.4rem; transition: 0.3s; }
-        .social-links a:hover { color: var(--accent); transform: translateY(-3px); }
+        footer#info { padding-bottom: 120px; }
+        .info-grid { display: grid; grid-template-columns: 1fr; gap: 30px; margin-bottom: 30px; }
+        @media (min-width: 768px) { .info-grid { grid-template-columns: repeat(2, 1fr); } }
+
+        .map-box { height: 250px; border-radius: 20px; overflow: hidden; filter: grayscale(1); border: 1px solid rgba(0,0,0,0.05); }
+
+        .social-links { margin-top: 15px; display: flex; gap: 20px; }
+        .social-links a { color: var(--primary); font-size: 1.2rem; }
 
         .wa-float {
-            position: fixed; top: 80px; right: 40px; background: white; width: 50px; height: 50px;
+            position: fixed; top: 70px; right: 20px; background: white; width: 45px; height: 45px;
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1); text-decoration: none; color: #25D366; font-size: 1.5rem; z-index: 1001;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1); text-decoration: none; color: #25D366; font-size: 1.3rem; z-index: 1001;
         }
     </style>
 </head>
@@ -133,14 +136,14 @@
 
         <header>
             <a href="#" class="logo">TACK & TAIL</a>
-            <div style="font-size: 0.7rem; font-weight: 600; letter-spacing: 2px; opacity: 0.5;">PREMIUM BOUTIQUE</div>
+            <div style="font-size: 0.6rem; font-weight: 600; letter-spacing: 1px; opacity: 0.5;">PREMIUM BOUTIQUE</div>
         </header>
 
         <div class="hero">
             <div class="hero-card">
                 <img src="https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?q=80&w=2000" class="hero-img">
                 <div class="hero-overlay">
-                    <p style="letter-spacing: 5px; opacity: 0.8;">JOOSTENBERGVLAKTE</p>
+                    <p style="letter-spacing: 3px; opacity: 0.8; font-size: 0.7rem;">JOOSTENBERGVLAKTE</p>
                     <h1>Equestrian<br>Elegance.</h1>
                 </div>
             </div>
@@ -148,16 +151,14 @@
 
         <section id="about">
             <div class="glass-card reveal">
-                <h2 style="font-family: 'Cormorant Garamond', serif; font-size: 3rem; margin-bottom: 20px;">The Boutique</h2>
-                <p style="font-size: 1.1rem; line-height: 1.8; opacity: 0.7;">
-                    <ul>
-					<li>Tack and Horse Feed Supplier
-					<li>We sell second hand and new tack
-					<li>We stock equestrian clothing
-					<li>Have a variety of Supplements
-					<li>Basic vet supplies
-					</ul>
-                </p>
+                <h2 style="font-family: 'Cormorant Garamond', serif; font-size: 2.2rem; margin-bottom: 15px;">The Boutique</h2>
+                <ul class="about-list">
+                    <li>Tack and Horse Feed Supplier</li>
+                    <li>Second hand and new tack</li>
+                    <li>Equestrian clothing</li>
+                    <li>Premium Supplements</li>
+                    <li>Basic vet supplies</li>
+                </ul>
             </div>
         </section>
 
@@ -165,24 +166,23 @@
             <div class="glass-card reveal">
                 <div class="info-grid">
                     <div>
-                        <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 2rem; margin-bottom: 10px;">Visit Us</h3>
-                        <p style="opacity: 0.7; font-size: 0.9rem;">20 Kiewiet Street,<br>Joostenbergvlakte, 7570</p>
-                        
+                        <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; margin-bottom: 10px;">Visit Us</h3>
+                        <p style="opacity: 0.7; font-size: 0.85rem;">20 Kiewiet Street,<br>Joostenbergvlakte, 7570</p>
                         <div class="social-links">
                             <a href="https://instagram.com/tackandtail" target="_blank"><i class="fab fa-instagram"></i></a>
                             <a href="https://facebook.com/tackandtail" target="_blank"><i class="fab fa-facebook-f"></i></a>
                         </div>
                     </div>
                     <div>
-                        <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 2rem; margin-bottom: 10px;">Reach Out</h3>
-                        <p style="opacity: 0.7; font-size: 0.9rem;"><strong>Phone:</strong> 066 266 1424</p>
-                        <p style="opacity: 0.7; font-size: 0.9rem;"><strong>Email:</strong> tackandtail@gmail.com</p>
+                        <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; margin-bottom: 10px;">Reach Out</h3>
+                        <p style="opacity: 0.7; font-size: 0.85rem;"><strong>Phone:</strong> 066 266 1424</p>
+                        <p style="opacity: 0.7; font-size: 0.85rem;"><strong>Email:</strong> tackandtail@gmail.com</p>
                     </div>
                 </div>
                 <div class="map-box">
-                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3314.542!2d18.789!3d-33.829!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzPCsDQ5JzQ0LjQiUyAxOMKwNDcnMjAuNCJF!5e0!3m2!1sen!2sza!4v1710000000000!5m2!1sen!2sza" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3314.283103239843!2d18.7845!3d-33.8236!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzPCsDQ5JzI1LjAiUyAxOMKwNDcnMDQuMiJF!5e0!3m2!1sen!2sza!4v1700000000000" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
                 </div>
-                <p style="text-align: center; margin-top: 40px; opacity: 0.3; font-size: 0.7rem; letter-spacing: 1px;">&copy; 2024 TACK AND TAIL</p>
+                <p style="text-align: center; margin-top: 30px; opacity: 0.3; font-size: 0.6rem; letter-spacing: 1px;">© 2024 TACK AND TAIL</p>
             </div>
         </section>
     </div>
@@ -203,18 +203,14 @@
         gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
         window.addEventListener('DOMContentLoaded', () => {
-            const hash = window.location.hash;
             gsap.to("#page-wrapper", {
-                scale: 1, opacity: 1, filter: "blur(0px)", borderRadius: "0px", duration: 1.2, ease: "expo.out",
-                onComplete: () => {
-                    if (hash) gsap.to(window, { duration: 1, scrollTo: { y: hash, autoKill: false }, ease: "power3.inOut" });
-                }
+                scale: 1, opacity: 1, filter: "blur(0px)", borderRadius: "0px", duration: 1.2, ease: "expo.out"
             });
         });
 
         function navigateInternal(target) {
             const tl = gsap.timeline();
-            tl.to("#page-wrapper", { scale: 0.94, borderRadius: "40px", duration: 0.5, ease: "power2.inOut" })
+            tl.to("#page-wrapper", { scale: 0.94, borderRadius: "25px", duration: 0.5, ease: "power2.inOut" })
             .to(window, { duration: 1.2, scrollTo: { y: target, autoKill: false }, ease: "expo.inOut" }, "-=0.2")
             .to("#page-wrapper", { scale: 1, borderRadius: "0px", duration: 0.5, ease: "power2.out" });
         }
@@ -227,7 +223,7 @@
         }
 
         gsap.to("#scrollText", {
-            x: -800, 
+            x: -600, 
             scrollTrigger: {
                 trigger: "body",
                 start: "top top",
@@ -239,7 +235,7 @@
         gsap.utils.toArray('.reveal').forEach(card => {
             gsap.from(card, {
                 scrollTrigger: { trigger: card, start: "top 90%" },
-                y: 80, opacity: 0, duration: 1.2, ease: "power4.out"
+                y: 50, opacity: 0, duration: 1, ease: "power3.out"
             });
         });
     </script>
