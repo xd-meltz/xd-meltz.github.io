@@ -2,942 +2,246 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Igor Rix | Photographic Art</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tack and Tail | Equestrian Excellence</title>
     
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;600&family=Montserrat:wght@100;400;600&display=swap" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollToPlugin.min.js"></script>
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.33/dist/lenis.min.js"></script>
 
     <style>
         :root {
-            --bg-color: #000000;
-            --surface-color: #111111;
-            --surface-glass: rgba(20, 20, 20, 0.6);
-            --accent-color: #ff4c4c;
-            --accent-glow: rgba(255, 76, 76, 0.4);
-            --text-primary: #ffffff;
-            --text-secondary: #86868b; /* Apple's classic grey */
-            --easing: cubic-bezier(0.165, 0.84, 0.44, 1);
-            --font-stack: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --ios-glass: rgba(255, 255, 255, 0.75);
+            --ios-blur: blur(30px);
+            --primary: #1b3022;
+            --accent: #c5a059;
+            --bg: #f2f2f7;
         }
 
-        /* --------------------------------------------------
-           RESET & GLOBAL
-           -------------------------------------------------- */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+        
+        body { 
+            background: #000; 
+            font-family: 'Montserrat', sans-serif; 
+            overflow-x: hidden; 
+            color: var(--primary); 
         }
 
-        html {
-            scroll-behavior: smooth;
-            font-size: 16px;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-primary);
-            font-family: var(--font-stack);
-            overflow-x: hidden;
-            width: 100vw;
-        }
-
-        /* Custom Scrollbar for Webkit */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: var(--bg-color);
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #333;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--accent-color);
-        }
-
-        a {
-            text-decoration: none;
-            color: inherit;
-            cursor: pointer;
-        }
-
-        /* --------------------------------------------------
-           TYPOGRAPHY & ANIMATIONS
-           -------------------------------------------------- */
-        h1, h2, h3 {
-            font-weight: 800;
-            letter-spacing: -0.03em;
-            line-height: 1.1;
-        }
-
-        .flow-text {
-            background: linear-gradient(90deg, #fff, #888, #fff);
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: flowGradient 5s linear infinite;
-        }
-
-        @keyframes flowGradient {
-            0% { background-position: 0% center; }
-            100% { background-position: 200% center; }
-        }
-
-        .fade-up {
-            opacity: 0;
-            transform: translateY(40px);
-            transition: opacity 1s var(--easing), transform 1s var(--easing);
-        }
-
-        .fade-up.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* --------------------------------------------------
-           NAVIGATION (Floating Pill)
-           -------------------------------------------------- */
-        .nav-wrapper {
-            position: fixed;
-            top: 20px;
-            left: 0;
+        #page-wrapper {
             width: 100%;
-            display: flex;
-            justify-content: center;
-            z-index: 1000;
-            pointer-events: none; /* Let clicks pass through around the pill */
+            min-height: 100vh;
+            transform-origin: center center;
+            position: relative;
+            z-index: 1;
+            transform: scale(0.85);
+            opacity: 0;
+            filter: blur(15px);
+            border-radius: 40px;
         }
+
+        .app-bg {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg);
+            z-index: -2;
+        }
+
+        .bg-text-container {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .bg-moving-text {
+            position: sticky;
+            top: 50%;
+            transform: translateY(-50%);
+            display: block;
+            font-size: 22vw;
+            font-weight: 900;
+            color: rgba(27, 48, 34, 0.1); 
+            white-space: nowrap;
+            text-transform: uppercase;
+            line-height: 1;
+            text-align: center;
+            will-change: transform;
+        }
+
+        header {
+            position: fixed; top: 0; left: 0; width: 100%;
+            padding: 20px 5%; display: flex; justify-content: space-between;
+            align-items: center; z-index: 1000;
+            background: linear-gradient(to bottom, rgba(242,242,247,0.8), transparent);
+            backdrop-filter: blur(10px);
+        }
+        .logo { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 600; letter-spacing: 2px; text-decoration: none; color: var(--primary); }
 
         nav {
-            pointer-events: auto;
-            background: rgba(28, 28, 30, 0.65);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            padding: 12px 24px;
-            border-radius: 50px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-            transition: transform 0.3s var(--easing), width 0.3s;
-            max-width: 90%;
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            width: 90%; max-width: 450px; padding: 12px 30px;
+            background: var(--ios-glass); backdrop-filter: var(--ios-blur);
+            border-radius: 40px; border: 1px solid rgba(255,255,255,0.3);
+            display: flex; justify-content: space-around; align-items: center;
+            z-index: 1000; box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        nav a { cursor: pointer; text-decoration: none; color: var(--primary); font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+
+        .hero { height: 100vh; display: flex; align-items: center; padding: 0 10%; position: relative; }
+        .hero-card { width: 100%; height: 80vh; border-radius: 40px; overflow: hidden; position: relative; box-shadow: 0 30px 60px rgba(0,0,0,0.2); }
+        .hero-img { width: 100%; height: 100%; object-fit: cover; }
+        .hero-overlay { position: absolute; bottom: 60px; left: 60px; color: white; }
+        .hero-overlay h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(3rem, 8vw, 6rem); line-height: 0.9; }
+
+        section { padding: 60px 10%; position: relative; }
+        .glass-card { 
+            background: var(--ios-glass); 
+            backdrop-filter: var(--ios-blur); 
+            padding: 60px; 
+            border-radius: 40px; 
+            border: 1px solid rgba(255,255,255,0.5);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.05);
         }
 
-        nav .pfp {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid var(--accent-color);
-            transition: transform 0.5s var(--easing);
-        }
+        /* Small Island Info Box */
+        footer#info { padding-bottom: 150px; }
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px; margin-bottom: 40px; }
+        .map-box { height: 300px; border-radius: 25px; overflow: hidden; filter: grayscale(1); border: 1px solid rgba(0,0,0,0.05); }
 
-        nav .pfp:hover {
-            transform: rotate(360deg) scale(1.1);
-        }
+        .social-links { margin-top: 20px; display: flex; gap: 20px; }
+        .social-links a { color: var(--primary); font-size: 1.4rem; transition: 0.3s; }
+        .social-links a:hover { color: var(--accent); transform: translateY(-3px); }
 
-        .nav-links {
-            display: flex;
-            gap: 5px;
+        .wa-float {
+            position: fixed; top: 80px; right: 40px; background: white; width: 50px; height: 50px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1); text-decoration: none; color: #25D366; font-size: 1.5rem; z-index: 1001;
         }
-
-        .nav-links a {
-            font-size: 0.85rem;
-            font-weight: 500;
-            color: var(--text-secondary);
-            padding: 8px 16px;
-            border-radius: 20px;
-            transition: all 0.3s var(--easing);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .nav-links a:hover {
-            color: #fff;
-            background: rgba(255,255,255,0.1);
-        }
-
-        .nav-links a.active {
-            color: var(--accent-color);
-            background: rgba(255, 76, 76, 0.1);
-        }
-
-        /* Mobile Nav Toggles */
-        @media (max-width: 768px) {
-            .nav-links {
-                display: none; /* Hidden by default on mobile */
-                position: absolute;
-                top: 70px;
-                left: 50%;
-                transform: translateX(-50%);
-                background: rgba(20,20,20,0.95);
-                backdrop-filter: blur(30px);
-                flex-direction: column;
-                padding: 20px;
-                border-radius: 24px;
-                border: 1px solid rgba(255,255,255,0.1);
-                width: 200px;
-                text-align: center;
-                opacity: 0;
-                pointer-events: none;
-                transition: opacity 0.3s ease;
-            }
-
-            .nav-links.open {
-                display: flex;
-                opacity: 1;
-                pointer-events: auto;
-            }
-
-            .mobile-toggle {
-                display: block;
-                color: #fff;
-                font-size: 1.5rem;
-                margin-left: 10px;
-                cursor: pointer;
-            }
-        }
-        @media (min-width: 769px) {
-            .mobile-toggle { display: none; }
-        }
-
-        /* --------------------------------------------------
-           HERO SECTION (Dynamic Background)
-           -------------------------------------------------- */
-        #hero {
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            text-align: center;
-            overflow: hidden;
-        }
-
-        /* Dynamic Orb Background */
-        .orb {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(80px);
-            z-index: 0;
-            opacity: 0.6;
-            animation: orbFloat 10s infinite alternate var(--easing);
-        }
-
-        .orb-1 { width: 300px; height: 300px; background: #ff4c4c; top: 20%; left: 20%; animation-delay: 0s; }
-        .orb-2 { width: 400px; height: 400px; background: #3c0000; bottom: 10%; right: 10%; animation-delay: -5s; }
-
-        @keyframes orbFloat {
-            0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(30px, 50px) scale(1.2); }
-        }
-
-        .hero-content {
-            z-index: 1;
-            padding: 0 20px;
-        }
-
-        #hero h1 {
-            font-size: clamp(3rem, 10vw, 8rem); /* Massive responsive text */
-            margin-bottom: 20px;
-            filter: drop-shadow(0 0 20px rgba(0,0,0,0.5));
-            opacity: 0;
-            animation: heroTextReveal 1.5s var(--easing) forwards 0.5s;
-        }
-
-        #hero p {
-            font-size: clamp(1rem, 2vw, 1.5rem);
-            color: var(--text-secondary);
-            max-width: 600px;
-            margin: 0 auto;
-            opacity: 0;
-            animation: heroTextReveal 1.5s var(--easing) forwards 1s;
-        }
-
-        @keyframes heroTextReveal {
-            from { transform: translateY(50px) scale(0.9); opacity: 0; }
-            to { transform: translateY(0) scale(1); opacity: 1; }
-        }
-
-        .scroll-pill {
-            position: absolute;
-            bottom: 40px;
-            width: 30px;
-            height: 50px;
-            border: 2px solid rgba(255,255,255,0.3);
-            border-radius: 20px;
-            z-index: 2;
-            opacity: 0;
-            animation: fadeIn 1s ease forwards 2s;
-        }
-
-        .scroll-pill::before {
-            content: '';
-            position: absolute;
-            top: 8px;
-            left: 50%;
-            width: 4px;
-            height: 8px;
-            background: #fff;
-            border-radius: 2px;
-            transform: translateX(-50%);
-            animation: scrollWheel 2s infinite;
-        }
-
-        @keyframes scrollWheel {
-            0% { top: 8px; opacity: 1; }
-            100% { top: 25px; opacity: 0; }
-        }
-
-        /* --------------------------------------------------
-           ABOUT SECTION (Apple Style Reveal)
-           -------------------------------------------------- */
-        #about {
-            padding: 150px 20px;
-            max-width: 900px;
-            margin: 0 auto;
-            text-align: center;
-        }
-
-        #about p {
-            font-size: clamp(1.5rem, 4vw, 3rem);
-            font-weight: 600;
-            line-height: 1.4;
-            color: #444; /* Start dim */
-            transition: color 0.5s;
-        }
-        
-        /* The span trick for scroll revealing text */
-        .reveal-text span {
-            color: #444;
-            transition: color 0.3s ease;
-        }
-        .reveal-text span.active {
-            color: #fff;
-            text-shadow: 0 0 15px rgba(255,255,255,0.3);
-        }
-
-        .social-row {
-            margin-top: 50px;
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-        }
-
-        .social-icon {
-            color: #fff;
-            transition: transform 0.4s var(--easing), color 0.3s;
-        }
-        .social-icon:hover {
-            color: var(--accent-color);
-            transform: scale(1.3) rotate(5deg);
-        }
-
-        /* --------------------------------------------------
-           PORTFOLIO (Card Stacking Effect)
-           -------------------------------------------------- */
-        #portfolio {
-            padding: 100px 0;
-            position: relative;
-        }
-
-        .section-header {
-            text-align: center;
-            margin-bottom: 80px;
-            font-size: 3rem;
-            color: var(--text-primary);
-        }
-
-        /* This creates the stack context */
-        .gallery-wrapper {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 0 20px;
-            position: relative;
-        }
-
-        /* Individual Card Container */
-        .card-container {
-            position: sticky;
-            top: 100px; /* Offset from top */
-            height: 80vh; /* Viewport height for the card area */
-            margin-bottom: 100px; /* Space between cards */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            perspective: 1000px;
-        }
-
-        .card {
-            width: 100%;
-            height: 100%;
-            max-height: 700px;
-            position: relative;
-            border-radius: 30px;
-            overflow: hidden;
-            transform-origin: center top;
-            transition: transform 0.5s ease;
-            box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
-            background: #000;
-        }
-
-        .card img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.8s var(--easing);
-            cursor: pointer;
-        }
-
-        .card:hover img {
-            transform: scale(1.05);
-        }
-
-        .card-overlay {
-            position: absolute;
-            bottom: 0; left: 0; right: 0;
-            padding: 40px;
-            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.4s ease;
-        }
-
-        .card:hover .card-overlay {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* Dynamic offsets for stacking logic calculated in CSS */
-        .card-container:nth-child(1) { top: 120px; z-index: 1; }
-        .card-container:nth-child(2) { top: 140px; z-index: 2; }
-        .card-container:nth-child(3) { top: 160px; z-index: 3; }
-        .card-container:nth-child(4) { top: 180px; z-index: 4; }
-        .card-container:nth-child(5) { top: 200px; z-index: 5; }
-        .card-container:nth-child(6) { top: 220px; z-index: 6; }
-        .card-container:nth-child(7) { top: 240px; z-index: 7; }
-        .card-container:nth-child(8) { top: 260px; z-index: 8; }
-
-        /* --------------------------------------------------
-           GEAR SECTION (Floating 3D Cards)
-           -------------------------------------------------- */
-        #gear {
-            padding: 100px 20px;
-            background: radial-gradient(circle at 50% 50%, #1a1a1a 0%, #000 100%);
-        }
-
-        .gear-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 40px;
-            max-width: 1200px;
-            margin: 50px auto;
-        }
-
-        .gear-card {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 24px;
-            padding: 30px;
-            text-align: center;
-            transition: all 0.4s var(--easing);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .gear-card:hover {
-            transform: translateY(-15px) scale(1.02);
-            background: rgba(255,255,255,0.06);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            border-color: var(--accent-color);
-        }
-
-        .gear-card img {
-            width: 80%;
-            height: auto;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));
-            transition: transform 0.4s ease;
-        }
-
-        .gear-card:hover img {
-            transform: scale(1.1) rotate(2deg);
-        }
-
-        .gear-card h3 {
-            font-size: 1.1rem;
-            color: #fff;
-            margin-top: 10px;
-        }
-
-        /* --------------------------------------------------
-           CONTACT & FORM
-           -------------------------------------------------- */
-        #contact {
-            padding: 150px 20px;
-            text-align: center;
-            position: relative;
-        }
-
-        .contact-container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: rgba(20,20,20,0.8);
-            backdrop-filter: blur(20px);
-            padding: 40px;
-            border-radius: 30px;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .form-group {
-            position: relative;
-            margin-bottom: 20px;
-            overflow: hidden;
-        }
-
-        .form-group input, 
-        .form-group textarea {
-            width: 100%;
-            padding: 20px;
-            background: rgba(255,255,255,0.05);
-            border: none;
-            border-radius: 16px;
-            color: #fff;
-            font-family: inherit;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-        }
-
-        .form-group input:focus, 
-        .form-group textarea:focus {
-            outline: none;
-            background: rgba(255,255,255,0.1);
-            transform: scale(1.01);
-            box-shadow: 0 0 0 2px var(--accent-color);
-        }
-
-        /* Magnetic Button */
-        .magnetic-btn {
-            display: inline-block;
-            background: var(--accent-color);
-            color: #fff;
-            font-weight: 700;
-            padding: 20px 40px;
-            border-radius: 50px;
-            border: none;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: transform 0.2s cubic-bezier(0.33, 1, 0.68, 1), background 0.3s;
-            position: relative;
-            overflow: hidden;
-            width: 100%;
-            margin-top: 20px;
-        }
-
-        .magnetic-btn::after {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%;
-            width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            transition: 0.5s;
-        }
-        
-        .magnetic-btn:hover::after {
-            left: 100%;
-        }
-
-        .magnetic-btn.success {
-            background: #25D366;
-            transform: scale(0.98);
-        }
-
-        /* --------------------------------------------------
-           BUY SECTION
-           -------------------------------------------------- */
-        #buy {
-            padding: 80px 20px;
-            text-align: center;
-        }
-
-        .buy-link {
-            display: inline-block;
-            padding: 18px 36px;
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 50px;
-            font-size: 1.2rem;
-            font-weight: 600;
-            transition: all 0.4s var(--easing);
-            background: rgba(255,255,255,0.05);
-        }
-
-        .buy-link:hover {
-            background: #fff;
-            color: #000;
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(255,255,255,0.2);
-        }
-
-        /* --------------------------------------------------
-           LIGHTBOX
-           -------------------------------------------------- */
-        .lightbox {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95);
-            backdrop-filter: blur(10px);
-            z-index: 9999;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .lightbox.active {
-            display: flex;
-            opacity: 1;
-        }
-
-        .lightbox img {
-            max-width: 90%;
-            max-height: 85vh;
-            border-radius: 12px;
-            box-shadow: 0 0 50px rgba(0,0,0,0.8);
-            transform: scale(0.8);
-            transition: transform 0.4s var(--easing);
-        }
-
-        .lightbox.active img {
-            transform: scale(1);
-        }
-
-        .close-lb {
-            position: absolute;
-            top: 30px;
-            right: 30px;
-            color: #fff;
-            font-size: 2rem;
-            cursor: pointer;
-            transition: transform 0.3s;
-        }
-        .close-lb:hover { transform: rotate(90deg); }
-
-        footer {
-            padding: 40px;
-            text-align: center;
-            font-size: 0.8rem;
-            color: #555;
-            border-top: 1px solid #1a1a1a;
-        }
-
     </style>
 </head>
 <body>
 
-    <div class="nav-wrapper">
-        <nav>
-            <img class="pfp" src="https://i.postimg.cc/3R2hbWZx/20251029-143504560-i-OS-1.jpg" alt="Profile">
-            
-            <div class="nav-links" id="navLinks">
-                <a href="#hero" class="active">Home</a>
-                <a href="#about">Philosophy</a>
-                <a href="#portfolio">Work</a>
-                <a href="#gear">Arsenal</a>
-                <a href="#contact">Contact</a>
-                <a href="#buy" style="color: var(--accent-color);">Store</a>
-            </div>
+    <div id="page-wrapper">
+        <div class="app-bg"></div>
+        <div class="bg-text-container">
+            <div class="bg-moving-text" id="scrollText">TACK&TAIL</div>
+        </div>
 
-            <div class="mobile-toggle" id="menuBtn">
-                &#9776;
+        <header>
+            <a href="#" class="logo">TACK & TAIL</a>
+            <div style="font-size: 0.7rem; font-weight: 600; letter-spacing: 2px; opacity: 0.5;">PREMIUM BOUTIQUE</div>
+        </header>
+
+        <div class="hero">
+            <div class="hero-card">
+                <img src="https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?q=80&w=2000" class="hero-img">
+                <div class="hero-overlay">
+                    <p style="letter-spacing: 5px; opacity: 0.8;">JOOSTENBERGVLAKTE</p>
+                    <h1>Equestrian<br>Elegance.</h1>
+                </div>
             </div>
-        </nav>
+        </div>
+
+        <section id="about">
+            <div class="glass-card reveal">
+                <h2 style="font-family: 'Cormorant Garamond', serif; font-size: 3rem; margin-bottom: 20px;">The Boutique</h2>
+                <p style="font-size: 1.1rem; line-height: 1.8; opacity: 0.7;">
+                    <ul>
+					<li>Tack and Horse Feed Supplier
+					<li>We sell second hand and new tack
+					<li>We stock equestrian clothing
+					<li>Have a variety of Supplements
+					<li>Basic vet supplies
+					</ul>
+                </p>
+            </div>
+        </section>
+
+        <section id="info">
+            <div class="glass-card reveal">
+                <div class="info-grid">
+                    <div>
+                        <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 2rem; margin-bottom: 10px;">Visit Us</h3>
+                        <p style="opacity: 0.7; font-size: 0.9rem;">20 Kiewiet Street,<br>Joostenbergvlakte, 7570</p>
+                        
+                        <div class="social-links">
+                            <a href="https://instagram.com/tackandtail" target="_blank"><i class="fab fa-instagram"></i></a>
+                            <a href="https://facebook.com/tackandtail" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 2rem; margin-bottom: 10px;">Reach Out</h3>
+                        <p style="opacity: 0.7; font-size: 0.9rem;"><strong>Phone:</strong> 066 266 1424</p>
+                        <p style="opacity: 0.7; font-size: 0.9rem;"><strong>Email:</strong> tackandtail@gmail.com</p>
+                    </div>
+                </div>
+                <div class="map-box">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3314.542!2d18.789!3d-33.829!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzPCsDQ5JzQ0LjQiUyAxOMKwNDcnMjAuNCJF!5e0!3m2!1sen!2sza!4v1710000000000!5m2!1sen!2sza" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                </div>
+                <p style="text-align: center; margin-top: 40px; opacity: 0.3; font-size: 0.7rem; letter-spacing: 1px;">&copy; 2024 TACK AND TAIL</p>
+            </div>
+        </section>
     </div>
 
-    <section id="hero">
-        <div class="orb orb-1"></div>
-        <div class="orb orb-2"></div>
-        
-        <div class="hero-content">
-            <h1 class="flow-text">Igor Rix</h1>
-            <p>Capturing the adrenaline of motorsports and the silence of nature.</p>
-        </div>
+    <a href="https://wa.me/27662661424" class="wa-float"><i class="fab fa-whatsapp"></i></a>
 
-        <div class="scroll-pill"></div>
-    </section>
-
-    <section id="about">
-        <h2 class="fade-up flow-text">The Philosophy</h2>
-        <br>
-        <p class="reveal-text" id="revealText">
-            Photography is not about the camera. It is about freezing a split second of time that will never happen again. From the roar of an engine on the track to the quiet gaze of a predator in the bush, I strive to tell stories without words.
-        </p>
-        
-        <div class="social-row fade-up">
-            <a href="https://www.instagram.com/_ir.photo_?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" class="social-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" viewBox="0 0 24 24"><path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5A4.25 4.25 0 0 0 16.25 3.5h-8.5ZM12 7a5 5 0 1 1 0 10a5 5 0 0 1 0-10Zm0 1.5a3.5 3.5 0 1 0 0 7a3.5 3.5 0 0 0 0-7Zm4.75-.88a.88.88 0 1 1 0 1.75a.88.88 0 0 1 0-1.75Z"/></svg>
-            </a>
-            <a href="https://www.tiktok.com/@_ir.photo_?is_from_webapp=1&sender_device=pc" target="_blank" class="social-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" viewBox="0 0 24 24"><path d="M12.999 2c.169 3.83 2.025 6.019 5.356 6.248V10.8a8.47 8.47 0 0 1-4.353-1.19v6.413c0 7.623-8.241 9.23-11.094 3.323a5.568 5.568 0 0 1 5.473-8.173v2.889c-.306.027-.612.084-.913.176c-1.902.585-2.385 2.939-1.265 4.282c1.205 1.445 3.786 1.034 4.186-1.069c.07-.355.1-.727.1-1.135V2h2.51Z"/></svg>
-            </a>
-        </div>
-    </section>
-
-    <section id="portfolio">
-        <h2 class="section-header flow-text fade-up">Selected Works</h2>
-        <div class="gallery-wrapper">
-            
-            <div class="card-container fade-up">
-                <div class="card">
-                    <img src="https://i.postimg.cc/htwh57ZV/IR-0723.jpg" alt="Work 1">
-                    <div class="card-overlay"><h3>Wildlife Portraiture</h3></div>
-                </div>
-            </div>
-
-            <div class="card-container fade-up">
-                <div class="card">
-                    <img src="https://i.postimg.cc/m2mP7nYb/1-IMG-0323.jpg" alt="Work 2">
-                </div>
-            </div>
-
-            <div class="card-container fade-up">
-                <div class="card">
-                    <img src="https://i.postimg.cc/XYhXzy1k/IR-1342.jpg" alt="Work 3">
-                </div>
-            </div>
-
-            <div class="card-container fade-up">
-                <div class="card">
-                    <img src="https://i.postimg.cc/BnytV17D/IR-1478.jpg" alt="Work 4">
-                </div>
-            </div>
-            
-            <div class="card-container fade-up">
-                <div class="card">
-                    <img src="https://i.postimg.cc/MpXv5Y5Q/2-IR-1179.jpg" alt="Work 5">
-                </div>
-            </div>
-
-            <div class="card-container fade-up">
-                <div class="card">
-                    <img src="https://i.postimg.cc/g25rT6tr/2-IMG-0884.jpg" alt="Work 6">
-                </div>
-            </div>
-
-            <div class="card-container fade-up">
-                <div class="card">
-                    <img src="https://i.postimg.cc/dQGhN0Q6/1_IR_2367.jpg" alt="Work 7">
-                </div>
-            </div>
-
-            <div class="card-container fade-up">
-                <div class="card">
-                    <img src="https://i.postimg.cc/CMbRrKM6/2_IR_2160.jpg" alt="Work 8">
-                </div>
-            </div>
-
-        </div>
-    </section>
-
-    <section id="gear">
-        <h2 class="fade-up flow-text">The Arsenal</h2>
-        <div class="gear-grid">
-            
-            <div class="gear-card fade-up">
-                <a href="https://www.sony.com/za/interchangeable-lens-cameras/products/ilce-6400" target="_blank">
-                    <img src="https://i.postimg.cc/4xhJQGfN/sony-a6400.webp" alt="Sony a6400">
-                    <h3>Sony a6400 Body</h3>
-                </a>
-            </div>
-
-            <div class="gear-card fade-up">
-                <a href="https://www.sony.com/za/electronics/interchangeable-lenses/selp16502" target="_blank">
-                    <img src="https://i.postimg.cc/13CySzvC/16-50.png" alt="Lens">
-                    <h3>E PZ 16-50mm F3.5-5.6</h3>
-                </a>
-            </div>
-
-            <div class="gear-card fade-up">
-                <a href="https://www.tamron.com/global/consumer/lenses/a047/photo.html" target="_blank">
-                    <img src="https://i.postimg.cc/zvck5KRS/tamron.png" alt="Lens">
-                    <h3>Tamron 70-300mm RXD</h3>
-                </a>
-            </div>
-
-        </div>
-    </section>
-
-    <section id="contact">
-        <h2 class="fade-up flow-text">Collaborate</h2>
-        <p style="color: #888; margin-bottom: 40px;" class="fade-up">Book a private shoot, event coverage, or print commission.</p>
-        
-        <div class="contact-container fade-up">
-            <form id="whatsappForm">
-                <div class="form-group">
-                    <input type="text" name="name" placeholder="Name" required>
-                </div>
-                <div class="form-group">
-                    <input type="email" name="email" placeholder="Email Address" required>
-                </div>
-                <div class="form-group">
-                    <textarea name="message" rows="5" placeholder="Tell me about your vision..." required></textarea>
-                </div>
-                <button type="submit" id="whatsappBtn" class="magnetic-btn">Initiate via WhatsApp</button>
-            </form>
-        </div>
-    </section>
-
-    <section id="buy">
-        <h2 class="flow-text" style="margin-bottom: 30px;">Own a Print</h2>
-        <a href="https://photofrog.co.za/sellers/igorrix" target="_blank" class="buy-link fade-up">
-            Browse Gallery Store
-        </a>
-    </section>
-
-    <footer>
-        &copy; 2025 Igor Rix Photography. Designed with Precision.
-    </footer>
-
-    <div class="lightbox" id="lightbox">
-        <div class="close-lb">&times;</div>
-        <img src="" alt="Expanded View">
-    </div>
+    <nav>
+        <a onclick="navigateInternal('#about')">About</a>
+        <a onclick="toShop()">Shop</a>
+        <a onclick="navigateInternal('#info')">Info</a>
+    </nav>
 
     <script>
-        // 1. SCROLL OBSERVER (Animations on Scroll)
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: "0px 0px -50px 0px"
-        };
+        const lenis = new Lenis();
+        function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+        requestAnimationFrame(raf);
 
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
+        gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const hash = window.location.hash;
+            gsap.to("#page-wrapper", {
+                scale: 1, opacity: 1, filter: "blur(0px)", borderRadius: "0px", duration: 1.2, ease: "expo.out",
+                onComplete: () => {
+                    if (hash) gsap.to(window, { duration: 1, scrollTo: { y: hash, autoKill: false }, ease: "power3.inOut" });
                 }
             });
-        }, observerOptions);
+        });
 
-        document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+        function navigateInternal(target) {
+            const tl = gsap.timeline();
+            tl.to("#page-wrapper", { scale: 0.94, borderRadius: "40px", duration: 0.5, ease: "power2.inOut" })
+            .to(window, { duration: 1.2, scrollTo: { y: target, autoKill: false }, ease: "expo.inOut" }, "-=0.2")
+            .to("#page-wrapper", { scale: 1, borderRadius: "0px", duration: 0.5, ease: "power2.out" });
+        }
 
-        // 2. TEXT REVEAL EFFECT (Word by Word Opacity)
-        const textElement = document.getElementById('revealText');
-        if(textElement) {
-            const words = textElement.innerText.split(' ');
-            textElement.innerHTML = '';
-            words.forEach(word => {
-                const span = document.createElement('span');
-                span.textContent = word + ' ';
-                textElement.appendChild(span);
-            });
-
-            window.addEventListener('scroll', () => {
-                const spans = textElement.querySelectorAll('span');
-                const scrollPos = window.scrollY;
-                const sectionTop = document.getElementById('about').offsetTop;
-                const sectionHeight = document.getElementById('about').offsetHeight;
-                
-                // Calculate percentage through the section
-                let percentage = (scrollPos - sectionTop + 300) / (sectionHeight);
-                
-                let activeCount = Math.floor(percentage * spans.length);
-                
-                spans.forEach((span, index) => {
-                    if (index < activeCount) {
-                        span.classList.add('active');
-                    } else {
-                        span.classList.remove('active');
-                    }
-                });
+        function toShop() {
+            gsap.to("#page-wrapper", {
+                scale: 0.8, opacity: 0, filter: "blur(20px)", duration: 0.8, ease: "power2.in",
+                onComplete: () => { window.location.href = "shop.html"; }
             });
         }
 
-        // 3. MAGNETIC BUTTONS
-        const btns = document.querySelectorAll('.magnetic-btn');
-        btns.forEach(btn => {
-            btn.addEventListener('mousemove', function(e) {
-                const pos = btn.getBoundingClientRect();
-                const x = e.clientX - pos.left - pos.width / 2;
-                const y = e.clientY - pos.top - pos.height / 2;
-                
-                btn.style.transform = `translate(${x * 0.3}px, ${y * 0.3}px)`;
-            });
-
-            btn.addEventListener('mouseleave', function() {
-                btn.style.transform = 'translate(0px, 0px)';
-            });
+        gsap.to("#scrollText", {
+            x: -800, 
+            scrollTrigger: {
+                trigger: "body",
+                start: "top top",
+                end: "bottom bottom",
+                scrub: 1.5
+            }
         });
 
-        // 4. MOBILE MENU TOGGLE
-        const menuBtn = document.getElementById('menuBtn');
-        const navLinks = document.getElementById('navLinks');
-        
-        menuBtn.addEventListener('click', () => {
-            navLinks.classList.toggle('open');
-            // Animate hamburger to X (simple implementation)
-            menuBtn.innerHTML = navLinks.classList.contains('open') ? '&times;' : '&#9776;';
-        });
-
-        // 5. LIGHTBOX LOGIC
-        const lightbox = document.getElementById('lightbox');
-        const lbImg = lightbox.querySelector('img');
-        const closeLb = lightbox.querySelector('.close-lb');
-        const cards = document.querySelectorAll('.card img');
-
-        cards.forEach(img => {
-            img.addEventListener('click', () => {
-                lbImg.src = img.src;
-                lightbox.classList.add('active');
-                document.body.style.overflow = 'hidden'; // Stop scrolling
+        gsap.utils.toArray('.reveal').forEach(card => {
+            gsap.from(card, {
+                scrollTrigger: { trigger: card, start: "top 90%" },
+                y: 80, opacity: 0, duration: 1.2, ease: "power4.out"
             });
         });
-
-        const closeLightbox = () => {
-            lightbox.classList.remove('active');
-            document.body.style.overflow = 'auto';
-        }
-
-        closeLb.addEventListener('click', closeLightbox);
-        lightbox.addEventListener('click', (e) => {
-            if(e.target === lightbox) closeLightbox();
-        });
-
-        // 6. WHATSAPP FORM LOGIC (Preserved)
-        const form = document.getElementById("whatsappForm");
-        const button = document.getElementById("whatsappBtn");
-
-        form.addEventListener("submit", (e) => {
-            e.preventDefault();
-            const name = form.name.value.trim();
-            const email = form.email.value.trim();
-            const message = form.message.value.trim();
-            const phoneNumber = "27619280584";
-
-            const text = `Hi Igor, I’d like to book a private shoot.\n\nName: ${name}\nEmail: ${email}\n\nMessage:\n${message}`;
-            const encoded = encodeURIComponent(text);
-            const url = `https://wa.me/${phoneNumber}?text=${encoded}`;
-
-            button.classList.add("success");
-            button.textContent = "Opening WhatsApp...";
-
-            window.open(url, "_blank");
-
-            setTimeout(() => {
-                button.classList.remove("success");
-                button.textContent = "Initiate via WhatsApp";
-                form.reset();
-            }, 3000);
-        });
-
     </script>
 </body>
 </html>
