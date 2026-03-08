@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Shop | Tack and Tail</title>
     
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -96,6 +96,26 @@
         .product-info { padding: 15px; }
         .product-info h3 { font-size: 0.85rem; margin-bottom: 5px; font-weight: 600; }
         .product-info p { font-size: 0.75rem; color: var(--accent); font-weight: 600; }
+		
+		html, body {
+    /* Prevents the 'diagonal' pull */
+    overflow-x: hidden; 
+    /* Ensures the body is the same color as the app so if it leaks, it matches */
+    background: var(--bg); 
+    /* Fixes height issues on mobile Safari */
+    height: -webkit-fill-available;
+    position: relative;
+    width: 100%;
+}
+
+#page-wrapper {
+    /* ... keep your existing styles, but add these: */
+    width: 100vw;
+    overflow-x: hidden;
+    position: relative;
+    /* This stops the 'sliding' behavior on mobile */
+    touch-action: pan-y; 
+}
     </style>
 </head>
 <body>
