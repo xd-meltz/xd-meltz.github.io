@@ -2,19 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Collection | Tack and Tail</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Shop | Tack and Tail</title>
     
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;600&family=Montserrat:wght@100;400;600&display=swap" rel="stylesheet">
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <script src="https://unpkg.com/@studio-freight/lenis@1.0.33/dist/lenis.min.js"></script>
 
     <style>
         :root {
-            --ios-glass: rgba(255, 255, 255, 0.7);
-            --ios-blur: blur(30px);
+            --ios-glass: rgba(255, 255, 255, 0.75);
+            --ios-blur: blur(25px);
             --primary: #1b3022;
             --accent: #c5a059;
             --bg: #f2f2f7;
@@ -22,185 +23,124 @@
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
         
-        body { 
-            background: #000; 
-            font-family: 'Montserrat', sans-serif; 
-            overflow-x: hidden; 
-            color: var(--primary); 
+        body { background: #000; font-family: 'Montserrat', sans-serif; overflow-x: hidden; color: var(--primary); }
+
+        #page-wrapper {
+            width: 100%; min-height: 100vh; transform-origin: center center;
+            position: relative; z-index: 1; transform: scale(0.85);
+            opacity: 0; filter: blur(15px); border-radius: 40px;
         }
 
-        /* --- Page Wrapper (Matches Home) --- */
-        #page-wrapper {
-            background: var(--bg);
-            width: 100%;
-            min-height: 100vh;
-            transform-origin: center center;
-            position: relative;
-            z-index: 1;
-            /* Initial state for the Entrance Animation */
-            transform: scale(0.9);
-            opacity: 0;
-            border-radius: 40px;
+        .app-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: -2; }
+
+        .bg-text-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; }
+        .bg-moving-text {
+            position: sticky; top: 50%; transform: translateY(-50%); display: block;
+            font-size: 25vw; font-weight: 900; color: rgba(27, 48, 34, 0.06); 
+            white-space: nowrap; text-transform: uppercase; text-align: center;
         }
 
         header {
             position: fixed; top: 0; left: 0; width: 100%;
-            padding: 20px 5%; display: flex; justify-content: space-between;
+            padding: 15px 5%; display: flex; justify-content: space-between;
             align-items: center; z-index: 1000;
             background: linear-gradient(to bottom, rgba(242,242,247,0.8), transparent);
             backdrop-filter: blur(10px);
         }
-        .logo { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 600; letter-spacing: 2px; text-decoration: none; color: var(--primary); }
-        
-        /* --- Bottom Navbar --- */
-        nav {
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            width: 90%; max-width: 450px; padding: 12px 30px;
-            background: var(--ios-glass); backdrop-filter: var(--ios-blur);
-            border-radius: 40px; border: 1px solid rgba(255,255,255,0.3);
-            display: flex; justify-content: space-around; align-items: center;
-            z-index: 1000; box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-        }
-        nav a { cursor: pointer; text-decoration: none; color: var(--primary); font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        .logo { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 600; text-decoration: none; color: var(--primary); letter-spacing: 2px; }
 
-        .shop-hero { padding: 160px 10% 40px; text-align: center; }
-        .shop-hero h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(3rem, 6vw, 4.5rem); margin-bottom: 10px; }
-        .shop-hero p { letter-spacing: 2px; text-transform: uppercase; font-size: 0.8rem; opacity: 0.6; }
+        /* Back Button - Positioned to look like an app 'Back' action */
+        .back-btn {
+            position: fixed; top: 75px; left: 20px; background: white;
+            width: 45px; height: 45px; border-radius: 50%; display: flex;
+            align-items: center; justify-content: center; z-index: 1001;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1); cursor: pointer;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
 
-        .category-nav {
-            display: flex; justify-content: center; gap: 15px; margin-bottom: 50px; flex-wrap: wrap;
+        /* Category Bar (The 'Pills') */
+        .category-bar {
+            padding: 135px 5% 10px; /* Adjusted for back button space */
+            display: flex; gap: 10px;
+            overflow-x: auto;
+            scrollbar-width: none;
         }
-        .cat-btn {
-            padding: 10px 25px; border-radius: 25px; border: 1px solid rgba(0,0,0,0.05);
-            background: white; cursor: pointer; font-size: 0.75rem; font-weight: 600;
-            transition: 0.3s ease; text-transform: uppercase; letter-spacing: 1px; color: var(--primary);
+        .category-bar::-webkit-scrollbar { display: none; }
+        .cat-chip {
+            padding: 10px 22px; background: white; border-radius: 25px;
+            font-size: 0.75rem; font-weight: 600; white-space: nowrap;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.04); cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
         }
-        .cat-btn.active, .cat-btn:hover { background: var(--primary); color: white; }
+        .cat-chip.active { 
+            background: var(--primary); 
+            color: white; 
+            transform: scale(1.05);
+        }
 
-        .shop-section { padding: 0 10% 80px; }
-        .grid-title { 
-            font-family: 'Cormorant Garamond', serif; font-size: 2.2rem; margin-bottom: 30px; 
-            display: flex; align-items: center; gap: 20px;
-        }
-        .grid-title::after { content: ""; flex: 1; height: 1px; background: rgba(0,0,0,0.1); }
-        
+        /* Shop Grid */
+        .shop-container { padding: 20px 5% 50px; }
         .product-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 40px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
         }
+        @media (min-width: 768px) { .product-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 30px; } }
 
-        .product-card { position: relative; }
-        .img-container {
-            width: 100%; aspect-ratio: 4/5; border-radius: 24px; overflow: hidden; 
-            background: #e5e5ea; margin-bottom: 20px; position: relative;
+        .product-card {
+            background: white; border-radius: 25px; overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.03); 
         }
-        .img-container img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.8s ease; }
-        .img-overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(27, 48, 34, 0.2); display: flex; align-items: center; justify-content: center;
-            opacity: 0; transition: 0.4s;
-        }
-        .product-card:hover .img-overlay { opacity: 1; }
-        .product-card:hover img { transform: scale(1.05); }
-
-        .price { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 600; color: var(--primary); display: block; margin-bottom: 12px; }
-        .enquire-link {
-            font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;
-            color: var(--accent); text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
-        }
-
-        .wa-float {
-            position: fixed; top: 80px; right: 40px; background: white; width: 50px; height: 50px;
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1); text-decoration: none; color: #25D366; font-size: 1.5rem; z-index: 1001;
-        }
-
-        /* Minimal Footer for Shop */
-        footer { padding: 100px 10%; text-align: center; opacity: 0.3; font-size: 0.7rem; }
+        .product-img { width: 100%; aspect-ratio: 1/1; object-fit: cover; background: #eee; }
+        .product-info { padding: 15px; }
+        .product-info h3 { font-size: 0.85rem; margin-bottom: 5px; font-weight: 600; }
+        .product-info p { font-size: 0.75rem; color: var(--accent); font-weight: 600; }
     </style>
 </head>
 <body>
 
     <div id="page-wrapper">
+        <div class="app-bg"></div>
+        <div class="bg-text-container">
+            <div class="bg-moving-text" id="scrollText">THE SHOP</div>
+        </div>
+
         <header>
             <a href="index.html" class="logo">TACK & TAIL</a>
-            <div style="font-size: 0.7rem; font-weight: 600; letter-spacing: 2px; opacity: 0.5;">IN-STORE CATALOG</div>
         </header>
 
-        <div class="shop-hero">
-            <p>Curated Selection</p>
-            <h1>The Inventory.</h1>
+        <div class="back-btn" onclick="goHome()">
+            <i class="fas fa-chevron-left"></i>
         </div>
 
-        <div class="category-nav">
-            <button class="cat-btn active" onclick="filterCat('all')">View All</button>
-            <button class="cat-btn" onclick="filterCat('feed')">Premium Feed</button>
-            <button class="cat-btn" onclick="filterCat('tack')">Tack & Gear</button>
-            <button class="cat-btn" onclick="filterCat('apparel')">Rider Apparel</button>
+        <div class="category-bar">
+            <div class="cat-chip active" onclick="filterCategory(this, 'all')">All Items</div>
+            <div class="cat-chip" onclick="filterCategory(this, 'tack')">Tack</div>
+            <div class="cat-chip" onclick="filterCategory(this, 'feed')">Feed</div>
+            <div class="cat-chip" onclick="filterCategory(this, 'apparel')">Apparel</div>
+            <div class="cat-chip" onclick="filterCategory(this, 'vet')">Vet Supplies</div>
         </div>
 
-        <section class="shop-section reveal" id="feed-section">
-            <h2 class="grid-title">Premium Feed</h2>
+        <section class="shop-container">
             <div class="product-grid">
-                <div class="product-card">
-                    <div class="img-container">
-                        <img src="https://images.unsplash.com/photo-1594142461623-2895f87f48e9?q=80&w=800">
-                        <div class="img-overlay"><span style="color:white; font-size: 0.7rem; letter-spacing: 2px;">IN STOCK</span></div>
-                    </div>
+                <div class="product-card reveal" data-category="tack">
+                    <img src="https://images.unsplash.com/photo-1601989391033-5b9a7d35b5b2?q=80&w=500" class="product-img">
                     <div class="product-info">
-                        <h3>Performance Mix 20kg</h3>
-                        <span class="price">R 450.00</span>
-                        <a href="https://wa.me/27662661424?text=Checking stock for Performance Mix" class="enquire-link">Enquire <i class="fas fa-arrow-right"></i></a>
+                        <h3>Leather Saddle</h3>
+                        <p>R 4,200.00</p>
+                    </div>
+                </div>
+                <div class="product-card reveal" data-category="apparel">
+                    <img src="https://images.unsplash.com/photo-1534430480872-3498386e7856?q=80&w=500" class="product-img">
+                    <div class="product-info">
+                        <h3>Riding Boots</h3>
+                        <p>R 1,200.00</p>
                     </div>
                 </div>
             </div>
         </section>
-
-        <section class="shop-section reveal" id="tack-section">
-            <h2 class="grid-title">Tack & Gear</h2>
-            <div class="product-grid">
-                <div class="product-card">
-                    <div class="img-container">
-                        <img src="https://images.unsplash.com/photo-1598970434795-0c54fe7c0648?q=80&w=800">
-                        <div class="img-overlay"><span style="color:white; font-size: 0.7rem; letter-spacing: 2px;">PRE-OWNED</span></div>
-                    </div>
-                    <div class="product-info">
-                        <h3>Leather Jump Saddle</h3>
-                        <span class="price">R 12,500.00</span>
-                        <a href="https://wa.me/27662661424?text=Enquiring about the Jump Saddle" class="enquire-link">Enquire <i class="fas fa-arrow-right"></i></a>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="shop-section reveal" id="apparel-section">
-            <h2 class="grid-title">Rider Apparel</h2>
-            <div class="product-grid">
-                <div class="product-card">
-                    <div class="img-container">
-                        <img src="https://images.unsplash.com/photo-1601342898711-8f537024f2b9?q=80&w=800">
-                        <div class="img-overlay"><span style="color:white; font-size: 0.7rem; letter-spacing: 2px;">NEW</span></div>
-                    </div>
-                    <div class="product-info">
-                        <h3>Technical Riding Boots</h3>
-                        <span class="price">R 2,200.00</span>
-                        <a href="https://wa.me/27662661424?text=Boots size inquiry" class="enquire-link">Enquire <i class="fas fa-arrow-right"></i></a>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <footer>
-            <p>&copy; 2024 Tack and Tail Boutique. All Rights Reserved.</p>
-        </footer>
     </div>
-
-    <a href="https://wa.me/27662661424" class="wa-float"><i class="fab fa-whatsapp"></i></a>
-
-    <nav>
-        <a onclick="exitTo('index.html', '#about')">About</a>
-        <a href="shop.html" style="color: var(--accent);">Shop</a>
-        <a onclick="exitTo('index.html', '#info')">Info</a>
-    </nav>
 
     <script>
         const lenis = new Lenis();
@@ -209,47 +149,41 @@
 
         gsap.registerPlugin(ScrollTrigger);
 
-        // --- ENTRANCE ANIMATION ---
-        window.addEventListener('load', () => {
-            gsap.to("#page-wrapper", {
-                scale: 1,
-                opacity: 1,
-                borderRadius: "0px",
-                duration: 1,
-                ease: "expo.out"
-            });
-        });
+        // --- Category Filter Logic ---
+        function filterCategory(element, category) {
+            // Remove active class from all chips
+            document.querySelectorAll('.cat-chip').forEach(chip => chip.classList.remove('active'));
+            // Add active class to clicked chip
+            element.classList.add('active');
 
-        // --- EXIT TRANSITION ---
-        function exitTo(url, target) {
-            gsap.to("#page-wrapper", {
-                scale: 0.8,
-                opacity: 0,
-                filter: "blur(10px)",
-                duration: 0.8,
-                ease: "power2.in",
-                onComplete: () => {
-                    window.location.href = url + target;
+            // Logic for filtering items (can be expanded based on your data-category attributes)
+            const products = document.querySelectorAll('.product-card');
+            products.forEach(product => {
+                if (category === 'all' || product.getAttribute('data-category') === category) {
+                    gsap.to(product, { opacity: 1, scale: 1, duration: 0.3, display: "block" });
+                } else {
+                    gsap.to(product, { opacity: 0, scale: 0.9, duration: 0.3, display: "none" });
                 }
             });
         }
 
-        // --- FILTER LOGIC ---
-        function filterCat(category) {
-            document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-            const sections = { feed: document.getElementById('feed-section'), tack: document.getElementById('tack-section'), apparel: document.getElementById('apparel-section') };
-            if(category === 'all') { Object.values(sections).forEach(s => s.style.display = 'block'); }
-            else { Object.values(sections).forEach(s => s.style.display = 'none'); sections[category].style.display = 'block'; }
-            ScrollTrigger.refresh();
+        // --- Animations ---
+        window.addEventListener('DOMContentLoaded', () => {
+            gsap.to("#page-wrapper", {
+                scale: 1, opacity: 1, filter: "blur(0px)", borderRadius: "0px", duration: 1.2, ease: "expo.out"
+            });
+        });
+
+        function goHome() {
+            gsap.to("#page-wrapper", {
+                scale: 0.8, opacity: 0, filter: "blur(20px)", duration: 0.8, ease: "power2.in",
+                onComplete: () => { window.location.href = "index.html"; }
+            });
         }
 
-        // Section Reveals
-        gsap.utils.toArray('.reveal').forEach(section => {
-            gsap.from(section, {
-                scrollTrigger: { trigger: section, start: "top 90%" },
-                y: 30, opacity: 0, duration: 1, ease: "power2.out"
-            });
+        gsap.to("#scrollText", {
+            x: -500,
+            scrollTrigger: { trigger: "body", start: "top top", end: "bottom bottom", scrub: 1.5 }
         });
     </script>
 </body>
