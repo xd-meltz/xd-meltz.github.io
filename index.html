@@ -148,7 +148,7 @@
             z-index: 2;
             margin-bottom: 40px;
             width: 100%;
-            overflow: hidden; /* Prevents text bounds from leaking into viewport width */
+            overflow: hidden;
         }
 
         .hero-content h1 {
@@ -158,7 +158,7 @@
             line-height: 1.1;
             margin-bottom: 25px;
             text-transform: uppercase;
-            min-height: 2.2em; /* Prevents content layout shifts while letters change */
+            min-height: 2.2em;
             display: block;
         }
 
@@ -209,7 +209,7 @@
             white-space: nowrap;
             scrollbar-width: none;
             padding: 5px 0;
-            -webkit-overflow-scrolling: touch; /* High smoothness for iOS scroll views */
+            -webkit-overflow-scrolling: touch;
         }
 
         .model-tabs::-webkit-scrollbar { display: none; }
@@ -298,7 +298,7 @@
             border: 1px solid rgba(255, 255, 255, 0.04);
             border-radius: 20px;
             transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            will-change: transform, border-color; /* Promotes layer directly to GPU hardware acceleration */
+            will-change: transform, border-color;
         }
 
         .stat-block:hover {
@@ -316,7 +316,7 @@
             background: linear-gradient(45deg, #ffffff, #a5a5a5);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            font-variant-numeric: tabular-nums; /* Lock width size of changing digits to prevent line jittering */
+            font-variant-numeric: tabular-nums;
         }
 
         .stat-label {
@@ -698,7 +698,6 @@
 
             #models, #purchase, #gallery { padding: 60px 30px; }
             
-            /* Enhanced alignments for Mobile viewports */
             .controls-row { 
                 flex-direction: row; 
                 justify-content: space-between;
@@ -717,7 +716,14 @@
 
             .model-showcase { grid-template-columns: 1fr; gap: 40px; }
             .model-image-wrapper { height: 400px; }
-            .features-grid { grid-column: span 1; }
+            
+            /* Retain 2x2 structure on tablet portrait views */
+            .features-grid { 
+                grid-column: span 1; 
+                grid-template-columns: repeat(2, 1fr) !important; 
+                gap: 15px;
+            }
+            
             .specs-grid-layout { grid-template-columns: 1fr; }
             .stats-grid { position: static; }
             .purchase-container { padding: 40px 20px; border-radius: 24px; }
@@ -737,7 +743,6 @@
             #hero { padding: 40px 20px 80px 20px; }
             #models, #purchase, #gallery { padding: 50px 20px; }
             
-            /* Lock the control parameters nicely on tight device views */
             .controls-row {
                 flex-direction: column;
                 align-items: stretch;
@@ -755,7 +760,27 @@
             .model-image-wrapper { height: 280px; border-radius: 16px; }
             .stats-grid { grid-template-columns: 1fr; gap: 15px; }
             .stat-block { padding: 25px 20px; border-radius: 16px; }
-            .features-grid { grid-template-columns: 1fr; }
+            
+            /* Force exact 2x2 matrix on small smartphone screens */
+            .features-grid { 
+                grid-template-columns: repeat(2, 1fr) !important; 
+                gap: 12px;
+            }
+            .feature-img-box {
+                height: 110px; /* Tightened height to optimize space gracefully inside the columns */
+            }
+            .feature-info {
+                padding: 12px;
+            }
+            .feature-info h4 {
+                font-size: 0.8rem;
+                letter-spacing: 0.5px;
+            }
+            .feature-info p {
+                font-size: 0.7rem;
+                line-height: 1.4;
+            }
+
             .gallery-grid { grid-template-columns: 1fr; }
             .gallery-item { height: 220px; border-radius: 14px; }
         }
@@ -1159,7 +1184,6 @@
             }
         }
 
-        // New Hardware Accelerated Slower Counting Engine (1.2 Seconds Total Duration)
         function animateStatsCounters(modelKey) {
             const duration = 1200; 
             const startTime = performance.now();
@@ -1175,8 +1199,6 @@
             function update(currentTime) {
                 const elapsed = currentTime - startTime;
                 const progress = Math.min(elapsed / duration, 1);
-
-                // Quad Out Easing function for smoother trailing deceleration
                 const easeProgress = progress * (2 - progress);
 
                 targets.forEach(target => {
@@ -1265,7 +1287,7 @@
             const subject = encodeURIComponent(`Dune Bikes Allocation Inquiry: ${selectedBike}`);
             const body = encodeURIComponent(`Hello Dune Team,\n\nI am interested in exploring a custom build window for the ${selectedBike}.\n\nPlease contact me with additional ordering parameters, build schedules, and pricing options.\n\nBest regards,`);
             
-            window.location.href = `mailto:${businessEmail}?subject=${subject}&body=${body}`;
+            window.location.href = `mailto:${businessEmail}?subject=${subject}?body=${body}`;
         }
 
         const words = ["Shift the Landscape", "Pure Electric Power", "Rule the Terrain"];
@@ -1303,11 +1325,12 @@
         document.addEventListener("DOMContentLoaded", function() {
             typingEffect();
 
-            // Slower numbers kick off on scroll arrival via intersection observer
+            // Mobile Scroll Fixed Observer Parameters
             const scrollSectionTarget = document.getElementById('models');
             const scrollObserverOptions = {
                 root: null,
-                threshold: 0.1
+                rootMargin: "0px 0px -5% 0px", // Triggers slightly before section clears viewport baseline
+                threshold: 0.01 // Dropped to 1% to trigger instantly on directional boundaries
             };
 
             const scrollSectionObserver = new IntersectionObserver((entries) => {
