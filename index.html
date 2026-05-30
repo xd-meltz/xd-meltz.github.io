@@ -108,27 +108,49 @@
             text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
         }
 
+        /* --- DYNAMIC LUXURY HAMBURGER MENU --- */
         .menu-toggle {
             display: none;
             flex-direction: column;
-            gap: 6px;
+            justify-content: center;
+            align-items: center;
+            width: 44px;
+            height: 44px;
             cursor: pointer;
-            z-index: 1001;
+            z-index: 1050;
             padding: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .menu-toggle:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .menu-toggle .burger-icon {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            width: 20px;
+            position: relative;
         }
 
         .menu-toggle span {
             display: block;
-            width: 24px;
+            width: 100%;
             height: 2px;
             background-color: #ffffff;
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
             border-radius: 2px;
         }
 
-        .menu-toggle.active span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+        /* Fluid transformation to absolute perfectly center-aligned close cross */
+        .menu-toggle.active span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
         .menu-toggle.active span:nth-child(2) { opacity: 0; transform: scale(0); }
-        .menu-toggle.active span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+        .menu-toggle.active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
         /* --- HERO SECTION --- */
         #hero {
@@ -250,7 +272,6 @@
             cursor: pointer;
             transition: all 0.3s ease;
             flex-shrink: 0;
-            text-align: center;
         }
 
         .compare-trigger-btn:hover {
@@ -647,9 +668,9 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(4, 4, 6, 0.95);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
+            background: rgba(4, 4, 6, 0.96);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
             z-index: 2000;
             opacity: 0;
             pointer-events: none;
@@ -695,6 +716,7 @@
             justify-content: center;
             align-items: center;
             transition: all 0.3s ease;
+            z-index: 10;
         }
 
         .close-compare:hover {
@@ -706,7 +728,50 @@
             font-size: 2rem;
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
+        }
+
+        /* --- VISUAL VISUAL SPECS PREVIEW ROW --- */
+        .compare-preview-row {
+            display: grid;
+            grid-template-columns: 25% 37.5% 37.5%;
+            gap: 0;
+            margin-bottom: 25px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 25px;
+        }
+
+        .compare-preview-card {
+            background: #111115;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 16px;
+            overflow: hidden;
+            height: 180px;
+            margin: 0 10px;
+            position: relative;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+        }
+
+        .compare-preview-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center 15%;
+        }
+
+        .compare-preview-card .model-tag {
+            position: absolute;
+            bottom: 15px;
+            left: 15px;
+            background: rgba(6, 6, 8, 0.75);
+            backdrop-filter: blur(10px);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            border: 1px solid rgba(255,255,255,0.1);
         }
 
         .compare-table {
@@ -718,7 +783,6 @@
         .compare-table th, .compare-table td {
             padding: 18px 20px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            vertical-align: middle;
         }
 
         .compare-table th {
@@ -727,22 +791,6 @@
             letter-spacing: 2px;
             color: rgba(255, 255, 255, 0.4);
             font-weight: 600;
-        }
-
-        .compare-header-cell {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 12px;
-        }
-
-        .compare-thumb {
-            width: 90px;
-            height: 60px;
-            object-fit: cover;
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            background-color: #060608;
         }
 
         .compare-table tr:hover td { background: rgba(255, 255, 255, 0.02); }
@@ -880,33 +928,32 @@
                 transform: none;
                 width: 100%;
                 border-radius: 0;
-                border-top: none;
-                border-left: none;
-                border-right: none;
-                padding: 18px 25px; 
+                border: none;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+                padding: 16px 24px; 
             }
             .menu-toggle { display: flex; }
 
+            /* Modern Cinematic Full Screen Menu Overlay */
             .nav-links {
                 position: fixed;
-                top: 80px; 
+                top: 0; 
                 left: 0;
                 width: 100%;
-                height: calc(100vh - 80px);
-                background-color: rgba(6, 6, 8, 0.98);
-                backdrop-filter: blur(25px);
-                -webkit-backdrop-filter: blur(25px);
+                height: 100vh;
+                background-color: rgba(4, 4, 6, 0.98);
+                backdrop-filter: blur(30px);
+                -webkit-backdrop-filter: blur(30px);
                 flex-direction: column;
-                justify-content: flex-start;
+                justify-content: center;
                 align-items: center;
-                gap: 40px;
-                padding-top: 60px;
-                transform: translateY(-20px);
+                gap: 35px;
+                padding: 0;
+                transform: translateY(-100%);
                 opacity: 0;
                 visibility: hidden;
-                transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease, visibility 0.4s;
-                z-index: 999;
-                border-top: 1px solid rgba(255, 255, 255, 0.05);
+                transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease, visibility 0.5s;
+                z-index: 1000;
             }
 
             .nav-links.active { 
@@ -915,7 +962,22 @@
                 visibility: visible;
             }
             
-            .nav-links a { font-size: 1.4rem; letter-spacing: 3px; }
+            .nav-links a { 
+                font-size: 1.6rem; 
+                letter-spacing: 4px; 
+                opacity: 0;
+                transform: translateY(20px);
+                transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+            }
+
+            /* Complex active staggering link entry animation logic */
+            .nav-links.active a {
+                opacity: 0.8;
+                transform: translateY(0);
+            }
+            .nav-links.active li:nth-child(1) a { transition-delay: 0.2s; }
+            .nav-links.active li:nth-child(2) a { transition-delay: 0.3s; }
+            .nav-links.active li:nth-child(3) a { transition-delay: 0.4s; }
 
             #hero { 
                 padding: 60px 30px 100px 30px; 
@@ -958,7 +1020,10 @@
             .purchase-preview-viewport { height: 340px; order: -1; }
 
             .purchase-container { padding: 40px 20px; border-radius: 24px; }
-            .compare-container, .specs-modal-container { padding: 25px 15px; }
+            .compare-container, .specs-modal-container { padding: 30px 20px; }
+            .compare-preview-row { grid-template-columns: 1fr 1fr; gap: 15px; }
+            .compare-preview-label-dummy { display: none; }
+            .compare-preview-card { margin: 0; height: 140px; }
             .compare-table th, .compare-table td { padding: 12px 10px; font-size: 0.8rem; }
             .compare-val { font-size: 0.8rem; }
             .specs-grid-layout { grid-template-columns: 1fr; gap: 15px; }
@@ -981,7 +1046,7 @@
             
             .controls-row { flex-direction: column; align-items: stretch; gap: 12px; }
             .model-tabs { max-width: 100%; justify-content: flex-start; }
-            .compare-trigger-btn { width: 100%; padding: 14px 0; font-size: 0.8rem; text-align: center; margin-left: 0; }
+            .compare-trigger-btn { width: 100%; padding: 14px 0; font-size: 0.8rem; }
 
             .model-image-wrapper { height: 280px; border-radius: 16px; }
             .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
@@ -1005,6 +1070,8 @@
             .lightbox-content { max-width: 100%; }
             .close-lightbox { top: -45px; right: 10px; }
             .close-specs, .close-compare { top: 20px; right: 20px; width: 38px; height: 38px; }
+            .compare-preview-card { height: 100px; }
+            .compare-preview-card .model-tag { bottom: 8px; left: 8px; padding: 4px 10px; font-size: 0.65rem; }
         }
 
         @media (max-width: 480px) {
@@ -1022,9 +1089,11 @@
             <img src="transparent dune logo.png" alt="Dune Bikes Logo" style="height: 100%; width: auto; object-fit: contain;">
 	   </div>
         <div class="menu-toggle" id="mobile-menu-btn" onclick="toggleMenu()">
-            <span></span>
-            <span></span>
-            <span></span>
+            <div class="burger-icon">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
         </div>
         <ul class="nav-links" id="nav-menu">
             <li><a href="#hero" onclick="closeMenuOnly()">Home</a></li>
@@ -1051,7 +1120,7 @@
                 <button class="tab-btn active" onclick="switchModel('desert-storm', event)">TRAIL</button>
                 <button class="tab-btn" onclick="switchModel('sand-runner', event)">ROVER</button>
             </div>
-            <button class="compare-trigger-btn" onclick="toggleCompareModal(true)">Compare</button>
+            <button class="compare-trigger-btn" onclick="toggleCompareModal(true)">Compare Specs</button>
         </div>
 
         <div class="model-showcase">
@@ -1206,22 +1275,25 @@
         <div class="compare-container">
             <button class="close-compare" onclick="toggleCompareModal(false)">&times;</button>
             <h3>Platform Comparison</h3>
+            
+            <div class="compare-preview-row">
+                <div class="compare-preview-label-dummy"></div>
+                <div class="compare-preview-card">
+                    <img src="Trail.jpg" alt="Dune Trail High-Performance Profile">
+                    <div class="model-tag">Trail</div>
+                </div>
+                <div class="compare-preview-card">
+                    <img src="Rover.jpg" alt="Dune Rover Aggressive Urban Profile">
+                    <div class="model-tag">Rover</div>
+                </div>
+            </div>
+
             <table class="compare-table">
                 <thead>
                     <tr>
                         <th>Specification</th>
-                        <th>
-                            <div class="compare-header-cell">
-                                <img src="Trail.jpg" alt="Trail Thumbnail" class="compare-thumb">
-                                <span>TRAIL</span>
-                            </div>
-                        </th>
-                        <th>
-                            <div class="compare-header-cell">
-                                <img src="Rover.jpg" alt="Rover Thumbnail" class="compare-thumb">
-                                <span>ROVER</span>
-                            </div>
-                        </th>
+                        <th>TRAIL</th>
+                        <th>ROVER</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -1464,6 +1536,12 @@
             const toggleBtn = document.getElementById('mobile-menu-btn');
             navMenu.classList.toggle('active');
             toggleBtn.classList.toggle('active');
+            
+            if (navMenu.classList.contains('active')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = 'auto';
+            }
         }
 
         function closeMenuOnly() {
@@ -1472,6 +1550,7 @@
             if (window.innerWidth <= 968) {
                 navMenu.classList.remove('active');
                 toggleBtn.classList.remove('active');
+                document.body.style.overflow = 'auto';
             }
         }
 
