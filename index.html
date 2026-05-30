@@ -250,6 +250,7 @@
             cursor: pointer;
             transition: all 0.3s ease;
             flex-shrink: 0;
+            text-align: center;
         }
 
         .compare-trigger-btn:hover {
@@ -717,6 +718,7 @@
         .compare-table th, .compare-table td {
             padding: 18px 20px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            vertical-align: middle;
         }
 
         .compare-table th {
@@ -725,6 +727,22 @@
             letter-spacing: 2px;
             color: rgba(255, 255, 255, 0.4);
             font-weight: 600;
+        }
+
+        .compare-header-cell {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .compare-thumb {
+            width: 90px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background-color: #060608;
         }
 
         .compare-table tr:hover td { background: rgba(255, 255, 255, 0.02); }
@@ -963,7 +981,7 @@
             
             .controls-row { flex-direction: column; align-items: stretch; gap: 12px; }
             .model-tabs { max-width: 100%; justify-content: flex-start; }
-            .compare-trigger-btn { width: 100%; padding: 14px 0; font-size: 0.8rem; }
+            .compare-trigger-btn { width: 100%; padding: 14px 0; font-size: 0.8rem; text-align: center; margin-left: 0; }
 
             .model-image-wrapper { height: 280px; border-radius: 16px; }
             .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
@@ -1033,7 +1051,7 @@
                 <button class="tab-btn active" onclick="switchModel('desert-storm', event)">TRAIL</button>
                 <button class="tab-btn" onclick="switchModel('sand-runner', event)">ROVER</button>
             </div>
-            <button class="compare-trigger-btn" onclick="toggleCompareModal(true)">Compare Specs</button>
+            <button class="compare-trigger-btn" onclick="toggleCompareModal(true)">Compare</button>
         </div>
 
         <div class="model-showcase">
@@ -1192,8 +1210,18 @@
                 <thead>
                     <tr>
                         <th>Specification</th>
-                        <th>TRAIL</th>
-                        <th>ROVER</th>
+                        <th>
+                            <div class="compare-header-cell">
+                                <img src="Trail.jpg" alt="Trail Thumbnail" class="compare-thumb">
+                                <span>TRAIL</span>
+                            </div>
+                        </th>
+                        <th>
+                            <div class="compare-header-cell">
+                                <img src="Rover.jpg" alt="Rover Thumbnail" class="compare-thumb">
+                                <span>ROVER</span>
+                            </div>
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
