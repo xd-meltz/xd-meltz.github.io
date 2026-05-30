@@ -989,21 +989,25 @@
             #models, #purchase { padding: 60px 30px; }
             
             .controls-row { 
-                flex-direction: row; 
-                justify-content: space-between;
-                align-items: center; 
-                gap: 15px; 
-                width: 100%;
-            }
-            .model-tabs { max-width: 65%; }
-            .compare-trigger-btn { 
-                width: auto; 
-                text-align: center;
-                padding: 10px 18px;
-                font-size: 0.72rem;
-                letter-spacing: 1px;
-                border-radius: 20px;
-            }
+        display: flex;
+        flex-direction: row; /* Ensure row alignment */
+        justify-content: space-between;
+        align-items: center; 
+        gap: 10px; 
+        width: 100%;
+        flex-wrap: nowrap; /* Prevent wrapping to next line */
+    }
+    
+    .model-tabs { 
+        flex: 1; /* Allow tabs to take available space */
+        max-width: calc(100% - 100px); /* Ensure room for the compare button */
+        overflow-x: auto;
+    }
+    
+    .compare-trigger-btn { 
+        flex-shrink: 0; /* Prevent the button from squishing */
+        width: auto; 
+    }
 
             .model-showcase { grid-template-columns: 1fr; gap: 40px; }
             .model-image-wrapper { height: 400px; }
@@ -1043,8 +1047,7 @@
             header { padding: 12px 20px; }
             #hero { padding: 40px 20px 80px 20px; }
             #models, #purchase { padding: 50px 20px; }
-            
-            .controls-row { flex-direction: column; align-items: stretch; gap: 12px; }
+           
             .model-tabs { max-width: 100%; justify-content: flex-start; }
             .compare-trigger-btn { width: 100%; padding: 14px 0; font-size: 0.8rem; }
 
