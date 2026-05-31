@@ -4,6 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
     <title>DUNE BIKES | Pure Electric Performance</title>
+    
+    <!-- Essential SEO Meta Tags -->
+    <meta name="description" content="Experience precision electric performance engineered to dominate the harshest terrains with DUNE BIKES. Explore our high-motion Trail and Rover platforms.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://www.dunebikes.com/">
+
+    <!-- Open Graph / Facebook / WhatsApp -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.dunebikes.com/">
+    <meta property="og:title" content="DUNE BIKES | Pure Electric Performance">
+    <meta property="og:description" content="Precision electric performance engineered to dominate the harshest terrains. Secure your production window.">
+    <meta property="og:image" content="https://www.dunebikes.com/Main.jpg">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:title" content="DUNE BIKES | Pure Electric Performance">
+    <meta property="twitter:description" content="Precision electric performance engineered to dominate the harshest terrains. Secure your production window.">
+    <meta property="twitter:image" content="https://www.dunebikes.com/Main.jpg">
+
+    <!-- FontAwesome for the Header Shopping Cart Icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
         /* --- BRAND FONTS & RESET --- */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght=300;400;600;800&display=swap');
@@ -92,6 +114,10 @@
             display: flex;
             list-style: none;
             gap: 40px;
+            align-items: center;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
         }
 
         .nav-links a {
@@ -108,7 +134,56 @@
             text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
         }
 
-        /* --- DYNAMIC LUXURY HAMBURGER MENU --- */
+        /* --- HEADER ACTIONS ROW --- */
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            z-index: 1050;
+        }
+
+        .header-cart-btn {
+            position: relative;
+            font-size: 1.25rem;
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: pointer;
+        }
+
+        .header-cart-btn:hover {
+            background: #ffffff;
+            color: #000000;
+            border-color: #ffffff;
+            transform: scale(1.05);
+        }
+
+        .cart-badge-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ffd700;
+            color: #000000;
+            font-size: 0.7rem;
+            font-weight: 800;
+            border-radius: 50%;
+            padding: 2px 6px;
+            min-width: 18px;
+            height: 18px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease;
+        }
+
         .menu-toggle {
             display: none;
             flex-direction: column;
@@ -117,7 +192,6 @@
             width: 44px;
             height: 44px;
             cursor: pointer;
-            z-index: 1050;
             padding: 10px;
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.08);
@@ -198,7 +272,7 @@
             line-height: 1.7;
         }
 
-        /* --- DYNAMIC MODELS / STATS SECTION --- */
+        /* --- MODELS & STATS SECTION --- */
         #models {
             padding: 140px 50px 40px 50px;
             max-width: 1400px;
@@ -213,61 +287,72 @@
             margin-bottom: 40px;
         }
 
+        /* NEW RE-ARCHITECTED CONTROLS ROW */
         .controls-row {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            flex-direction: column;
+            gap: 25px;
             margin-bottom: 50px;
-            gap: 20px;
             width: 100%;
         }
 
+        /* 1 ROW, 2 COLUMNS PRESETS TABLE STYLING */
         .model-tabs {
-            display: flex;
-            gap: 15px;
-            overflow-x: auto;
-            white-space: nowrap;
-            scrollbar-width: none;
-            padding: 5px 0;
-            -webkit-overflow-scrolling: touch;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            width: 100%;
+            background: rgba(255, 255, 255, 0.02);
+            border: 2px solid rgba(255, 255, 255, 0.08);
+            border-radius: 4px;
+            overflow: hidden;
         }
 
-        .model-tabs::-webkit-scrollbar { display: none; }
-
+        /* REMOVED BUBBLES: ENHANCED SIZE AND VISUAL PRESENCE */
         .tab-btn {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: transparent;
+            border: none;
+            border-right: 1px solid rgba(255, 255, 255, 0.08);
             color: #ffffff;
-            font-size: 1rem;
-            font-weight: 600;
+            font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+            font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            opacity: 0.5;
+            letter-spacing: 4px;
+            opacity: 0.35;
             cursor: pointer;
             transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            padding: 14px 28px;
-            border-radius: 20px;
+            padding: 26px 20px;
+            text-align: center;
+            border-radius: 0;
             flex-shrink: 0;
+        }
+
+        .tab-btn:last-child {
+            border-right: none;
         }
 
         .tab-btn.active {
             opacity: 1;
             background: #ffffff;
             color: #000000;
-            border-color: #ffffff;
-            box-shadow: 0 8px 20px rgba(255,255,255,0.15);
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        .tab-btn:not(.active):hover {
+            opacity: 0.7;
+            background: rgba(255, 255, 255, 0.03);
         }
 
         .compare-trigger-btn {
+            align-self: flex-end;
             background: transparent;
             border: 1px solid rgba(255,255,255,0.15);
             color: #ffffff;
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            padding: 10px 18px;
-            border-radius: 18px;
+            letter-spacing: 1.5px;
+            padding: 12px 28px;
+            border-radius: 4px;
             cursor: pointer;
             transition: all 0.3s ease;
             flex-shrink: 0;
@@ -359,12 +444,11 @@
             -webkit-text-fill-color: transparent;
         }
 
-        /* LIVE STOCK TRACKER VISUAL EFFECTS */
         .stat-block.stock-highlight {
             transition: border-color 0.4s ease;
         }
 
-        /* --- DEEP-DIVE ECOSYSTEM FEATURES --- */
+        /* --- FEATURES --- */
         .features-showcase-heading {
             margin-top: 40px;
             font-size: 1.4rem;
@@ -431,7 +515,7 @@
             line-height: 1.5;
         }
 
-        /* --- DYNAMIC TECH SPECS POPUP MODAL --- */
+        /* --- SPECS MODAL --- */
         .specs-modal {
             position: fixed;
             top: 0;
@@ -526,7 +610,7 @@
             opacity: 0.9;
         }
 
-        /* --- GALLERY EXHIBITION HUB --- */
+        /* --- GALLERY --- */
         #gallery-sub-view {
             margin-top: 60px;
             width: 100%;
@@ -565,7 +649,7 @@
 
         .gallery-item:hover img { transform: scale(1.06); }
 
-        /* --- LIGHTBOX MODAL --- */
+        /* --- LIGHTBOX --- */
         .lightbox-modal {
             position: fixed;
             top: 0;
@@ -631,7 +715,7 @@
             color: #000000;
         }
 
-        /* --- COMPARISON MODAL ENGINE OVERLAY --- */
+        /* --- COMPARISON MODAL --- */
         .compare-modal {
             position: fixed;
             top: 0;
@@ -701,7 +785,6 @@
             margin-bottom: 25px;
         }
 
-        /* --- VISUAL VISUAL SPECS PREVIEW ROW --- */
         .compare-preview-row {
             display: grid;
             grid-template-columns: 25% 37.5% 37.5%;
@@ -768,7 +851,7 @@
         .compare-val { font-size: 0.95rem; font-weight: 600; width: 37.5%; }
         .compare-val.price-highlight { color: #ffd700; }
 
-        /* --- PURCHASE / CONTACT HUB --- */
+        /* --- ALLOCATION HUB --- */
         #purchase {
             padding: 90px 50px 140px 50px;
             background-color: #060608;
@@ -886,7 +969,7 @@
             width: 100%;
         }
 
-        /* --- RESPONSIVE PLATFORM MEDIA --- */
+        /* --- RESPONSIVE MEDIA QUERIES --- */
         @media (max-width: 1100px) {
             .gallery-grid { grid-template-columns: repeat(2, 1fr); }
         }
@@ -902,6 +985,7 @@
                 border-bottom: 1px solid rgba(255, 255, 255, 0.05);
                 padding: 16px 24px; 
             }
+            
             .menu-toggle { display: flex; }
 
             .nav-links {
@@ -958,22 +1042,14 @@
             
             .controls-row { 
                 display: flex;
-                flex-direction: row; 
-                justify-content: space-between;
-                align-items: center; 
-                gap: 10px; 
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px; 
                 width: 100%;
-                flex-wrap: nowrap; 
             }
-            
-            .model-tabs { 
-                flex: 1; 
-                max-width: calc(100% - 100px); 
-                overflow-x: auto;
-            }
-            
+
             .compare-trigger-btn { 
-                flex-shrink: 0; 
+                align-self: flex-end;
                 width: auto; 
             }
 
@@ -1016,9 +1092,9 @@
             #hero { padding: 40px 20px 80px 20px; }
             #models, #purchase { padding: 50px 20px; }
             
-            .controls-row { flex-direction: column; align-items: stretch; gap: 12px; }
-            .model-tabs { max-width: 100%; justify-content: flex-start; }
-            .compare-trigger-btn { width: 100%; padding: 14px 0; font-size: 0.8rem; }
+            .controls-row { gap: 15px; }
+            .tab-btn { padding: 18px 10px; }
+            .compare-trigger-btn { width: 100%; text-align: center; padding: 14px 0; }
 
             .model-image-wrapper { height: 280px; border-radius: 16px; }
             .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
@@ -1030,8 +1106,6 @@
                 text-align: center;
                 padding: 22px 15px;
             }
-            .stat-block.action-block .action-icon { margin-bottom: 6px; }
-
             .features-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 12px; }
             .feature-img-box { height: 110px; }
             .feature-info { padding: 12px; }
@@ -1044,9 +1118,6 @@
             .close-specs, .close-compare { top: 20px; right: 20px; width: 38px; height: 38px; }
             .compare-preview-card { height: 100px; }
             .compare-preview-card .model-tag { bottom: 8px; left: 8px; padding: 4px 10px; font-size: 0.65rem; }
-        }
-
-        @media (max-width: 480px) {
             .select-wrapper::after { right: 20px; }
             .purchase-form-minimal select { padding: 16px 20px; }
         }
@@ -1060,13 +1131,22 @@
        <div class="logo-container">
             <img src="transparent dune logo.png" alt="Dune Bikes Logo" style="height: 100%; width: auto; object-fit: contain;">
 	   </div>
-        <div class="menu-toggle" id="mobile-menu-btn" onclick="toggleMenu()">
-            <div class="burger-icon">
-                <span></span>
-                <span></span>
-                <span></span>
+       
+       <div class="header-actions">
+            <a href="cart.html" class="header-cart-btn" aria-label="View allocation cart">
+                <i class="fas fa-shopping-cart"></i>
+                <span class="cart-badge-count" id="global-cart-badge">0</span>
+            </a>
+            
+            <div class="menu-toggle" id="mobile-menu-btn" onclick="toggleMenu()">
+                <div class="burger-icon">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
             </div>
-        </div>
+       </div>
+
         <ul class="nav-links" id="nav-menu">
             <li><a href="#hero" onclick="closeMenuOnly()">Home</a></li>
             <li><a href="#models" onclick="closeMenuOnly()">Models</a></li>
@@ -1088,6 +1168,7 @@
         </div>
 
         <div class="controls-row">
+            <!-- Table row layout with two option columns -->
             <div class="model-tabs">
                 <button class="tab-btn active" onclick="switchModel('desert-storm', event)">TRAIL</button>
                 <button class="tab-btn" onclick="switchModel('sand-runner', event)">ROVER</button>
@@ -1152,7 +1233,6 @@
                     <div class="stat-value" id="stat-power">48V</div>
                     <div class="stat-label">Peak Power</div>
                 </div>
-                <!-- REPLACED TOTAL WEIGHT WITH THE LIVE STOCK INDICATOR -->
                 <div class="stat-block stock-highlight" id="stock-block">
                     <div class="stat-value" id="stat-stock">--</div>
                     <div class="stat-label">Available Stock</div>
@@ -1379,8 +1459,8 @@
         <div class="purchase-container">
             <div class="purchase-split-layout">
                 <div class="purchase-info-panel">
-                    <h2>Secure Your Ride</h2>
-                    <p>Our builds are highly tailored for high-motion performance environments. Choose your baseline platform below and connect directly with our build team to lock in your production window.</p>
+                    <h2>Secure Your Allocation</h2>
+                    <p>Select your baseline platform configuration to begin staging your high-motion build window. Added platforms will populate your top-right allocation cart.</p>
                     
                     <div class="purchase-form-minimal">
                         <div class="select-wrapper">
@@ -1389,7 +1469,9 @@
                                 <option value="sand-runner">Dune Rover — R60,000</option>
                             </select>
                         </div>
-                        <button type="button" class="btn" onclick="sendOrderEmail()">Initiate Consultation</button>
+                        <button type="button" class="btn" id="add-to-cart-action-btn" style="width: 100%;" onclick="addToCart()">
+                            Add To Manifest Cart
+                        </button>
                     </div>
                 </div>
                 
@@ -1414,28 +1496,27 @@
 
     <script>
         let currentBikeKey = 'desert-storm';
+        let allocationCart = JSON.parse(localStorage.getItem('duneBikesCart')) || [];
 
         const bikeData = {
             'desert-storm': {
+                name: "Dune Trail Platform",
                 img: "Trail.jpg",
                 checkoutImg: "Trail Side.jpg",
-                priceNum: 45000, pricePrefix: "R", priceSuffix: "",
+                priceNum: 45000,
                 powerNum: 48, powerSuffix: "V",
-                stockCount: 0, // Hydrated dynamically from stock.json
+                stockCount: 0, 
                 torqueNum: 190, torqueSuffix: "nm",
                 rangeNum: 60, rangeSuffix: "km",
                 
                 suspensionImg: "Trail Suspension.jpg",
                 suspensionLbl: "Suspension",
                 suspensionTxt: "Custom long-travel inverted racing forks, built to absorb brutal trail impacts smoothly.",
-                
                 lightingImg: "Trail Light.jpg",
                 lightingTxt: "High-output matrix LED projection setup delivering optimal clarity for twilight and night sessions.",
-                
                 tiresImg: "Trail Tires.jpg",
                 tiresLbl: "Tire Compounds",
                 tiresTxt: "Reinforced off-road knobby compound offering extreme lateral traction across changing surfaces.",
-                
                 dashboardImg: "Trail HUD.jpg",
                 dashboardTxt: "Sleek layout with real-time speed tracking, motor diagnostics, and system charge stats.",
                 
@@ -1460,25 +1541,23 @@
                 ]
             },
             'sand-runner': {
+                name: "Dune Rover Platform",
                 img: "Rover.jpg",
                 checkoutImg: "Rover Side.jpg",
-                priceNum: 60000, pricePrefix: "R", priceSuffix: "",
+                priceNum: 60000,
                 powerNum: 60, powerSuffix: "V",
-                stockCount: 0, // Hydrated dynamically from stock.json
+                stockCount: 0, 
                 torqueNum: 250, torqueSuffix: "nm",
                 rangeNum: 80, rangeSuffix: "km",
                 
                 suspensionImg: "Rover Back Light.jpg",
                 suspensionLbl: "Sleek Taillight",
                 suspensionTxt: "Integrated high-visibility LED rear light strip tailored beautifully into the minimalist subframe.",
-                
                 lightingImg: "Rover Light.jpg",
                 lightingTxt: "Sleek tactical black-out casing housing high-intensity focused spotlight beams.",
-                
                 tiresImg: "Rover Engine.jpg",
                 tiresLbl: "High-Output Motor",
                 tiresTxt: "Mid-drive brushless motor assembly tuned engineered specifically for maximum instantaneous line acceleration.",
-                
                 dashboardImg: "Rover HUD.jpg",
                 dashboardTxt: "Compact integrated high-contrast dashboard display detailing tracking data and speed telemetry.",
                 
@@ -1504,11 +1583,10 @@
             }
         };
 
-        // NEW: Live JSON fetching mechanics avoiding browser cache errors
         async function fetchLiveStock() {
             try {
                 const response = await fetch('stock.json?t=' + new Date().getTime());
-                if (!response.ok) throw new Error('Network fault fetching stock');
+                if (!response.ok) throw new Error('Data reference error');
                 const data = await response.json();
                 
                 bikeData['desert-storm'].stockCount = parseInt(data.trailStock) || 0;
@@ -1517,7 +1595,6 @@
                 updateStockUI(currentBikeKey);
             } catch (err) {
                 console.error("Stock Sync Error: ", err);
-                // Fallbacks
                 document.getElementById('stat-stock').innerText = "Inquire";
             }
         }
@@ -1527,7 +1604,6 @@
             const stockValEl = document.getElementById('stat-stock');
             const stockBlock = document.getElementById('stock-block');
             
-            // Set values explicitly based on numbers
             if (currentStock <= 0) {
                 stockValEl.innerText = "SOLD OUT";
                 stockValEl.style.background = 'linear-gradient(45deg, #ff3333, #ff6666)';
@@ -1545,74 +1621,82 @@
             stockValEl.style.webkitTextFillColor = 'transparent';
         }
 
+        function updateGlobalBadge() {
+            const totalCount = allocationCart.reduce((sum, item) => sum + item.quantity, 0);
+            document.getElementById('global-cart-badge').innerText = totalCount;
+        }
+
+        function addToCart() {
+            const selectedKey = document.getElementById('bike-selection').value;
+            const targetBike = bikeData[selectedKey];
+            const existingItem = allocationCart.find(item => item.id === selectedKey);
+            
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                allocationCart.push({
+                    id: selectedKey,
+                    name: targetBike.name,
+                    price: targetBike.priceNum,
+                    quantity: 1
+                });
+            }
+            
+            localStorage.setItem('duneBikesCart', JSON.stringify(allocationCart));
+            updateGlobalBadge();
+
+            const addBtn = document.getElementById('add-to-cart-action-btn');
+            addBtn.innerText = "ADDED TO MANIFEST ✓";
+            addBtn.style.background = "#ffd700";
+            addBtn.style.color = "#000000";
+            addBtn.style.borderColor = "#ffd700";
+            
+            setTimeout(() => {
+                addBtn.innerText = "ADD TO MANIFEST CART";
+                addBtn.style.background = "#ffffff";
+                addBtn.style.color = "#000000";
+                addBtn.style.borderColor = "#ffffff";
+            }, 1000);
+        }
+
         function toggleMenu() {
             const navMenu = document.getElementById('nav-menu');
             const toggleBtn = document.getElementById('mobile-menu-btn');
             navMenu.classList.toggle('active');
             toggleBtn.classList.toggle('active');
-            
-            if (navMenu.classList.contains('active')) {
-                document.body.style.overflow = 'hidden';
-            } else {
-                document.body.style.overflow = 'auto';
-            }
+            document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : 'auto';
         }
 
         function closeMenuOnly() {
-            const navMenu = document.getElementById('nav-menu');
-            const toggleBtn = document.getElementById('mobile-menu-btn');
             if (window.innerWidth <= 968) {
-                navMenu.classList.remove('active');
-                toggleBtn.classList.remove('active');
+                document.getElementById('nav-menu').classList.remove('active');
+                document.getElementById('mobile-menu-btn').classList.remove('active');
                 document.body.style.overflow = 'auto';
             }
         }
 
         function toggleSpecsModal(open) {
-            const modal = document.getElementById('tech-specs-modal-box');
-            if (open) {
-                modal.classList.add('active');
-                document.body.style.overflow = 'hidden';
-            } else {
-                modal.classList.remove('active');
-                if(!document.getElementById('compare-modal-box').classList.contains('active')) {
-                    document.body.style.overflow = 'auto';
-                }
-            }
+            document.getElementById('tech-specs-modal-box').classList.toggle('active', open);
+            document.body.style.overflow = open ? 'hidden' : 'auto';
         }
 
         function toggleCompareModal(open) {
-            const modal = document.getElementById('compare-modal-box');
-            if (open) {
-                modal.classList.add('active');
-                document.body.style.overflow = 'hidden';
-            } else {
-                modal.classList.remove('active');
-                if(!document.getElementById('tech-specs-modal-box').classList.contains('active')) {
-                    document.body.style.overflow = 'auto';
-                }
-            }
+            document.getElementById('compare-modal-box').classList.toggle('active', open);
+            document.body.style.overflow = open ? 'hidden' : 'auto';
         }
 
         function openLightbox(element) {
             const lightbox = document.getElementById('gallery-lightbox');
             const lightboxImg = document.getElementById('lightbox-target-img');
-            const clickedImgSrc = element.querySelector('img').src;
-            const clickedImgAlt = element.querySelector('img').alt;
-            
-            lightboxImg.src = clickedImgSrc;
-            lightboxImg.alt = clickedImgAlt;
+            lightboxImg.src = element.querySelector('img').src;
+            lightboxImg.alt = element.querySelector('img').alt;
             lightbox.classList.add('active');
             document.body.style.overflow = 'hidden';
         }
 
         function closeLightbox() {
-            const lightbox = document.getElementById('gallery-lightbox');
-            lightbox.classList.remove('active');
-            if(!document.getElementById('compare-modal-box').classList.contains('active') && 
-               !document.getElementById('tech-specs-modal-box').classList.contains('active')) {
-                document.body.style.overflow = 'auto';
-            }
+            document.getElementById('gallery-lightbox').classList.remove('active');
+            document.body.style.overflow = 'auto';
         }
 
         function animateStatsCounters(modelKey) {
@@ -1621,10 +1705,10 @@
             const data = bikeData[modelKey];
 
             const targets = [
-                { el: document.getElementById('stat-price'), max: data.priceNum, suffix: data.priceSuffix, prefix: data.pricePrefix, decimals: 0 },
-                { el: document.getElementById('stat-power'), max: data.powerNum, suffix: data.powerSuffix, prefix: '', decimals: 0 },
-                { el: document.getElementById('stat-torque'), max: data.torqueNum, suffix: data.torqueSuffix, prefix: '', decimals: 0 },
-                { el: document.getElementById('stat-range'), max: data.rangeNum, suffix: data.rangeSuffix, prefix: '', decimals: 0 }
+                { el: document.getElementById('stat-price'), max: data.priceNum, prefix: "R", suffix: "" },
+                { el: document.getElementById('stat-power'), max: data.powerNum, prefix: "", suffix: "V" },
+                { el: document.getElementById('stat-torque'), max: data.torqueNum, prefix: "", suffix: "nm" },
+                { el: document.getElementById('stat-range'), max: data.rangeNum, prefix: "", suffix: "km" }
             ];
 
             function update(currentTime) {
@@ -1635,19 +1719,13 @@
                 targets.forEach(target => {
                     if (!target.el) return;
                     const currentVal = easeProgress * target.max;
-                    if(target.el.id === 'stat-price') {
-                        target.el.innerText = target.prefix + Math.floor(currentVal).toLocaleString();
-                    } else {
-                        target.el.innerText = target.prefix + currentVal.toFixed(target.decimals) + target.suffix;
-                    }
+                    target.el.innerText = target.el.id === 'stat-price' 
+                        ? target.prefix + Math.floor(currentVal).toLocaleString() 
+                        : target.prefix + currentVal.toFixed(0) + target.suffix;
                 });
 
-                if (progress < 1) {
-                    requestAnimationFrame(update);
-                } else {
-                    // Update the text styling layout accurately at the animation's conclusion
-                    updateStockUI(modelKey);
-                }
+                if (progress < 1) requestAnimationFrame(update);
+                else updateStockUI(modelKey);
             }
             requestAnimationFrame(update);
         }
@@ -1656,132 +1734,71 @@
             if(currentBikeKey === modelKey) return;
             currentBikeKey = modelKey;
 
-            const tabs = document.querySelectorAll('.tab-btn');
-            tabs.forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(tab => tab.classList.remove('active'));
             event.target.classList.add('active');
 
             const imgEl = document.getElementById('model-img');
-            const galleryItems = document.querySelectorAll('.gallery-item');
-            
-            const checkoutSelect = document.getElementById('bike-selection');
-            if (checkoutSelect) {
-                checkoutSelect.value = modelKey;
-                updatePurchasePreview(modelKey);
-            }
-            
             imgEl.style.opacity = 0.2;
             imgEl.style.transform = 'scale(0.97)';
-            galleryItems.forEach(item => item.style.opacity = 0.3);
             
             setTimeout(() => {
-                const suspImg = document.getElementById('feat-img-suspension');
-                const suspLbl = document.getElementById('feat-lbl-suspension');
-                const suspTxt = document.getElementById('feat-txt-suspension');
-                
-                const lightImg = document.getElementById('feat-img-lighting');
-                const lightTxt = document.getElementById('feat-txt-lighting');
-                
-                const tireImg = document.getElementById('feat-img-tires');
-                const tireLbl = document.getElementById('feat-lbl-tires');
-                const tireTxt = document.getElementById('feat-txt-tires');
-                
-                const dashImg = document.getElementById('feat-img-dashboard');
-                const dashTxt = document.getElementById('feat-txt-dashboard');
-
-                const motorSpecEl = document.getElementById('spec-motor');
-                const batterySpecEl = document.getElementById('spec-battery');
-                const wheelsSpecEl = document.getElementById('spec-wheels');
-                const suspensionSpecEl = document.getElementById('spec-suspension');
-                const gearsSpecEl = document.getElementById('spec-gears');
-                const chassisSpecEl = document.getElementById('spec-chassis');
-                const ergoSpecEl = document.getElementById('spec-ergo');
-                const dimsSpecEl = document.getElementById('spec-dims');
-
                 imgEl.src = bikeData[modelKey].img;
+                document.getElementById('feat-img-suspension').src = bikeData[modelKey].suspensionImg;
+                document.getElementById('feat-lbl-suspension').innerText = bikeData[modelKey].suspensionLbl;
+                document.getElementById('feat-txt-suspension').innerText = bikeData[modelKey].suspensionTxt;
+                document.getElementById('feat-img-lighting').src = bikeData[modelKey].lightingImg;
+                document.getElementById('feat-txt-lighting').innerText = bikeData[modelKey].lightingTxt;
+                document.getElementById('feat-img-tires').src = bikeData[modelKey].tiresImg;
+                document.getElementById('feat-lbl-tires').innerText = bikeData[modelKey].tiresLbl;
+                document.getElementById('feat-txt-tires').innerText = bikeData[modelKey].tiresTxt;
+                document.getElementById('feat-img-dashboard').src = bikeData[modelKey].dashboardImg;
+                document.getElementById('feat-txt-dashboard').innerText = bikeData[modelKey].dashboardTxt;
 
-                suspImg.src = bikeData[modelKey].suspensionImg;
-                suspLbl.innerText = bikeData[modelKey].suspensionLbl;
-                suspTxt.innerText = bikeData[modelKey].suspensionTxt;
-                
-                lightImg.src = bikeData[modelKey].lightingImg;
-                lightTxt.innerText = bikeData[modelKey].lightingTxt;
-                
-                tireImg.src = bikeData[modelKey].tiresImg;
-                tireLbl.innerText = bikeData[modelKey].tiresLbl;
-                tireTxt.innerText = bikeData[modelKey].tiresTxt;
-                
-                dashImg.src = bikeData[modelKey].dashboardImg;
-                dashTxt.innerText = bikeData[modelKey].dashboardTxt;
-
-                motorSpecEl.innerText = bikeData[modelKey].motorSpec;
-                batterySpecEl.innerText = bikeData[modelKey].batterySpec;
-                wheelsSpecEl.innerText = bikeData[modelKey].wheelsSpec;
-                suspensionSpecEl.innerText = bikeData[modelKey].suspensionSpec;
-                gearsSpecEl.innerText = bikeData[modelKey].gearsSpec;
-                chassisSpecEl.innerText = bikeData[modelKey].chassisSpec;
-                ergoSpecEl.innerText = bikeData[modelKey].ergoSpec;
-                dimsSpecEl.innerText = bikeData[modelKey].dimsSpec;
+                document.getElementById('spec-motor').innerText = bikeData[modelKey].motorSpec;
+                document.getElementById('spec-battery').innerText = bikeData[modelKey].batterySpec;
+                document.getElementById('spec-wheels').innerText = bikeData[modelKey].wheelsSpec;
+                document.getElementById('spec-suspension').innerText = bikeData[modelKey].suspensionSpec;
+                document.getElementById('spec-gears').innerText = bikeData[modelKey].gearsSpec;
+                document.getElementById('spec-chassis').innerText = bikeData[modelKey].chassisSpec;
+                document.getElementById('spec-ergo').innerText = bikeData[modelKey].ergoSpec;
+                document.getElementById('spec-dims').innerText = bikeData[modelKey].dimsSpec;
 
                 const targetGallery = bikeData[modelKey].gallery;
-                galleryItems.forEach((item, index) => {
+                document.querySelectorAll('.gallery-item').forEach((item, index) => {
                     if (targetGallery[index]) {
-                        const img = item.querySelector('img');
-                        img.src = targetGallery[index].src;
-                        img.alt = targetGallery[index].alt;
+                        item.querySelector('img').src = targetGallery[index].src;
+                        item.querySelector('img').alt = targetGallery[index].alt;
                     }
                 });
 
+                document.getElementById('bike-selection').value = modelKey;
+                updatePurchasePreview(modelKey);
                 animateStatsCounters(modelKey);
                 updateStockUI(modelKey);
 
                 imgEl.style.opacity = 1;
                 imgEl.style.transform = 'scale(1)';
-                galleryItems.forEach(item => item.style.opacity = 1);
             }, 250);
         }
 
         function updatePurchasePreview(bikeKey) {
             const previewImg = document.getElementById('purchase-preview-img');
-            if (!previewImg || !bikeData[bikeKey]) return;
-            
             previewImg.style.opacity = '0.1';
-            previewImg.style.transform = 'scale(0.96) translateY(5px)';
-            
             setTimeout(() => {
                 previewImg.src = bikeData[bikeKey].checkoutImg;
                 previewImg.style.opacity = '1';
-                previewImg.style.transform = 'scale(1) translateY(0)';
             }, 200);
         }
 
-        function sendOrderEmail() {
-            const businessEmail = "orders@dunebikes.com"; 
-            const selectedVal = document.getElementById('bike-selection').value;
-            
-            let bikeCleanName = "Dune Trail (R45,000 baseline)";
-            if (selectedVal === 'sand-runner') {
-                bikeCleanName = "Dune Rover (R60,000 baseline)";
-            }
-            
-            const subject = encodeURIComponent(`Dune Bikes Allocation Inquiry: ${bikeCleanName}`);
-            const body = encodeURIComponent(`Hello Dune Team,\n\nI am interested in exploring a custom build window for the ${bikeCleanName}.\n\nPlease contact me with additional ordering parameters, build schedules, and pricing options.\n\nBest regards,`);
-            
-            window.location.href = `mailto:${businessEmail}?subject=${subject}&body=${body}`;
-        }
-
         const words = ["Dominate Dirt", "Electric Power", "Own the Streets"];
-        let i = 0;
-        let timer;
-
+        let wordIndex = 0;
         function typingEffect() {
-            let word = words[i].split("");
+            let word = words[wordIndex].split("");
             const loopTyping = function() {
                 if (word.length > 0) {
                     document.getElementById('typewriter').innerHTML += word.shift();
-                    timer = setTimeout(loopTyping, 80);
-                } else {
-                    setTimeout(deletingEffect, 2000);
-                }
+                    setTimeout(loopTyping, 80);
+                } else setTimeout(deletingEffect, 2000);
             };
             loopTyping();
         }
@@ -1792,9 +1809,9 @@
                 if (currentText.length > 0) {
                     currentText = currentText.substring(0, currentText.length - 1);
                     document.getElementById('typewriter').innerHTML = currentText;
-                    timer = setTimeout(loopDeleting, 40);
+                    setTimeout(loopDeleting, 40);
                 } else {
-                    i = (i + 1) % words.length;
+                    wordIndex = (wordIndex + 1) % words.length;
                     setTimeout(typingEffect, 500);
                 }
             };
@@ -1803,24 +1820,15 @@
 
         document.addEventListener("DOMContentLoaded", function() {
             typingEffect();
-            fetchLiveStock(); // Pull the fresh JSON instantly when the DOM builds
+            fetchLiveStock();
+            updateGlobalBadge();
 
-            const scrollSectionTarget = document.getElementById('models');
-            const scrollObserverOptions = {
-                root: null,
-                rootMargin: "0px 0px -5% 0px",
-                threshold: 0.01 
-            };
-
-            const scrollSectionObserver = new IntersectionObserver((entries) => {
+            const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        animateStatsCounters(currentBikeKey);
-                    }
+                    if (entry.isIntersecting) animateStatsCounters(currentBikeKey);
                 });
-            }, scrollObserverOptions);
-
-            scrollSectionObserver.observe(scrollSectionTarget);
+            }, { rootMargin: "0px 0px -5% 0px", threshold: 0.01 });
+            observer.observe(document.getElementById('models'));
         });
     </script>
 </body>
