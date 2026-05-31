@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DUNE BIKES | Allocation Cart Review</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght=300;400;600;800&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: #060608;
+            color: #ffffff;
+            padding: 40px 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .cart-wrapper {
+            width: 100%;
+            max-width: 1000px;
+            margin-top: 40px;
+        }
+
+        .back-nav-link {
+            display: inline-block;
+            color: rgba(255,255,255,0.6);
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            text-decoration: none;
+            transition: color 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .back-nav-link:hover {
+            color: #ffffff;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 40px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            padding-bottom: 15px;
+        }
+
+        .cart-split-layout {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 40px;
+        }
+
+        .items-list-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .cart-item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 25px;
+            background: #111115;
+            border: 1px solid rgba(255,255,255,0.04);
+            border-radius: 16px;
+        }
+
+        .item-title {
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .item-details-meta {
+            font-size: 0.85rem;
+            color: #ffd700;
+            font-weight: 600;
+        }
+
+        .remove-item-btn {
+            background: transparent;
+            border: none;
+            color: #ff4646;
+            cursor: pointer;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            transition: opacity 0.2s;
+        }
+
+        .remove-item-btn:hover {
+            opacity: 0.7;
+        }
+
+        .summary-explanation-panel {
+            background: linear-gradient(135deg, #111115 0%, #0d0d11 100%);
+            border: 1px solid rgba(255,255,255,0.05);
+            padding: 30px;
+            border-radius: 24px;
+            height: fit-content;
+        }
+
+        .summary-title {
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            opacity: 0.9;
+        }
+
+        .total-price-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .total-label {
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.85rem;
+            opacity: 0.5;
+        }
+
+        .total-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #ffd700;
+        }
+
+        .process-explainer-box {
+            background: rgba(255, 215, 0, 0.02);
+            border-left: 3px solid #ffd700;
+            padding: 20px;
+            border-radius: 4px;
+            margin-bottom: 35px;
+        }
+
+        .explainer-heading {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #ffd700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .explainer-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .explainer-list li {
+            font-size: 0.82rem;
+            line-height: 1.5;
+            opacity: 0.7;
+            position: relative;
+            padding-left: 15px;
+        }
+
+        .explainer-list li::before {
+            content: '▪';
+            position: absolute;
+            left: 0;
+            color: #ffd700;
+        }
+
+        .action-submit-btn {
+            display: block;
+            width: 100%;
+            padding: 16px;
+            background: #ffffff;
+            color: #000000;
+            border: 2px solid #ffffff;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            border-radius: 30px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+            margin-bottom: 12px;
+        }
+
+        .action-submit-btn:hover {
+            background: transparent;
+            color: #ffffff;
+        }
+
+        .clear-manifest-btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.4);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .clear-manifest-btn:hover {
+            border-color: #ff4646;
+            color: #ff4646;
+        }
+
+        .empty-view-state {
+            text-align: center;
+            padding: 60px 20px;
+            opacity: 0.4;
+            font-style: italic;
+        }
+
+        @media (max-width: 850px) {
+            .cart-split-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="cart-wrapper">
+        <a href="index.html" class="back-nav-link">← Return to Platforms</a>
+        <h1>Your Build Manifest</h1>
+
+        <div class="cart-split-layout">
+            <div class="items-list-container" id="cart-items-injector">
+                <!-- Dynamically populated rows -->
+            </div>
+
+            <div class="summary-explanation-panel" id="summary-panel-view" style="display: none;">
+                <h3 class="summary-title">Summary Review</h3>
+                <div class="total-price-row">
+                    <span class="total-label">Subtotal Estimate</span>
+                    <span class="total-value" id="cart-subtotal-value">R0</span>
+                </div>
+
+                <div class="process-explainer-box">
+                    <h4 class="explainer-heading">
+                        <span>ℹ️</span> Secure Allocation Protocol
+                    </h4>
+                    <ul class="explainer-list">
+                        <li>Clicking <strong>"Submit Order via Email"</strong> loads your full machine mix configuration setup profile list down automatically.</li>
+                        <li>Your native mail application app opens up an instantaneous pre-written formal booking request draft email template directed to our studio lines.</li>
+                        <li>Our consultant crew reviews your allocation metrics and replies directly within 24 hours with banking coordinate keys for downpayment slot logging.</li>
+                    </ul>
+                </div>
+
+                <button class="action-submit-btn" onclick="fireBespokeEmailOrder()">Submit Order via Email</button>
+                <button class="clear-manifest-btn" onclick="clearFullCart()">Clear Manifest</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let allocationCart = JSON.parse(localStorage.getItem('duneBikesCart')) || [];
+
+        function renderCartPage() {
+            const container = document.getElementById('cart-items-injector');
+            const summaryPanel = document.getElementById('summary-panel-view');
+            const subtotalText = document.getElementById('cart-subtotal-value');
+
+            container.innerHTML = '';
+
+            if (allocationCart.length === 0) {
+                container.innerHTML = `<div class="empty-view-state">Your manifest is currently empty. Configure a machine platform grid to fill it up.</div>`;
+                summaryPanel.style.display = 'none';
+                return;
+            }
+
+            summaryPanel.style.display = 'block';
+            let calculatedSubtotal = 0;
+
+            allocationCart.forEach((item, index) => {
+                const totalItemCost = item.price * item.quantity;
+                calculatedSubtotal += totalItemCost;
+
+                const cardRow = document.createElement('div');
+                cardRow.className = 'cart-item-row';
+                cardRow.innerHTML = `
+                    <div>
+                        <h3 class="item-title">${item.name}</h3>
+                        <p class="item-details-meta">Qty: ${item.quantity} × R${item.price.toLocaleString()}</p>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 25px;">
+                        <span style="font-weight: 700; font-size: 1.1rem;">R${totalItemCost.toLocaleString()}</span>
+                        <button class="remove-item-btn" onclick="removeSingleItem(${index})">Remove</button>
+                    </div>
+                `;
+                container.appendChild(cardRow);
+            });
+
+            subtotalText.innerText = 'R' + calculatedSubtotal.toLocaleString();
+        }
+
+        function removeSingleItem(index) {
+            allocationCart.splice(index, 1);
+            localStorage.setItem('duneBikesCart', JSON.stringify(allocationCart));
+            renderCartPage();
+        }
+
+        function clearFullCart() {
+            allocationCart = [];
+            localStorage.setItem('duneBikesCart', JSON.stringify(allocationCart));
+            renderCartPage();
+        }
+
+        function fireBespokeEmailOrder() {
+            if (allocationCart.length === 0) return;
+            const studioEmailLine = "orders@dunebikes.com";
+            
+            let listStringData = "";
+            let consolidatedCost = 0;
+
+            allocationCart.forEach((item, idx) => {
+                listStringData += `- Configuration Match #${idx + 1}: ${item.name} | [Quantity: ${item.quantity}] — Total Base Line: R${(item.price * item.quantity).toLocaleString()}\n`;
+                consolidatedCost += (item.price * item.quantity);
+            });
+
+            const subjectKey = encodeURIComponent(`DUNE BIKES: Private Allocation Request [${allocationCart.length} Unique Lines]`);
+            const completeEmailBody = encodeURIComponent(
+`Hello Dune Performance Team,\n\nI have locked in my custom configurations via the digital storefront portal interface and would like to formally apply to log my allocation build windows.\n\nMY CONFIGURATION LIST BUILD SUMMARY:\n${listStringData}\nConsolidated Base Value: R${consolidatedCost.toLocaleString()}\n\nPlease verify my item specifications allocation lists and return confirmation maps detailing:\n1. Open production schedule timelines matching my count numbers.\n2. Invoicing data structures and deposit verification wire links.\n\nThank you,\n[My Full Name]\n[My Phone Line Contact]`
+            );
+
+            window.location.href = `mailto:${studioEmailLine}?subject=${subjectKey}&body=${completeEmailBody}`;
+        }
+
+        document.addEventListener('DOMContentLoaded', renderCartPage);
+    </script>
+</body>
+</html>
