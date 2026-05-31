@@ -6,7 +6,7 @@
     <title>DUNE BIKES | Pure Electric Performance</title>
     <style>
         /* --- BRAND FONTS & RESET --- */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght=300;400;600;800&display=swap');
         
         * {
             margin: 0;
@@ -147,7 +147,6 @@
             border-radius: 2px;
         }
 
-        /* Fluid transformation to absolute perfectly center-aligned close cross */
         .menu-toggle.active span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
         .menu-toggle.active span:nth-child(2) { opacity: 0; transform: scale(0); }
         .menu-toggle.active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
@@ -360,38 +359,9 @@
             -webkit-text-fill-color: transparent;
         }
 
-        /* --- INTERACTIVE STAT BUTTON BLOCK --- */
-        .stat-block.action-block {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px dashed rgba(255, 255, 255, 0.15);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: flex-start;
-            cursor: pointer;
-            text-align: left;
-        }
-
-        .stat-block.action-block:hover {
-            border-style: solid;
-            border-color: rgba(255, 255, 255, 0.4);
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .stat-block.action-block .action-icon {
-            font-size: 1.6rem;
-            margin-bottom: 12px;
-            transition: transform 0.3s ease;
-        }
-
-        .stat-block.action-block:hover .action-icon {
-            transform: translateY(4px);
-        }
-
-        .stat-block.action-block .stat-label {
-            opacity: 0.8;
-            font-weight: 600;
-            color: #ffffff;
+        /* LIVE STOCK TRACKER VISUAL EFFECTS */
+        .stat-block.stock-highlight {
+            transition: border-color 0.4s ease;
         }
 
         /* --- DEEP-DIVE ECOSYSTEM FEATURES --- */
@@ -934,7 +904,6 @@
             }
             .menu-toggle { display: flex; }
 
-            /* Modern Cinematic Full Screen Menu Overlay */
             .nav-links {
                 position: fixed;
                 top: 0; 
@@ -970,7 +939,6 @@
                 transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
             }
 
-            /* Complex active staggering link entry animation logic */
             .nav-links.active a {
                 opacity: 0.8;
                 transform: translateY(0);
@@ -989,25 +957,25 @@
             #models, #purchase { padding: 60px 30px; }
             
             .controls-row { 
-        display: flex;
-        flex-direction: row; /* Ensure row alignment */
-        justify-content: space-between;
-        align-items: center; 
-        gap: 10px; 
-        width: 100%;
-        flex-wrap: nowrap; /* Prevent wrapping to next line */
-    }
-    
-    .model-tabs { 
-        flex: 1; /* Allow tabs to take available space */
-        max-width: calc(100% - 100px); /* Ensure room for the compare button */
-        overflow-x: auto;
-    }
-    
-    .compare-trigger-btn { 
-        flex-shrink: 0; /* Prevent the button from squishing */
-        width: auto; 
-    }
+                display: flex;
+                flex-direction: row; 
+                justify-content: space-between;
+                align-items: center; 
+                gap: 10px; 
+                width: 100%;
+                flex-wrap: nowrap; 
+            }
+            
+            .model-tabs { 
+                flex: 1; 
+                max-width: calc(100% - 100px); 
+                overflow-x: auto;
+            }
+            
+            .compare-trigger-btn { 
+                flex-shrink: 0; 
+                width: auto; 
+            }
 
             .model-showcase { grid-template-columns: 1fr; gap: 40px; }
             .model-image-wrapper { height: 400px; }
@@ -1184,9 +1152,10 @@
                     <div class="stat-value" id="stat-power">48V</div>
                     <div class="stat-label">Peak Power</div>
                 </div>
-                <div class="stat-block">
-                    <div class="stat-value" id="stat-weight">64.5 kg</div>
-                    <div class="stat-label">Total Weight</div>
+                <!-- REPLACED TOTAL WEIGHT WITH THE LIVE STOCK INDICATOR -->
+                <div class="stat-block stock-highlight" id="stock-block">
+                    <div class="stat-value" id="stat-stock">--</div>
+                    <div class="stat-label">Available Stock</div>
                 </div>
                 <div class="stat-block">
                     <div class="stat-value" id="stat-torque">190nm</div>
@@ -1452,7 +1421,7 @@
                 checkoutImg: "Trail Side.jpg",
                 priceNum: 45000, pricePrefix: "R", priceSuffix: "",
                 powerNum: 48, powerSuffix: "V",
-                weightNum: 64.5, weightSuffix: " kg",
+                stockCount: 0, // Hydrated dynamically from stock.json
                 torqueNum: 190, torqueSuffix: "nm",
                 rangeNum: 60, rangeSuffix: "km",
                 
@@ -1495,7 +1464,7 @@
                 checkoutImg: "Rover Side.jpg",
                 priceNum: 60000, pricePrefix: "R", priceSuffix: "",
                 powerNum: 60, powerSuffix: "V",
-                weightNum: 64.5, weightSuffix: " kg",
+                stockCount: 0, // Hydrated dynamically from stock.json
                 torqueNum: 250, torqueSuffix: "nm",
                 rangeNum: 80, rangeSuffix: "km",
                 
@@ -1535,6 +1504,47 @@
             }
         };
 
+        // NEW: Live JSON fetching mechanics avoiding browser cache errors
+        async function fetchLiveStock() {
+            try {
+                const response = await fetch('stock.json?t=' + new Date().getTime());
+                if (!response.ok) throw new Error('Network fault fetching stock');
+                const data = await response.json();
+                
+                bikeData['desert-storm'].stockCount = parseInt(data.trailStock) || 0;
+                bikeData['sand-runner'].stockCount = parseInt(data.roverStock) || 0;
+                
+                updateStockUI(currentBikeKey);
+            } catch (err) {
+                console.error("Stock Sync Error: ", err);
+                // Fallbacks
+                document.getElementById('stat-stock').innerText = "Inquire";
+            }
+        }
+
+        function updateStockUI(modelKey) {
+            const currentStock = bikeData[modelKey].stockCount;
+            const stockValEl = document.getElementById('stat-stock');
+            const stockBlock = document.getElementById('stock-block');
+            
+            // Set values explicitly based on numbers
+            if (currentStock <= 0) {
+                stockValEl.innerText = "SOLD OUT";
+                stockValEl.style.background = 'linear-gradient(45deg, #ff3333, #ff6666)';
+                stockBlock.style.borderColor = 'rgba(255, 50, 50, 0.4)';
+            } else if (currentStock <= 3) {
+                stockValEl.innerText = `${currentStock} LEFT`;
+                stockValEl.style.background = 'linear-gradient(45deg, #ff9900, #ffcc00)';
+                stockBlock.style.borderColor = 'rgba(255, 150, 0, 0.4)';
+            } else {
+                stockValEl.innerText = `${currentStock} Units`;
+                stockValEl.style.background = 'linear-gradient(45deg, #ffffff, #a5a5a5)';
+                stockBlock.style.borderColor = 'rgba(255, 255, 255, 0.04)';
+            }
+            stockValEl.style.webkitBackgroundClip = 'text';
+            stockValEl.style.webkitTextFillColor = 'transparent';
+        }
+
         function toggleMenu() {
             const navMenu = document.getElementById('nav-menu');
             const toggleBtn = document.getElementById('mobile-menu-btn');
@@ -1558,7 +1568,6 @@
             }
         }
 
-        /* --- DETAILED SPECS POPUP SYSTEM --- */
         function toggleSpecsModal(open) {
             const modal = document.getElementById('tech-specs-modal-box');
             if (open) {
@@ -1585,7 +1594,6 @@
             }
         }
 
-        /* --- LIGHTBOX INTERACTION LOGIC --- */
         function openLightbox(element) {
             const lightbox = document.getElementById('gallery-lightbox');
             const lightboxImg = document.getElementById('lightbox-target-img');
@@ -1615,7 +1623,6 @@
             const targets = [
                 { el: document.getElementById('stat-price'), max: data.priceNum, suffix: data.priceSuffix, prefix: data.pricePrefix, decimals: 0 },
                 { el: document.getElementById('stat-power'), max: data.powerNum, suffix: data.powerSuffix, prefix: '', decimals: 0 },
-                { el: document.getElementById('stat-weight'), max: data.weightNum, suffix: data.weightSuffix, prefix: '', decimals: 1 },
                 { el: document.getElementById('stat-torque'), max: data.torqueNum, suffix: data.torqueSuffix, prefix: '', decimals: 0 },
                 { el: document.getElementById('stat-range'), max: data.rangeNum, suffix: data.rangeSuffix, prefix: '', decimals: 0 }
             ];
@@ -1637,6 +1644,9 @@
 
                 if (progress < 1) {
                     requestAnimationFrame(update);
+                } else {
+                    // Update the text styling layout accurately at the animation's conclusion
+                    updateStockUI(modelKey);
                 }
             }
             requestAnimationFrame(update);
@@ -1722,6 +1732,7 @@
                 });
 
                 animateStatsCounters(modelKey);
+                updateStockUI(modelKey);
 
                 imgEl.style.opacity = 1;
                 imgEl.style.transform = 'scale(1)';
@@ -1792,6 +1803,7 @@
 
         document.addEventListener("DOMContentLoaded", function() {
             typingEffect();
+            fetchLiveStock(); // Pull the fresh JSON instantly when the DOM builds
 
             const scrollSectionTarget = document.getElementById('models');
             const scrollObserverOptions = {
