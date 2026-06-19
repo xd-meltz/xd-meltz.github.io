@@ -1,0 +1,6 @@
+{
+  "name": "Stellos Coffee",
+  "description": "An elegant, cozy coffee shop website for Stellos Coffee in Stellenbosch, South Africa, featuring their full authentic chalkboard menu.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
