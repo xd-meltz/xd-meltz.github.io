@@ -1,49 +1,30 @@
-export interface MenuItem {
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+export interface PricingPlan {
   id: string;
-  name: string;
-  priceM?: number;
-  priceL?: number;
-  description?: string;
-  popular?: boolean;
+  category: 'weekends' | 'weekdays';
+  title: string;
+  subtitle?: string;
+  priceText: string;
+  features: string[];
+  notes?: string;
 }
 
-export interface AddonItem {
-  name: string;
-  priceM: number;
-  priceL?: number;
-}
-
-export interface SpecialCombo {
+export interface GalleryItem {
   id: string;
-  name: string;
-  price: number;
-  description: string;
-  includes: string;
+  url: string;
+  altText: string;
 }
 
-export interface TrayItem {
-  uniqueId: string;
-  itemId: string;
+export interface BookingFormState {
   name: string;
-  size: 'M' | 'L' | 'Single' | 'Double' | 'Standard';
-  basePrice: number;
-  quantity: number;
-  selectedMilk?: string;
-  selectedMilkPrice?: number;
-  extraEspressoShot?: boolean;
-  extraEspressoPrice?: number;
-  whippedCream?: boolean;
-  whippedCreamPrice?: number;
-  selectedSyrup?: 'None' | 'Vanilla' | 'Hazelnut' | 'Caramel';
-  selectedSyrupPrice?: number;
-  finalItemPrice: number; // Price of individual item with upgrades
-  finalTotalItemPrice: number; // calculated as finalItemPrice * quantity
-  itemNotes?: string;
-}
-
-export interface FeedbackFormInput {
-  name: string;
-  email: string;
-  rating: number;
-  message: string;
+  bookingType: 'weekday' | 'weekend';
+  packageName: '30min' | '60min' | '4hour' | 'weekend-rental' | 'weekend-own-bike';
+  bikesCount: 5 | 10;
+  riderType?: 'PitBike' | 'QuadBike';
+  date: string;
+  time: string;
 }
