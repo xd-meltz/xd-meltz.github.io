@@ -655,8 +655,8 @@ export default function BookingSystem({ onBack }: { onBack?: () => void }) {
   };
 
   const redirectToPayFast = (totalAmount: number, bookingId: string) => {
-    const merchantId = (import.meta as any).env.VITE_PAYFAST_MERCHANT_ID || "10000100";
-    const merchantKey = (import.meta as any).env.VITE_PAYFAST_MERCHANT_KEY || "464270a3f33d7";
+    const merchantId = (import.meta as any).env.VITE_PAYFAST_MERCHANT_ID || "10051106";
+    const merchantKey = (import.meta as any).env.VITE_PAYFAST_MERCHANT_KEY || "w3q3a42d6my8m";
     const processUrl = (import.meta as any).env.VITE_PAYFAST_PROCESS_URL || "https://sandbox.payfast.co.za/eng/process";
 
     // Build self-referential return and cancel URLs
