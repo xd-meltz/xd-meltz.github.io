@@ -30,6 +30,7 @@ import {
   db, 
   collection, 
   addDoc, 
+  setDoc,
   doc, 
   deleteDoc, 
   getDocs, 
@@ -423,9 +424,9 @@ export default function BookingSystem({ onBack }: { onBack?: () => void }) {
               if (pendingRaw) {
                 const finalBooking = JSON.parse(pendingRaw);
                 finalBooking.paid = true;
-                addDoc(collection(db, 'bookings'), finalBooking)
-                  .then((newDocRef) => {
-                    const confirmedBooking: BookedSlot = { id: newDocRef.id, ...finalBooking };
+                setDoc(doc(db, 'bookings', bookingId), finalBooking)
+                  .then(() => {
+                    const confirmedBooking: BookedSlot = { id: bookingId, ...finalBooking };
                     setLatestBooking(confirmedBooking);
                     setPaymentStep('success');
                     localStorage.removeItem('pending_rix_booking');
@@ -435,7 +436,7 @@ export default function BookingSystem({ onBack }: { onBack?: () => void }) {
                     const mailDoc = {
                       to: finalBooking.email,
                       message: {
-                        subject: `Rix Compound Booking Confirmation - Ticket #${newDocRef.id}`,
+                        subject: `Rix Compound Booking Confirmation - Ticket #${bookingId}`,
                         html: `
                           <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 30px; border: 1px solid #222; border-radius: 16px; background-color: #0a0a0a; color: #ffffff;">
                             <div style="text-align: center; border-bottom: 2px dashed #facc15; padding-bottom: 25px; margin-bottom: 25px;">
@@ -445,7 +446,7 @@ export default function BookingSystem({ onBack }: { onBack?: () => void }) {
                             <div style="margin-bottom: 25px; padding: 20px; background-color: #121212; border: 1px solid #1a1a1a; border-radius: 12px;">
                               <h3 style="color: #facc15; margin: 0 0 15px 0; font-size: 14px; text-transform: uppercase; font-family: monospace; letter-spacing: 1px;">Reservation Receipt</h3>
                               <table style="width: 100%; border-collapse: collapse; font-size: 14px; color: #d4d4d4;">
-                                <tr><td style="padding: 8px 0; color: #888; font-family: monospace;">TICKET REF:</td><td style="padding: 8px 0; font-weight: bold; text-align: right; color: #facc15; font-family: monospace;">#${newDocRef.id}</td></tr>
+                                <tr><td style="padding: 8px 0; color: #888; font-family: monospace;">TICKET REF:</td><td style="padding: 8px 0; font-weight: bold; text-align: right; color: #facc15; font-family: monospace;">#${bookingId}</td></tr>
                                 <tr><td style="padding: 8px 0; color: #888; font-family: monospace;">RIDER:</td><td style="padding: 8px 0; font-weight: bold; text-align: right; color: #fff;">${finalBooking.name}</td></tr>
                                 <tr><td style="padding: 8px 0; color: #888; font-family: monospace;">TIME SLOT:</td><td style="padding: 8px 0; font-weight: bold; text-align: right; color: #facc15;">${finalBooking.timeSlot}</td></tr>
                                 <tr><td style="padding: 12px 0 0 0; color: #888; font-family: monospace;">TOTAL PAID:</td><td style="padding: 12px 0 0 0; font-size: 18px; font-weight: 900; text-align: right; color: #facc15;">R${finalBooking.totalPaid.toLocaleString('en-ZA')}</td></tr>
@@ -778,7 +779,14 @@ export default function BookingSystem({ onBack }: { onBack?: () => void }) {
 
     try {
       const totalAmount = calculateTotal();
-      const finalBooking: Omit<BookedSlot, 'id'> = {
+      
+      // Generate a highly professional custom booking ID client-side
+      const datePart = selectedDateStr.replace(/-/g, '');
+      const randomPart = Math.random().toString(36).substring(2, 8).toUpperCase();
+      const bookingId = `RIX_${datePart}_${randomPart}`;
+
+      const finalBooking: BookedSlot = {
+        id: bookingId,
         date: selectedDateStr,
         timeSlot: selectedTime,
         type: bookingType,
@@ -798,13 +806,29 @@ export default function BookingSystem({ onBack }: { onBack?: () => void }) {
         paid: false
       };
 
-      // Write pending booking to Firestore
-      const docRef = await addDoc(collection(db, 'bookings'), finalBooking);
-      const bookingId = docRef.id;
-
-      // Store in localStorage as a backup
+      // Store in localStorage as a backup instantly
       localStorage.setItem('pending_rix_booking_id', bookingId);
-      localStorage.setItem('pending_rix_booking', JSON.stringify({ ...finalBooking, id: bookingId }));
+      localStorage.setItem('pending_rix_booking', JSON.stringify(finalBooking));
+
+      // Attempt to save to Firestore using setDoc with a strict, non-blocking timeout
+      const saveToFirestore = async () => {
+        try {
+          await setDoc(doc(db, 'bookings', bookingId), finalBooking);
+          console.log("Pending booking saved to Firestore successfully:", bookingId);
+        } catch (firestoreErr) {
+          console.warn("Firestore background write error:", firestoreErr);
+        }
+      };
+
+      // We use a Promise.race to wait for a maximum of 1500ms before redirecting
+      const timeoutPromise = new Promise((resolve) => setTimeout(resolve, 1500, 'timeout'));
+      
+      console.log("Saving pending booking to Firestore with a 1.5s timeout safety net...");
+      const result = await Promise.race([saveToFirestore(), timeoutPromise]);
+
+      if (result === 'timeout') {
+        console.warn("Firestore write timed out (took > 1.5s). Proceeding to payment gateway to prevent user blocking.");
+      }
 
       // Redirect to PayFast
       redirectToPayFast(totalAmount, bookingId);
