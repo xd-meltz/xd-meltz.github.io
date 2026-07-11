@@ -34,8 +34,9 @@ const app = initializeApp(firebaseConfig);
 // Initialize Auth
 export const auth = getAuth(app);
 
-// Initialize Firestore with the custom database ID provided in the config
-export const db = getFirestore(app, (firebaseConfig as any).firestoreDatabaseId);
+// Initialize Firestore with the custom database ID if available
+const dbId = (firebaseConfig as any).firestoreDatabaseId;
+export const db = dbId ? getFirestore(app, dbId) : getFirestore(app);
 
 export enum OperationType {
   CREATE = 'create',

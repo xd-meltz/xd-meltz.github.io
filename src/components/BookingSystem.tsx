@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   Calendar as CalendarIcon, 
   Clock, 
@@ -120,6 +120,26 @@ export default function BookingSystem({ onBack }: { onBack?: () => void }) {
 
   // List of all bookings persisted in Firebase
   const [bookings, setBookings] = useState<BookedSlot[]>([]);
+
+  // PayFast parameters state for reliable form submission
+  const [payfastParams, setPayfastParams] = useState<Record<string, string> | null>(null);
+  const payfastFormRef = useRef<HTMLFormElement | null>(null);
+
+  // Check if app is running inside an iframe (e.g., inside AI Studio preview)
+  const isIframe = typeof window !== 'undefined' && window.self !== window.top;
+
+  // Auto-submit PayFast form when parameters are prepared (only when outside an iframe)
+  useEffect(() => {
+    if (payfastParams && payfastFormRef.current) {
+      try {
+        if (!isIframe) {
+          payfastFormRef.current.submit();
+        }
+      } catch (err) {
+        console.error("Auto-submit form failed:", err);
+      }
+    }
+  }, [payfastParams, isIframe]);
 
   // Google Calendar Integration states
   const [googleUser, setGoogleUser] = useState<any>(null);
@@ -629,6 +649,7 @@ export default function BookingSystem({ onBack }: { onBack?: () => void }) {
     }
 
     // Immediately trigger processing screen
+    setPayfastParams(null);
     setPaymentStep('processing');
     setIsPaying(true);
 
@@ -675,13 +696,6 @@ export default function BookingSystem({ onBack }: { onBack?: () => void }) {
   const redirectToPayFast = (totalAmount: number, bookingId: string) => {
     const merchantId = (import.meta as any).env.VITE_PAYFAST_MERCHANT_ID || "10051106";
     const merchantKey = (import.meta as any).env.VITE_PAYFAST_MERCHANT_KEY || "w3q3a42d6my8m";
-    const processUrl = (import.meta as any).env.VITE_PAYFAST_PROCESS_URL || "https://sandbox.payfast.co.za/eng/process";
-
-    // Clean up any existing programmatically added form
-    const existingForm = document.getElementById('payfast-redirect-form');
-    if (existingForm) {
-      existingForm.remove();
-    }
 
     // Build self-referential return and cancel URLs
     const urlSuccess = new URL(window.location.href);
@@ -691,13 +705,6 @@ export default function BookingSystem({ onBack }: { onBack?: () => void }) {
     const urlCancel = new URL(window.location.href);
     urlCancel.searchParams.set('payfast_status', 'cancel');
     urlCancel.searchParams.set('booking_id', bookingId);
-
-    // Create a form element programmatically and submit
-    const form = document.createElement('form');
-    form.id = 'payfast-redirect-form';
-    form.method = 'POST';
-    form.action = processUrl;
-    form.target = '_blank'; // Use _blank to open in a new tab, bypassing all iframe sandboxing blockades
 
     const parameters: Record<string, string> = {
       merchant_id: merchantId,
@@ -714,21 +721,7 @@ export default function BookingSystem({ onBack }: { onBack?: () => void }) {
       custom_str1: bookingId
     };
 
-    for (const [key, value] of Object.entries(parameters)) {
-      const input = document.createElement('input');
-      input.type = 'hidden';
-      input.name = key;
-      input.value = value;
-      form.appendChild(input);
-    }
-
-    document.body.appendChild(form);
-    
-    try {
-      form.submit();
-    } catch (e) {
-      console.error("Auto-submit failed, relying on user-triggered action", e);
-    }
+    setPayfastParams(parameters);
   };
 
   const handleGoogleCalendarSync = async (booking: BookedSlot) => {
@@ -1352,36 +1345,97 @@ export default function BookingSystem({ onBack }: { onBack?: () => void }) {
 
                {paymentStep === 'processing' && (
                 <div className="py-8 flex flex-col items-center justify-center text-center">
-                  <div className="relative w-16 h-16 mb-6">
-                    <div className="absolute inset-0 rounded-full border-4 border-neutral-850" />
-                    <div className="absolute inset-0 rounded-full border-4 border-brand border-t-transparent animate-spin" />
-                    <Bike className="w-6 h-6 text-brand absolute inset-0 m-auto animate-pulse" />
-                  </div>
-                  
-                  <span className="font-mono text-[10px] text-brand uppercase font-black tracking-widest block animate-pulse">RE-DIRECTING SECURELY</span>
-                  <h4 className="font-display text-lg font-black text-white uppercase tracking-tight mt-1.5">OPENING PAYFAST PORTAL</h4>
-                  <p className="text-neutral-450 text-xs mt-2 max-w-xs">
-                    Please do not refresh or close. Initiating South Africa's leading secure merchant checkout for slot {selectedTime} on {selectedDateStr}.
-                  </p>
+                  {!payfastParams ? (
+                    <>
+                      <div className="relative w-16 h-16 mb-6">
+                        <div className="absolute inset-0 rounded-full border-4 border-neutral-850" />
+                        <div className="absolute inset-0 rounded-full border-4 border-brand border-t-transparent animate-spin" />
+                        <Bike className="w-6 h-6 text-brand absolute inset-0 m-auto animate-pulse" />
+                      </div>
+                      <span className="font-mono text-[10px] text-brand uppercase font-black tracking-widest block animate-pulse">SECURING RESERVATION</span>
+                      <h4 className="font-display text-lg font-black text-white uppercase tracking-tight mt-1.5 font-sans">LOCKING YOUR RIDE SLOT</h4>
+                      <p className="text-neutral-450 text-xs mt-2 max-w-xs leading-relaxed font-sans">
+                        Please wait. We are reserving slot <strong className="text-white">{selectedTime}</strong> on <strong className="text-white">{selectedDateStr}</strong> in our secure database...
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <div className="w-12 h-12 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-full flex items-center justify-center mb-4">
+                        <Check className="w-5 h-5" />
+                      </div>
+                      <span className="font-mono text-[10px] text-emerald-400 uppercase font-black tracking-widest block">SLOT SECURED TEMPORARILY</span>
+                      <h4 className="font-display text-lg font-black text-white uppercase tracking-tight mt-1.5 font-sans">READY FOR PAYMENT</h4>
+                      <p className="text-neutral-450 text-xs mt-2 max-w-xs leading-relaxed font-sans font-medium">
+                        Your slot is locked! To finalize your ride session at Rix Compound, please click the yellow button below to pay securely on <strong className="text-white">PayFast</strong>.
+                      </p>
 
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const f = document.getElementById('payfast-redirect-form') as HTMLFormElement;
-                      if (f) {
-                        f.submit();
-                      } else {
-                        alert("Checkout session expired. Please select the slot again to re-initiate payment.");
-                      }
-                    }}
-                    className="mt-6 w-full py-3.5 bg-brand text-neutral-950 font-black text-xs uppercase tracking-widest rounded-xl hover:bg-brand/90 transition-all flex items-center justify-center gap-2 shadow-lg shadow-brand/20 cursor-pointer font-sans"
-                  >
-                    Open Secure PayFast Portal
-                  </button>
+                      {isIframe ? (
+                        <div className="w-full mt-5 p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-left font-sans">
+                          <h5 className="text-[11px] font-black text-amber-400 uppercase tracking-widest font-mono flex items-center gap-1.5 mb-1.5">
+                            ⚠️ Sandbox Environment Detected
+                          </h5>
+                          <p className="text-[11px] text-neutral-300 leading-relaxed mb-3">
+                            Web browsers block secure payment forms when run inside of the editor's embedded preview. To complete your Rix Compound booking, please open the application in a direct browser tab:
+                          </p>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              window.open(window.location.href, '_blank');
+                            }}
+                            className="w-full py-3.5 bg-amber-500 hover:bg-amber-400 text-neutral-950 font-black text-xs uppercase tracking-widest rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-lg shadow-amber-500/10 font-sans"
+                          >
+                            🚀 Open App in Full Browser Tab
+                          </button>
+                          
+                          <div className="relative flex py-3 items-center">
+                            <div className="flex-grow border-t border-neutral-850"></div>
+                            <span className="flex-shrink mx-3 text-neutral-600 text-[9px] uppercase tracking-widest font-mono">or try anyway</span>
+                            <div className="flex-grow border-t border-neutral-850"></div>
+                          </div>
 
-                  <p className="text-[10px] text-neutral-500 mt-2.5 max-w-xs leading-normal">
-                    If the secure payment tab did not launch automatically, please click the button above to complete your booking.
-                  </p>
+                          <form 
+                            ref={payfastFormRef}
+                            method="POST" 
+                            action={(import.meta as any).env.VITE_PAYFAST_PROCESS_URL || "https://sandbox.payfast.co.za/eng/process"} 
+                            target="_blank"
+                            className="w-full"
+                          >
+                            {Object.entries(payfastParams).map(([key, value]) => (
+                              <input key={key} type="hidden" name={key} value={value} />
+                            ))}
+                            <button
+                              type="submit"
+                              className="w-full py-3 bg-neutral-900 border border-neutral-800 hover:bg-neutral-850 hover:border-neutral-700 text-neutral-300 font-extrabold text-[10px] uppercase tracking-widest rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer font-sans"
+                            >
+                              Launch Gateway Here
+                            </button>
+                          </form>
+                        </div>
+                      ) : (
+                        <form 
+                          ref={payfastFormRef}
+                          method="POST" 
+                          action={(import.meta as any).env.VITE_PAYFAST_PROCESS_URL || "https://sandbox.payfast.co.za/eng/process"} 
+                          target="_blank"
+                          className="w-full mt-6 animate-fade-in"
+                        >
+                          {Object.entries(payfastParams).map(([key, value]) => (
+                            <input key={key} type="hidden" name={key} value={value} />
+                          ))}
+                          <button
+                            type="submit"
+                            className="w-full py-4 bg-brand text-neutral-950 font-black text-xs uppercase tracking-widest rounded-xl hover:bg-brand/90 hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2 shadow-lg shadow-brand/20 cursor-pointer font-sans"
+                          >
+                            PROCEED TO PAYFAST SECURE GATEWAY
+                          </button>
+                        </form>
+                      )}
+
+                      <p className="text-[10px] text-neutral-500 mt-4 max-w-xs leading-normal font-sans">
+                        Note: This will open a secure checkout page. We support Credit Cards, Instant EFT, and more.
+                      </p>
+                    </>
+                  )}
 
                   <button
                     type="button"
@@ -1389,7 +1443,7 @@ export default function BookingSystem({ onBack }: { onBack?: () => void }) {
                       setIsPaying(false);
                       setPaymentStep('idle');
                     }}
-                    className="mt-5 text-[9px] text-neutral-500 hover:text-rose-400 uppercase font-black tracking-widest font-mono transition-all cursor-pointer"
+                    className="mt-6 text-[9px] text-neutral-500 hover:text-rose-400 uppercase font-black tracking-widest font-mono transition-all cursor-pointer"
                   >
                     Cancel & Return to Slots
                   </button>
