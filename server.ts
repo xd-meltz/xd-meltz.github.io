@@ -13,6 +13,15 @@ async function startServer() {
   const app = express();
   const PORT = 3000;
 
+  // PayFast dynamic runtime configuration endpoint
+  app.get('/api/payfast-config', (req, res) => {
+    res.json({
+      merchantId: process.env.VITE_PAYFAST_MERCHANT_ID || "10051106",
+      merchantKey: process.env.VITE_PAYFAST_MERCHANT_KEY || "w3q3a42d6my8m",
+      processUrl: process.env.VITE_PAYFAST_PROCESS_URL || "https://sandbox.payfast.co.za/eng/process"
+    });
+  });
+
   // ICS Calendar feed endpoint
   app.get('/api/bookings.ics', async (req, res) => {
     try {

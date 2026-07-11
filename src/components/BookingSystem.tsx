@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { 
   Calendar as CalendarIcon, 
   Clock, 
@@ -123,20 +123,148 @@ export default function BookingSystem({ onBack }: { onBack?: () => void }) {
 
   // PayFast parameters state for reliable form submission
   const [payfastParams, setPayfastParams] = useState<Record<string, string> | null>(null);
-  const payfastFormRef = useRef<HTMLFormElement | null>(null);
+  const [redirectError, setRedirectError] = useState<string | null>(null);
+  const [payfastConfig, setPayfastConfig] = useState<{ merchantId: string; merchantKey: string; processUrl: string } | null>(null);
+
+  // Fetch PayFast configuration at runtime
+  useEffect(() => {
+    fetch('/api/payfast-config')
+      .then((res) => {
+        if (!res.ok) throw new Error("Server response error");
+        return res.json();
+      })
+      .then((data) => {
+        setPayfastConfig(data);
+      })
+      .catch((err) => {
+        console.error("Failed to load PayFast runtime config:", err);
+        // Resilient fallback to safe sandboxed credentials
+        setPayfastConfig({
+          merchantId: "10051106",
+          merchantKey: "w3q3a42d6my8m",
+          processUrl: "https://sandbox.payfast.co.za/eng/process"
+        });
+      });
+  }, []);
 
   // Check if app is running inside an iframe (e.g., inside AI Studio preview)
-  const isIframe = typeof window !== 'undefined' && window.self !== window.top;
+  const isIframe = (() => {
+    try {
+      return typeof window !== 'undefined' && window.self !== window.top;
+    } catch (e) {
+      return true;
+    }
+  })();
 
-  // Auto-submit PayFast form when parameters are prepared (only when outside an iframe)
+  // Load draft booking if it exists in URL hash or localStorage (resilient across sandboxed iframe restrictions)
   useEffect(() => {
-    if (payfastParams && payfastFormRef.current) {
-      try {
-        if (!isIframe) {
-          payfastFormRef.current.submit();
+    try {
+      let draft: any = null;
+
+      // 1. Try reading and parsing from URL Hash first (safest across iframe boundaries)
+      const hash = window.location.hash;
+      if (hash && hash.startsWith('#draft=')) {
+        try {
+          const base64Draft = hash.substring(7);
+          const decodedJson = decodeURIComponent(escape(atob(base64Draft)));
+          draft = JSON.parse(decodedJson);
+          
+          // Instantly clear hash so it doesn't auto-restore on manual page refreshes
+          window.history.replaceState(null, '', window.location.pathname + window.location.search);
+        } catch (hashErr) {
+          console.error("Failed to restore draft from URL hash:", hashErr);
         }
+      }
+
+      // 2. Try restoring from localStorage as a fallback
+      if (!draft) {
+        const draftRaw = localStorage.getItem('rix_draft_booking');
+        if (draftRaw) {
+          draft = JSON.parse(draftRaw);
+          localStorage.removeItem('rix_draft_booking');
+        }
+      }
+
+      if (draft) {
+        if (draft.selectedDateStr) {
+          setSelectedDate(new Date(draft.selectedDateStr));
+        }
+        if (draft.bookingType) setBookingType(draft.bookingType);
+        if (draft.selectedTime) setSelectedTime(draft.selectedTime);
+        if (draft.pitBikesCount !== undefined) setPitBikesCount(draft.pitBikesCount);
+        if (draft.quadsCount !== undefined) setQuadsCount(draft.quadsCount);
+        if (draft.ownBikesCount !== undefined) setOwnBikesCount(draft.ownBikesCount);
+        if (draft.groupPackageSize !== undefined) setGroupPackageSize(draft.groupPackageSize);
+        if (draft.groupDuration) setGroupDuration(draft.groupDuration);
+        if (draft.customerName) setCustomerName(draft.customerName);
+        if (draft.customerEmail) setCustomerEmail(draft.customerEmail);
+        if (draft.customerPhone) setCustomerPhone(draft.customerPhone);
+        if (draft.requirementsAccepted !== undefined) setRequirementsAccepted(draft.requirementsAccepted);
+        if (draft.waiverAccepted !== undefined) setWaiverAccepted(draft.waiverAccepted);
+        
+        // If they were in the paying state, restore that as well
+        if (draft.isPaying) {
+          setIsPaying(true);
+          setPaymentStep(draft.paymentStep || 'processing');
+          if (draft.payfastParams) {
+            setPayfastParams(draft.payfastParams);
+          }
+        }
+      }
+    } catch (e) {
+      console.error("Failed to restore draft booking:", e);
+    }
+  }, []);
+
+  const handleOpenInNewTab = () => {
+    try {
+      const draft = {
+        selectedDateStr: selectedDateStr,
+        bookingType,
+        selectedTime,
+        pitBikesCount,
+        quadsCount,
+        ownBikesCount,
+        groupPackageSize,
+        groupDuration,
+        customerName,
+        customerEmail,
+        customerPhone,
+        requirementsAccepted,
+        waiverAccepted,
+        isPaying,
+        paymentStep,
+        payfastParams
+      };
+      
+      try {
+        localStorage.setItem('rix_draft_booking', JSON.stringify(draft));
+      } catch (storageErr) {
+        console.warn("localStorage is blocked, relying solely on hash parameter:", storageErr);
+      }
+
+      // Base64 encode state to safely pass across sandbox restrictions
+      const draftJson = JSON.stringify(draft);
+      const base64Draft = btoa(unescape(encodeURIComponent(draftJson)));
+      
+      const cleanUrl = new URL(window.location.href);
+      cleanUrl.hash = `draft=${base64Draft}`;
+      
+      window.open(cleanUrl.toString(), '_blank');
+    } catch (err) {
+      console.error("Failed to save draft:", err);
+    }
+  };
+
+  // Callback ref that auto-submits PayFast form as soon as it mounts to the DOM
+  const payfastFormRef = useCallback((node: HTMLFormElement | null) => {
+    if (node && payfastParams && !isIframe) {
+      try {
+        setRedirectError(null);
+        node.submit();
       } catch (err) {
         console.error("Auto-submit form failed:", err);
+        setRedirectError("Failed to redirect to PayFast automatically. Please check your browser's popup blocker or click 'PROCEED TO PAYFAST SECURE GATEWAY' manually below.");
       }
     }
   }, [payfastParams, isIframe]);
@@ -287,7 +415,6 @@ export default function BookingSystem({ onBack }: { onBack?: () => void }) {
                     console.error("Error updating booking paid state in Firestore", err);
                     alert("Payment was successful on PayFast, but there was an error updating your booking. Please contact us!");
                     setIsPaying(false);
-                    handleFirestoreError(err, OperationType.UPDATE, `bookings/${bookingId}`);
                   });
               }
             } else {
@@ -348,7 +475,6 @@ export default function BookingSystem({ onBack }: { onBack?: () => void }) {
           .catch((err) => {
             console.error("Error getting booking document:", err);
             setIsPaying(false);
-            handleFirestoreError(err, OperationType.GET, `bookings/${bookingId}`);
           });
       }
     } else if (payfastStatus === 'cancel') {
@@ -438,7 +564,6 @@ export default function BookingSystem({ onBack }: { onBack?: () => void }) {
             await addDoc(collection(db, 'bookings'), item);
           } catch (err) {
             console.error("Error adding initial live seeding", err);
-            handleFirestoreError(err, OperationType.CREATE, 'bookings');
           }
         }
       } else {
@@ -446,7 +571,6 @@ export default function BookingSystem({ onBack }: { onBack?: () => void }) {
       }
     }, (error) => {
       console.error("Error loading live bookings from database", error);
-      handleFirestoreError(error, OperationType.GET, 'bookings');
     });
     return () => unsubscribe();
   }, []);
@@ -462,7 +586,6 @@ export default function BookingSystem({ onBack }: { onBack?: () => void }) {
       } catch (err) {
         console.error("Error clearing database bookings", err);
         alert("Could not clear database. See console logs.");
-        handleFirestoreError(err, OperationType.DELETE, 'bookings');
       }
     }
   };
@@ -689,13 +812,12 @@ export default function BookingSystem({ onBack }: { onBack?: () => void }) {
       console.error("Error creating pending booking:", err);
       alert("Failed to initialize booking session. Please try again.");
       setIsPaying(false);
-      handleFirestoreError(err, OperationType.CREATE, 'bookings');
     }
   };
 
   const redirectToPayFast = (totalAmount: number, bookingId: string) => {
-    const merchantId = (import.meta as any).env.VITE_PAYFAST_MERCHANT_ID || "10051106";
-    const merchantKey = (import.meta as any).env.VITE_PAYFAST_MERCHANT_KEY || "w3q3a42d6my8m";
+    const merchantId = payfastConfig?.merchantId || import.meta.env.VITE_PAYFAST_MERCHANT_ID || "10051106";
+    const merchantKey = payfastConfig?.merchantKey || import.meta.env.VITE_PAYFAST_MERCHANT_KEY || "w3q3a42d6my8m";
 
     // Build self-referential return and cancel URLs
     const urlSuccess = new URL(window.location.href);
@@ -1369,35 +1491,46 @@ export default function BookingSystem({ onBack }: { onBack?: () => void }) {
                         Your slot is locked! To finalize your ride session at Rix Compound, please click the yellow button below to pay securely on <strong className="text-white">PayFast</strong>.
                       </p>
 
-                      {isIframe ? (
+                      {redirectError && (
+                        <div className="w-full mb-4 p-3 bg-rose-500/15 border border-rose-500/30 text-rose-400 rounded-xl text-[11px] leading-relaxed text-left font-sans">
+                          {redirectError}
+                        </div>
+                      )}
+
+                      {!isIframe && (
+                        <div className="w-full mt-4 mb-2 p-3 bg-amber-500/10 border border-amber-500/20 text-amber-400 rounded-xl text-center flex items-center justify-center gap-2 animate-pulse">
+                          <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
+                          <span className="text-[11px] font-black uppercase tracking-wider font-sans">Automatic redirect in progress...</span>
+                        </div>
+                      )}
+
+                       {isIframe ? (
                         <div className="w-full mt-5 p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-left font-sans">
                           <h5 className="text-[11px] font-black text-amber-400 uppercase tracking-widest font-mono flex items-center gap-1.5 mb-1.5">
-                            ⚠️ Sandbox Environment Detected
+                            ⚠️ Embedded Preview Detected
                           </h5>
                           <p className="text-[11px] text-neutral-300 leading-relaxed mb-3">
-                            Web browsers block secure payment forms when run inside of the editor's embedded preview. To complete your Rix Compound booking, please open the application in a direct browser tab:
+                            Browsers block secure checkout popups when run inside the editor's embedded window. To guarantee a successful PayFast redirect without losing your selections, please use the recommended button below:
                           </p>
                           <button
                             type="button"
-                            onClick={() => {
-                              window.open(window.location.href, '_blank');
-                            }}
-                            className="w-full py-3.5 bg-amber-500 hover:bg-amber-400 text-neutral-950 font-black text-xs uppercase tracking-widest rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-lg shadow-amber-500/10 font-sans"
+                            onClick={handleOpenInNewTab}
+                            className="w-full py-3.5 bg-brand text-neutral-950 font-black text-xs uppercase tracking-widest rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-lg shadow-brand/20 hover:bg-brand/90 font-sans"
                           >
-                            🚀 Open App in Full Browser Tab
+                            🚀 Open Secure Checkout Tab
                           </button>
                           
                           <div className="relative flex py-3 items-center">
                             <div className="flex-grow border-t border-neutral-850"></div>
-                            <span className="flex-shrink mx-3 text-neutral-600 text-[9px] uppercase tracking-widest font-mono">or try anyway</span>
+                            <span className="flex-shrink mx-3 text-neutral-600 text-[9px] uppercase tracking-widest font-mono">or force redirect in this tab</span>
                             <div className="flex-grow border-t border-neutral-850"></div>
                           </div>
 
                           <form 
                             ref={payfastFormRef}
                             method="POST" 
-                            action={(import.meta as any).env.VITE_PAYFAST_PROCESS_URL || "https://sandbox.payfast.co.za/eng/process"} 
-                            target="_blank"
+                            action={payfastConfig?.processUrl || import.meta.env.VITE_PAYFAST_PROCESS_URL || "https://sandbox.payfast.co.za/eng/process"} 
+                            target="_top"
                             className="w-full"
                           >
                             {Object.entries(payfastParams).map(([key, value]) => (
@@ -1407,7 +1540,7 @@ export default function BookingSystem({ onBack }: { onBack?: () => void }) {
                               type="submit"
                               className="w-full py-3 bg-neutral-900 border border-neutral-800 hover:bg-neutral-850 hover:border-neutral-700 text-neutral-300 font-extrabold text-[10px] uppercase tracking-widest rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer font-sans"
                             >
-                              Launch Gateway Here
+                              Launch Gateway via Parent Window
                             </button>
                           </form>
                         </div>
@@ -1415,9 +1548,9 @@ export default function BookingSystem({ onBack }: { onBack?: () => void }) {
                         <form 
                           ref={payfastFormRef}
                           method="POST" 
-                          action={(import.meta as any).env.VITE_PAYFAST_PROCESS_URL || "https://sandbox.payfast.co.za/eng/process"} 
-                          target="_blank"
-                          className="w-full mt-6 animate-fade-in"
+                          action={payfastConfig?.processUrl || import.meta.env.VITE_PAYFAST_PROCESS_URL || "https://sandbox.payfast.co.za/eng/process"} 
+                          target="_self"
+                          className="w-full mt-4 animate-fade-in"
                         >
                           {Object.entries(payfastParams).map(([key, value]) => (
                             <input key={key} type="hidden" name={key} value={value} />
@@ -1431,7 +1564,7 @@ export default function BookingSystem({ onBack }: { onBack?: () => void }) {
                         </form>
                       )}
 
-                      <p className="text-[10px] text-neutral-500 mt-4 max-w-xs leading-normal font-sans">
+                      <p className="text-[10px] text-neutral-500 mt-4 max-w-xs leading-normal font-sans text-center">
                         Note: This will open a secure checkout page. We support Credit Cards, Instant EFT, and more.
                       </p>
                     </>
