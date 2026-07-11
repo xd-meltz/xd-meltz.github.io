@@ -18,13 +18,24 @@ import {
   onSnapshot,
   updateDoc
 } from 'firebase/firestore';
+import {
+  getAuth,
+  signInWithPopup,
+  GoogleAuthProvider,
+  onAuthStateChanged,
+  signOut,
+  type User
+} from 'firebase/auth';
 import firebaseConfig from '../../firebase-applet-config.json';
 
 // Initialize Firebase with the auto-provisioned configuration
 const app = initializeApp(firebaseConfig);
 
+// Initialize Auth
+export const auth = getAuth(app);
+
 // Initialize Firestore with the custom database ID provided in the config
-export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
+export const db = getFirestore(app, (firebaseConfig as any).firestoreDatabaseId);
 
 export enum OperationType {
   CREATE = 'create',
@@ -81,5 +92,10 @@ export {
   addDoc,
   deleteDoc,
   onSnapshot,
-  updateDoc
+  updateDoc,
+  signInWithPopup,
+  GoogleAuthProvider,
+  onAuthStateChanged,
+  signOut,
+  type User
 };

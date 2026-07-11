@@ -20,7 +20,10 @@ import {
   AlertCircle,
   HelpCircle,
   Sparkles,
-  X
+  X,
+  Link,
+  Copy,
+  Check
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
@@ -37,6 +40,7 @@ import {
   updateDoc,
   getDoc
 } from '../lib/firebase';
+import { googleSignIn, createGoogleCalendarEvent, getAccessToken, setAccessToken } from '../lib/calendarSync';
 
 // Type definitions for Booking State
 interface BookedSlot {
@@ -116,6 +120,20 @@ export default function BookingSystem({ onBack }: { onBack?: () => void }) {
 
   // List of all bookings persisted in Firebase
   const [bookings, setBookings] = useState<BookedSlot[]>([]);
+
+  // Google Calendar Integration states
+  const [googleUser, setGoogleUser] = useState<any>(null);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [syncSuccess, setSyncSuccess] = useState(false);
+  const [syncError, setSyncError] = useState<string | null>(null);
+  const [copiedLink, setCopiedLink] = useState(false);
+
+  // Auto-sync booking if signed in with Google
+  useEffect(() => {
+    if (latestBooking && googleUser && getAccessToken() && !syncSuccess && !isSyncing && !syncError) {
+      handleGoogleCalendarSync(latestBooking);
+    }
+  }, [latestBooking, googleUser]);
 
   // Check for PayFast return parameters
   useEffect(() => {
@@ -701,6 +719,38 @@ export default function BookingSystem({ onBack }: { onBack?: () => void }) {
     form.submit();
   };
 
+  const handleGoogleCalendarSync = async (booking: BookedSlot) => {
+    setIsSyncing(true);
+    setSyncError(null);
+    try {
+      let currentToken = getAccessToken();
+      
+      if (!currentToken) {
+        const res = await googleSignIn();
+        if (res) {
+          currentToken = res.accessToken;
+          setGoogleUser(res.user);
+        }
+      }
+
+      if (currentToken) {
+        const result = await createGoogleCalendarEvent(booking, currentToken);
+        if (result.success) {
+          setSyncSuccess(true);
+        } else {
+          setSyncError(result.error || "Could not sync event");
+        }
+      } else {
+        setSyncError("Google sign-in is required to sync.");
+      }
+    } catch (err: any) {
+      console.error(err);
+      setSyncError(err.message || String(err));
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
   const handleCloseSuccess = () => {
     setIsPaying(false);
     setLatestBooking(null);
@@ -710,6 +760,8 @@ export default function BookingSystem({ onBack }: { onBack?: () => void }) {
     setCustomerPhone('');
     setRequirementsAccepted(false);
     setWaiverAccepted(false);
+    setSyncSuccess(false);
+    setSyncError(null);
   };
 
   const monthNames = [
@@ -737,17 +789,6 @@ export default function BookingSystem({ onBack }: { onBack?: () => void }) {
           <p className="text-neutral-400 text-xs sm:text-sm mt-1">
             Real-time reservation system. Select your slot, secure with online payment, and lock your ride.
           </p>
-        </div>
-        
-        {/* Reset utilities for testing */}
-        <div className="flex items-center gap-2 sm:self-end">
-          <button
-            onClick={clearAllBookings}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-neutral-900 border border-neutral-800 rounded-lg hover:border-red-500/40 hover:bg-red-950/20 text-neutral-450 hover:text-red-400 font-mono text-[10px] sm:text-xs transition-all uppercase"
-            title="Reset slots back to default for testing"
-          >
-            <Trash2 className="w-3.5 h-3.5" /> Reset Slots
-          </button>
         </div>
       </div>
 
@@ -1165,6 +1206,7 @@ export default function BookingSystem({ onBack }: { onBack?: () => void }) {
 
               {/* Checkout Form */}
               <form onSubmit={handleBookingSubmit} className="space-y-3.5 mt-2.5">
+                
                 <div>
                   <label className="block text-neutral-400 text-[10px] font-mono uppercase mb-1">Your Full Name</label>
                   <input
