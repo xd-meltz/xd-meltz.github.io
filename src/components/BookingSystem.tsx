@@ -677,6 +677,12 @@ export default function BookingSystem({ onBack }: { onBack?: () => void }) {
     const merchantKey = (import.meta as any).env.VITE_PAYFAST_MERCHANT_KEY || "w3q3a42d6my8m";
     const processUrl = (import.meta as any).env.VITE_PAYFAST_PROCESS_URL || "https://sandbox.payfast.co.za/eng/process";
 
+    // Clean up any existing programmatically added form
+    const existingForm = document.getElementById('payfast-redirect-form');
+    if (existingForm) {
+      existingForm.remove();
+    }
+
     // Build self-referential return and cancel URLs
     const urlSuccess = new URL(window.location.href);
     urlSuccess.searchParams.set('payfast_status', 'success');
@@ -688,9 +694,10 @@ export default function BookingSystem({ onBack }: { onBack?: () => void }) {
 
     // Create a form element programmatically and submit
     const form = document.createElement('form');
+    form.id = 'payfast-redirect-form';
     form.method = 'POST';
     form.action = processUrl;
-    form.target = '_top'; // Break out of any iframes so PayFast loads correctly
+    form.target = '_blank'; // Use _blank to open in a new tab, bypassing all iframe sandboxing blockades
 
     const parameters: Record<string, string> = {
       merchant_id: merchantId,
@@ -716,7 +723,12 @@ export default function BookingSystem({ onBack }: { onBack?: () => void }) {
     }
 
     document.body.appendChild(form);
-    form.submit();
+    
+    try {
+      form.submit();
+    } catch (e) {
+      console.error("Auto-submit failed, relying on user-triggered action", e);
+    }
   };
 
   const handleGoogleCalendarSync = async (booking: BookedSlot) => {
@@ -1338,8 +1350,8 @@ export default function BookingSystem({ onBack }: { onBack?: () => void }) {
               {/* Caution stripes header */}
               <div className="absolute top-0 left-0 right-0 h-1.5 bg-[repeating-linear-gradient(45deg,#ff8c00,#ff8c00_8px,#000_8px,#000_16px)]" />
 
-              {paymentStep === 'processing' && (
-                <div className="py-12 flex flex-col items-center justify-center text-center">
+               {paymentStep === 'processing' && (
+                <div className="py-8 flex flex-col items-center justify-center text-center">
                   <div className="relative w-16 h-16 mb-6">
                     <div className="absolute inset-0 rounded-full border-4 border-neutral-850" />
                     <div className="absolute inset-0 rounded-full border-4 border-brand border-t-transparent animate-spin" />
@@ -1351,6 +1363,36 @@ export default function BookingSystem({ onBack }: { onBack?: () => void }) {
                   <p className="text-neutral-450 text-xs mt-2 max-w-xs">
                     Please do not refresh or close. Initiating South Africa's leading secure merchant checkout for slot {selectedTime} on {selectedDateStr}.
                   </p>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const f = document.getElementById('payfast-redirect-form') as HTMLFormElement;
+                      if (f) {
+                        f.submit();
+                      } else {
+                        alert("Checkout session expired. Please select the slot again to re-initiate payment.");
+                      }
+                    }}
+                    className="mt-6 w-full py-3.5 bg-brand text-neutral-950 font-black text-xs uppercase tracking-widest rounded-xl hover:bg-brand/90 transition-all flex items-center justify-center gap-2 shadow-lg shadow-brand/20 cursor-pointer font-sans"
+                  >
+                    Open Secure PayFast Portal
+                  </button>
+
+                  <p className="text-[10px] text-neutral-500 mt-2.5 max-w-xs leading-normal">
+                    If the secure payment tab did not launch automatically, please click the button above to complete your booking.
+                  </p>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsPaying(false);
+                      setPaymentStep('idle');
+                    }}
+                    className="mt-5 text-[9px] text-neutral-500 hover:text-rose-400 uppercase font-black tracking-widest font-mono transition-all cursor-pointer"
+                  >
+                    Cancel & Return to Slots
+                  </button>
                 </div>
               )}
 
