@@ -15,7 +15,15 @@ import { ShieldAlert, X } from 'lucide-react';
 
 export default function App() {
   const [showNotification, setShowNotification] = useState(true);
-  const [currentPage, setCurrentPage] = useState<'home' | 'booking'>('home');
+  const [currentPage, setCurrentPage] = useState<'home' | 'booking'>(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.has('payfast_status') || params.has('booking_id')) {
+        return 'booking';
+      }
+    }
+    return 'home';
+  });
 
   const handlePageChange = (page: 'home' | 'booking') => {
     setCurrentPage(page);
