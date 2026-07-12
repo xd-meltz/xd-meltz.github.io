@@ -1,0 +1,91 @@
+{
+  "entities": {
+    "BookedSlot": {
+      "title": "BookedSlot",
+      "description": "Represents an online reservation slot at Rix Compound",
+      "type": "object",
+      "properties": {
+        "date": {
+          "type": "string",
+          "description": "The date of the booking in YYYY-MM-DD format"
+        },
+        "timeSlot": {
+          "type": "string",
+          "description": "The allocated time slot interval (e.g. 08:00 - 09:00)"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["individual", "group"],
+          "description": "Type of booking: either individual or group"
+        },
+        "packageName": {
+          "type": "string",
+          "description": "Descriptive summary of the selected bikes or packages"
+        },
+        "name": {
+          "type": "string",
+          "description": "Customer full name"
+        },
+        "email": {
+          "type": "string",
+          "description": "Customer email address for confirmation"
+        },
+        "phone": {
+          "type": "string",
+          "description": "Customer contact phone number"
+        },
+        "totalPaid": {
+          "type": "number",
+          "description": "Total Rand paid for the booking"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp when the slot was created"
+        },
+        "paid": {
+          "type": "boolean",
+          "description": "True if the booking has been successfully paid"
+        },
+        "bikes": {
+          "type": "object",
+          "description": "Bike counts map",
+          "properties": {
+            "pitBikes": { "type": "integer" },
+            "quads": { "type": "integer" },
+            "ownBikes": { "type": "integer" }
+          }
+        }
+      },
+      "required": ["date", "timeSlot", "type", "packageName", "name", "email", "phone", "totalPaid", "createdAt", "bikes", "paid"]
+    },
+    "MailMessage": {
+      "title": "MailMessage",
+      "description": "An email task processed by the Firebase Trigger Email extension",
+      "type": "object",
+      "properties": {
+        "to": {
+          "type": "string",
+          "description": "Recipient email address"
+        },
+        "message": {
+          "type": "object",
+          "properties": {
+            "subject": { "type": "string" },
+            "html": { "type": "string" }
+          }
+        }
+      },
+      "required": ["to", "message"]
+    }
+  },
+  "firestore": {
+    "bookings": {
+      "schema": "BookedSlot",
+      "description": "Stored active reservations"
+    },
+    "mail": {
+      "schema": "MailMessage",
+      "description": "Outbox for real ticket emails sent via the Trigger Email extension"
+    }
+  }
+}
