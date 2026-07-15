@@ -267,21 +267,32 @@ function generateICSFeed(bookings: Booking[]): string {
     // Clean date: YYYY-MM-DD -> YYYYMMDD
     const cleanDate = b.date.replace(/-/g, "");
     
-    // Start time: "09:00" -> "090000"
-    const cleanStart = b.slot.replace(/:/g, "") + "00";
-    
-    // End time
-    const endTimes: Record<string, string> = {
-      "09:00": "094500",
-      "09:45": "103000",
-      "10:30": "111500",
-      "11:15": "120000",
-      "12:00": "124500",
-      "12:45": "133000",
-      "13:30": "141500",
-      "14:15": "150000",
+    // Convert Africa/Johannesburg slots (UTC+2) to standard UTC times for universal client compatibility.
+    // This resolves timezone parser mismatches and prevents Apple Calendar validation errors.
+    const startUtcMap: Record<string, string> = {
+      "09:00": "070000Z",
+      "09:45": "074500Z",
+      "10:30": "083000Z",
+      "11:15": "091500Z",
+      "12:00": "100000Z",
+      "12:45": "104500Z",
+      "13:30": "113000Z",
+      "14:15": "121500Z",
     };
-    const cleanEnd = endTimes[b.slot] || (b.slot.replace(/:/g, "") + "00");
+    
+    const endUtcMap: Record<string, string> = {
+      "09:00": "074500Z",
+      "09:45": "083000Z",
+      "10:30": "091500Z",
+      "11:15": "100000Z",
+      "12:00": "104500Z",
+      "12:45": "113000Z",
+      "13:30": "121500Z",
+      "14:15": "130000Z",
+    };
+
+    const cleanStart = startUtcMap[b.slot] || (b.slot.replace(/:/g, "") + "00Z");
+    const cleanEnd = endUtcMap[b.slot] || (b.slot.replace(/:/g, "") + "00Z");
 
     const bikeDetails = b.bikeType === "Mixed"
       ? `${b.pitBikeQty || 0} Pit Bikes, ${b.quadBikeQty || 0} Quad Bikes`
@@ -309,13 +320,25 @@ function generateICSFeed(bookings: Booking[]): string {
     ].map(escapeText).join("\\n");
 
     const uid = `${b.id}@rixcompound.co.za`;
-    const dtstamp = b.createdAt ? b.createdAt.replace(/[-:]/g, "").split(".")[0] + "Z" : "20260101T000000Z";
+    
+    // Strict ISO 8601 UTC timestamp formatting to ensure no space characters are in DTSTAMP
+    let dtstamp = "20260101T000000Z";
+    if (b.createdAt) {
+      try {
+        const dateObj = new Date(b.createdAt);
+        if (!isNaN(dateObj.getTime())) {
+          dtstamp = dateObj.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+        }
+      } catch (e) {
+        // fallback
+      }
+    }
 
     ics.push("BEGIN:VEVENT");
     ics.push(`UID:${uid}`);
     ics.push(`DTSTAMP:${dtstamp}`);
-    ics.push(`DTSTART;TZID=Africa/Johannesburg:${cleanDate}T${cleanStart}`);
-    ics.push(`DTEND;TZID=Africa/Johannesburg:${cleanDate}T${cleanEnd}`);
+    ics.push(`DTSTART:${cleanDate}T${cleanStart}`);
+    ics.push(`DTEND:${cleanDate}T${cleanEnd}`);
     ics.push(`SUMMARY:🏍️ Rix: ${escapeText(b.name)} (${b.bikeType})`);
     ics.push(`DESCRIPTION:${description}`);
     ics.push("LOCATION:Rix Compound\\, Stellenbosch\\, South Africa");
@@ -336,7 +359,17 @@ async function startServer() {
   // API Routes
 
   // Public calendar feed (iCalendar format)
+  app.options("/api/calendar.ics", (req, res) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+    res.sendStatus(200);
+  });
+
   app.get("/api/calendar.ics", async (req, res) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
     try {
       const bookings = await getAllBookingsDirect();
       const icsContent = generateICSFeed(bookings as any);
