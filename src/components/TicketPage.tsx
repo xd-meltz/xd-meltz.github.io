@@ -87,44 +87,6 @@ export default function TicketPage({ bookingId }: TicketPageProps) {
       });
   }, [bookingId]);
 
-  const getGoogleCalendarUrl = () => {
-    if (!booking) return '';
-    // Format date: YYYY-MM-DD -> YYYYMMDD
-    const dateClean = booking.date.replace(/-/g, '');
-    
-    // Parse start time (e.g., "09:00" -> "090000")
-    const startHourMin = booking.slot.replace(/:/g, '') + '00';
-    
-    // Parse end time (e.g., "09:00" -> "09:45" -> "094500")
-    const endTimes: Record<string, string> = {
-      "09:00": "094500",
-      "09:45": "103000",
-      "10:30": "111500",
-      "11:15": "120000",
-      "12:00": "124500",
-      "12:45": "133000",
-      "13:30": "141500",
-      "14:15": "150000",
-    };
-    const endHourMin = endTimes[booking.slot] || (booking.slot.replace(/:/g, '') + '00');
-    
-    const dates = `${dateClean}T${startHourMin}/${dateClean}T${endHourMin}`;
-    
-    const text = encodeURIComponent(`🏍️ Rix Compound Booking: ${booking.name}`);
-    const details = encodeURIComponent(
-      `Access Pass Reservation\n` +
-      `Rider: ${booking.name}\n` +
-      `Vehicle Type: ${booking.bikeType}\n` +
-      `Package: ${booking.packageName}\n` +
-      `Total: R${booking.amount}\n` +
-      `Reference ID: ${booking.id}\n` +
-      `Status: PAID`
-    );
-    const location = encodeURIComponent('Rix Compound, Stellenbosch, South Africa');
-    
-    return `https://www.google.com/calendar/render?action=TEMPLATE&text=${text}&dates=${dates}&details=${details}&location=${location}&ctz=Africa/Johannesburg&sf=true&output=xml`;
-  };
-
   const handlePrint = () => {
     window.print();
   };
@@ -392,16 +354,6 @@ export default function TicketPage({ bookingId }: TicketPageProps) {
           <Printer className="w-4 h-4 text-brand" />
           <span>Print Ticket</span>
         </button>
-
-        <a
-          href={getGoogleCalendarUrl()}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex-1 px-4 py-3 bg-neutral-900 hover:bg-neutral-800 text-white font-extrabold uppercase rounded-xl transition-all border border-neutral-850 hover:border-brand/30 text-neutral-300 hover:text-brand shadow-md flex items-center justify-center gap-2 active:scale-95 text-xs text-center"
-        >
-          <Calendar className="w-4 h-4 text-brand" />
-          <span>Add to Google Calendar</span>
-        </a>
 
         <button
           onClick={() => navigateTo('home')}

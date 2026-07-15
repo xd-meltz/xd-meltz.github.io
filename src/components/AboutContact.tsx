@@ -3,13 +3,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState } from 'react';
 import { 
   MapPin, 
   Phone, 
   ShieldAlert, 
-  Bike,
-  Calendar
+  Bike
 } from 'lucide-react';
 import { navigateTo } from '../App';
 
@@ -18,15 +16,6 @@ export default function AboutContact() {
   const emailAddress = "rixcompound@gmail.com";
   const phoneFormatted = "0768299919";
   const whatsappLink = "https://wa.me/27768299919";
-
-  const [copied, setCopied] = useState(false);
-
-  const handleCopyFeed = () => {
-    const feedUrl = window.location.origin + '/api/calendar.ics';
-    navigator.clipboard.writeText(feedUrl);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 4000);
-  };
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -173,21 +162,6 @@ export default function AboutContact() {
           <div className="space-y-1.5 text-[10px] text-neutral-600 flex flex-col items-center">
             <p>© 2026 Rix Compound. All rights reserved.</p>
             <p>Made for motorsport enthusiasts in Stellenbosch, Western Cape, South Africa.</p>
-            <div className="flex flex-col items-center mt-3 pt-1 w-full max-w-sm mx-auto">
-              <button
-                onClick={handleCopyFeed}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-neutral-900 border border-neutral-850 hover:border-brand/40 text-neutral-400 hover:text-brand transition-all text-[10px] font-mono uppercase tracking-wider cursor-pointer"
-                title="Copy live iCal feed link to add to your Google Calendar"
-              >
-                <Calendar className="w-3.5 h-3.5 text-brand" />
-                <span>{copied ? 'Copied Link!' : 'Live Google Calendar Feed'}</span>
-              </button>
-              {copied && (
-                <p className="text-[9px] text-brand/90 font-mono mt-1.5 animate-pulse">
-                  Copied feed URL! Paste into Google Calendar: Add Calendar → From URL
-                </p>
-              )}
-            </div>
           </div>
 
         </div>
