@@ -1,0 +1,11 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /bookings/{bookingId} {
+      // Allow public creation of bookings, read access (to check availability and tickets), and updates (to mark as paid)
+      allow read, create, update: if true;
+      // Disallow deleting bookings publicly
+      allow delete: if false;
+    }
+  }
+}

@@ -2,6 +2,12 @@ import express from "express";
 import path from "path";
 import fs from "fs";
 import { createServer as createViteServer } from "vite";
+import { 
+  getAvailabilityDirect, 
+  createBookingDirect, 
+  getBookingDirect, 
+  getAllBookingsDirect 
+} from "./src/lib/firebase";
 
 interface Booking {
   id: string;
@@ -330,70 +336,85 @@ async function startServer() {
   // API Routes
 
   // Public calendar feed (iCalendar format)
-  app.get("/api/calendar.ics", (req, res) => {
-    const bookings = getBookings();
-    const icsContent = generateICSFeed(bookings);
-    res.setHeader("Content-Type", "text/calendar; charset=utf-8");
-    res.setHeader("Content-Disposition", 'inline; filename="rix-bookings.ics"');
-    res.send(icsContent);
+  app.get("/api/calendar.ics", async (req, res) => {
+    try {
+      const bookings = await getAllBookingsDirect();
+      const icsContent = generateICSFeed(bookings as any);
+      res.setHeader("Content-Type", "text/calendar; charset=utf-8");
+      res.setHeader("Content-Disposition", 'inline; filename="rix-bookings.ics"');
+      res.send(icsContent);
+    } catch (err) {
+      console.warn("Firestore fetch for ICS failed, using local file backup:", err);
+      const bookings = getBookings();
+      const icsContent = generateICSFeed(bookings);
+      res.setHeader("Content-Type", "text/calendar; charset=utf-8");
+      res.setHeader("Content-Disposition", 'inline; filename="rix-bookings.ics"');
+      res.send(icsContent);
+    }
   });
 
   // Get availability for a specific date
-  app.get("/api/availability", (req, res) => {
+  app.get("/api/availability", async (req, res) => {
     const { date } = req.query;
     if (!date || typeof date !== "string") {
       res.status(400).json({ error: "Date parameter is required" });
       return;
     }
 
-    const bookings = getBookings();
-    const dateBookings = bookings.filter((b) => b.date === date);
+    try {
+      const availabilityMap = await getAvailabilityDirect(date);
+      res.json(availabilityMap);
+    } catch (err) {
+      console.warn("Firestore fetch for availability failed, using local file backup:", err);
+      const bookings = getBookings();
+      const dateBookings = bookings.filter((b) => b.date === date);
 
-    // Initial default capacity for 45-minute slots from 9 AM to 3 PM
-    const slots = [
-      "09:00",
-      "09:45",
-      "10:30",
-      "11:15",
-      "12:00",
-      "12:45",
-      "13:30",
-      "14:15",
-    ];
+      // Initial default capacity for 45-minute slots from 9 AM to 3 PM
+      const slots = [
+        "09:00",
+        "09:45",
+        "10:30",
+        "11:15",
+        "12:00",
+        "12:45",
+        "13:30",
+        "14:15",
+      ];
 
-    const availabilityMap: Record<string, { pitbikes: number; quadbikes: number }> = {};
+      const availabilityMap: Record<string, { pitbikes: number; quadbikes: number }> = {};
 
-    slots.forEach((slot) => {
-      // Base capacities
-      let bookedPitbikes = 0;
-      let bookedQuadbikes = 0;
+      slots.forEach((slot) => {
+        // Base capacities
+        let bookedPitbikes = 0;
+        let bookedQuadbikes = 0;
 
-      const slotBookings = dateBookings.filter((b) => b.slot === slot);
-      slotBookings.forEach((b) => {
-        if (b.bikeType === "PitBike") {
-          bookedPitbikes += b.quantity;
-        } else if (b.bikeType === "QuadBike") {
-          bookedQuadbikes += b.quantity;
-        } else if (b.bikeType === "GroupPackage") {
-          if (b.quantity >= 10) {
-            bookedPitbikes += 8;
-            bookedQuadbikes += 2;
-          } else {
-            bookedPitbikes += b.quantity; // usually 5
+        const slotBookings = dateBookings.filter((b) => b.slot === slot);
+        slotBookings.forEach((b) => {
+          if (b.bikeType === "PitBike") {
+            bookedPitbikes += b.quantity;
+          } else if (b.bikeType === "QuadBike") {
+            bookedQuadbikes += b.quantity;
+          } else if (b.bikeType === "GroupPackage") {
+            if (b.quantity >= 10) {
+              bookedPitbikes += 8;
+              bookedQuadbikes += 2;
+            } else {
+              bookedPitbikes += b.quantity; // usually 5
+            }
+          } else if (b.bikeType === "Mixed") {
+            bookedPitbikes += b.pitBikeQty || 0;
+            bookedQuadbikes += b.quadBikeQty || 0;
           }
-        } else if (b.bikeType === "Mixed") {
-          bookedPitbikes += b.pitBikeQty || 0;
-          bookedQuadbikes += b.quadBikeQty || 0;
-        }
+        });
+
+        availabilityMap[slot] = {
+          pitbikes: Math.max(0, 8 - bookedPitbikes),
+          quadbikes: Math.max(0, 2 - bookedQuadbikes),
+        };
       });
 
-      availabilityMap[slot] = {
-        pitbikes: Math.max(0, 8 - bookedPitbikes),
-        quadbikes: Math.max(0, 2 - bookedQuadbikes),
-      };
-    });
-
-    res.json(availabilityMap);
+      res.json(availabilityMap);
+    }
   });
 
   // Create a pending booking

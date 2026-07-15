@@ -16,6 +16,7 @@ import {
   ShieldCheck 
 } from 'lucide-react';
 import { navigateTo } from '../App';
+import { getBookingDirect } from '../lib/firebase';
 
 interface Booking {
   id: string;
@@ -57,14 +58,72 @@ export default function TicketPage({ bookingId }: TicketPageProps) {
       .then((data) => {
         setBooking(data);
       })
-      .catch((err) => {
-        console.error(err);
-        setError('Could not load the booking. However, if your payment was successful, your slot has been reserved.');
+      .catch(async (err) => {
+        console.warn('Backend query failed, trying direct Firestore client fetch:', err);
+        try {
+          const directBooking = await getBookingDirect(bookingId);
+          if (directBooking) {
+            setBooking(directBooking as any);
+          } else {
+            throw new Error('Not found in Firestore');
+          }
+        } catch (fsErr) {
+          console.warn('Firestore fetch failed, falling back to localStorage:', fsErr);
+          const stored = localStorage.getItem(`rix_booking_${bookingId}`);
+          if (stored) {
+            try {
+              setBooking(JSON.parse(stored));
+            } catch (e) {
+              console.error('Failed to parse stored booking:', e);
+              setError('Could not load the booking. However, if your payment was successful, your slot has been reserved.');
+            }
+          } else {
+            setError('Could not load the booking. However, if your payment was successful, your slot has been reserved.');
+          }
+        }
       })
       .finally(() => {
         setLoading(false);
       });
   }, [bookingId]);
+
+  const getGoogleCalendarUrl = () => {
+    if (!booking) return '';
+    // Format date: YYYY-MM-DD -> YYYYMMDD
+    const dateClean = booking.date.replace(/-/g, '');
+    
+    // Parse start time (e.g., "09:00" -> "090000")
+    const startHourMin = booking.slot.replace(/:/g, '') + '00';
+    
+    // Parse end time (e.g., "09:00" -> "09:45" -> "094500")
+    const endTimes: Record<string, string> = {
+      "09:00": "094500",
+      "09:45": "103000",
+      "10:30": "111500",
+      "11:15": "120000",
+      "12:00": "124500",
+      "12:45": "133000",
+      "13:30": "141500",
+      "14:15": "150000",
+    };
+    const endHourMin = endTimes[booking.slot] || (booking.slot.replace(/:/g, '') + '00');
+    
+    const dates = `${dateClean}T${startHourMin}/${dateClean}T${endHourMin}`;
+    
+    const text = encodeURIComponent(`🏍️ Rix Compound Booking: ${booking.name}`);
+    const details = encodeURIComponent(
+      `Access Pass Reservation\n` +
+      `Rider: ${booking.name}\n` +
+      `Vehicle Type: ${booking.bikeType}\n` +
+      `Package: ${booking.packageName}\n` +
+      `Total: R${booking.amount}\n` +
+      `Reference ID: ${booking.id}\n` +
+      `Status: PAID`
+    );
+    const location = encodeURIComponent('Rix Compound, Stellenbosch, South Africa');
+    
+    return `https://www.google.com/calendar/render?action=TEMPLATE&text=${text}&dates=${dates}&details=${details}&location=${location}&ctz=Africa/Johannesburg&sf=true&output=xml`;
+  };
 
   const handlePrint = () => {
     window.print();
@@ -325,21 +384,31 @@ export default function TicketPage({ bookingId }: TicketPageProps) {
       </div>
 
       {/* Control Buttons */}
-      <div className="flex flex-col sm:flex-row gap-3 mt-8 print:hidden">
+      <div className="flex flex-col sm:flex-row gap-3 mt-8 print:hidden w-full max-w-lg mx-auto">
         <button
           onClick={handlePrint}
-          className="px-6 py-3 bg-neutral-900 hover:bg-neutral-800 text-white font-extrabold uppercase rounded-xl transition-all border border-neutral-850 hover:border-neutral-700 shadow-md flex items-center justify-center gap-2 active:scale-95 text-xs sm:text-sm"
+          className="flex-1 px-4 py-3 bg-neutral-900 hover:bg-neutral-800 text-white font-extrabold uppercase rounded-xl transition-all border border-neutral-850 hover:border-neutral-700 shadow-md flex items-center justify-center gap-2 active:scale-95 text-xs"
         >
           <Printer className="w-4 h-4 text-brand" />
-          <span>Print Pass Ticket</span>
+          <span>Print Ticket</span>
         </button>
+
+        <a
+          href={getGoogleCalendarUrl()}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex-1 px-4 py-3 bg-neutral-900 hover:bg-neutral-800 text-white font-extrabold uppercase rounded-xl transition-all border border-neutral-850 hover:border-brand/30 text-neutral-300 hover:text-brand shadow-md flex items-center justify-center gap-2 active:scale-95 text-xs text-center"
+        >
+          <Calendar className="w-4 h-4 text-brand" />
+          <span>Add to Google Calendar</span>
+        </a>
 
         <button
           onClick={() => navigateTo('home')}
-          className="px-6 py-3 bg-brand hover:bg-brand-light text-black font-black uppercase rounded-xl transition-all shadow-lg shadow-brand/20 hover:shadow-brand/35 flex items-center justify-center gap-2 active:scale-95 text-xs sm:text-sm"
+          className="flex-1 px-4 py-3 bg-brand hover:bg-brand-light text-black font-black uppercase rounded-xl transition-all shadow-lg shadow-brand/20 hover:shadow-brand/35 flex items-center justify-center gap-2 active:scale-95 text-xs"
         >
           <Home className="w-4 h-4" />
-          <span>Return to Dashboard</span>
+          <span>Home Dashboard</span>
         </button>
       </div>
     </div>

@@ -1,0 +1,74 @@
+{
+  "entities": {
+    "Booking": {
+      "title": "Booking",
+      "description": "Schema representing a single track booking/reservation at Rix Compound",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique booking reference ID"
+        },
+        "name": {
+          "type": "string",
+          "description": "Full name of the rider"
+        },
+        "email": {
+          "type": "string",
+          "description": "Contact email address"
+        },
+        "phone": {
+          "type": "string",
+          "description": "Contact mobile/whatsapp number"
+        },
+        "date": {
+          "type": "string",
+          "description": "Booking date in YYYY-MM-DD format"
+        },
+        "slot": {
+          "type": "string",
+          "description": "Selected time slot"
+        },
+        "bikeType": {
+          "type": "string",
+          "description": "Type of bike rented (PitBike, QuadBike, GroupPackage, Mixed)"
+        },
+        "packageName": {
+          "type": "string",
+          "description": "Name of the rental/own bike package"
+        },
+        "quantity": {
+          "type": "integer",
+          "description": "Number of units rented"
+        },
+        "pitBikeQty": {
+          "type": "integer",
+          "description": "Count of pit bikes rented in mixed package"
+        },
+        "quadBikeQty": {
+          "type": "integer",
+          "description": "Count of quad bikes rented in mixed package"
+        },
+        "amount": {
+          "type": "number",
+          "description": "Total price paid/payable"
+        },
+        "paid": {
+          "type": "boolean",
+          "description": "Payment status flag"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp of booking creation"
+        }
+      },
+      "required": ["id", "name", "email", "phone", "date", "slot", "bikeType", "quantity", "amount", "paid"]
+    }
+  },
+  "firestore": {
+    "/bookings/{bookingId}": {
+      "schema": "Booking",
+      "description": "Collection of all user track bookings and rentals"
+    }
+  }
+}
