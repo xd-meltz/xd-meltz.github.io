@@ -10,6 +10,7 @@ import {
   doc, 
   getDoc, 
   setDoc, 
+  deleteDoc,
   getDocs, 
   query, 
   where 
@@ -152,4 +153,48 @@ export async function getAllBookingsDirect(): Promise<FirestoreBooking[]> {
     bookings.push({ id: docSnap.id, ...docSnap.data() } as FirestoreBooking);
   });
   return bookings;
+}
+
+export interface FirestoreClosedDate {
+  date: string;
+  reason?: string;
+  createdAt: string;
+}
+
+/**
+ * Fetch all closed dates from Firestore
+ */
+export async function getClosedDatesDirect(): Promise<FirestoreClosedDate[]> {
+  try {
+    const colRef = collection(db, 'closed_dates');
+    const querySnapshot = await getDocs(colRef);
+    const closedDates: FirestoreClosedDate[] = [];
+    querySnapshot.forEach((docSnap) => {
+      closedDates.push({ date: docSnap.id, ...docSnap.data() } as FirestoreClosedDate);
+    });
+    return closedDates.sort((a, b) => a.date.localeCompare(b.date));
+  } catch (error) {
+    console.error('Error fetching closed dates from Firestore:', error);
+    return [];
+  }
+}
+
+/**
+ * Save a closed date to Firestore
+ */
+export async function addClosedDateDirect(date: string, reason?: string): Promise<void> {
+  const docRef = doc(db, 'closed_dates', date);
+  await setDoc(docRef, {
+    date,
+    reason: reason || '',
+    createdAt: new Date().toISOString()
+  });
+}
+
+/**
+ * Remove a closed date from Firestore
+ */
+export async function removeClosedDateDirect(date: string): Promise<void> {
+  const docRef = doc(db, 'closed_dates', date);
+  await deleteDoc(docRef);
 }

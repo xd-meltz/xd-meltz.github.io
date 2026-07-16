@@ -35,160 +35,31 @@ export default function PricingCalculator() {
           <div className="w-12 h-0.5 bg-brand mx-auto mt-3 rounded-full" />
         </div>
 
-        {/* Pricing Layout: 2 Main Service Columns */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8 items-stretch mb-8 sm:mb-16">
-          
-          {/* Weekends Rate Card */}
-          <div className="bg-neutral-900/50 rounded-xl sm:rounded-3xl border-2 border-neutral-800 p-4 sm:p-8 lg:p-10 flex flex-col justify-between hover:border-brand/35 transition-all">
-            <div>
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-0 mb-4 sm:mb-6">
-                <span className="px-2.5 py-1 bg-brand/10 border border-brand/30 text-brand text-[10px] sm:text-xs font-extrabold uppercase tracking-wider rounded-md sm:rounded-lg">
-                  Saturdays, Sundays & Public Holidays
-                </span>
-                <span className="text-neutral-500 font-mono text-[10px] sm:text-xs">No Bookings Required</span>
-              </div>
-              
-              <h3 className="font-display text-2xl sm:text-3xl font-extrabold text-white uppercase italic tracking-tight mb-1.5 sm:mb-2">
-                Weekend & Holiday Rentals
-              </h3>
-              <p className="text-neutral-400 text-xs sm:text-sm mb-4 sm:mb-8 leading-relaxed">
-                Ridden exclusively on our Mini MX and Pit Bike Track. Operated on a first-come, first-served basis.
-              </p>
-              
-              <div className="space-y-3">
-                <div className="bg-neutral-950/45 p-3 sm:p-4 rounded-lg sm:rounded-xl border border-neutral-850 flex flex-row items-center justify-between gap-2">
-                  <div>
-                    <h4 className="font-bold text-white uppercase text-xs sm:text-sm">Pit Bike Rental</h4>
-                    <span className="text-[10px] sm:text-xs text-neutral-500">Fun, responsive ride on our mini track</span>
-                  </div>
-                  <span className="font-mono text-base sm:text-xl font-bold text-brand whitespace-nowrap">R250 <span className="text-[9px] sm:text-xs text-neutral-400 font-sans font-normal">/ 45 min</span></span>
-                </div>
-
-                <div className="bg-neutral-950/45 p-3 sm:p-4 rounded-lg sm:rounded-xl border border-neutral-850 flex flex-row items-center justify-between gap-2">
-                  <div>
-                    <h4 className="font-bold text-white uppercase text-xs sm:text-sm">Quad Bike Rental</h4>
-                    <span className="text-[10px] sm:text-xs text-neutral-500">Stable and solid dirt quad bike action</span>
-                  </div>
-                  <span className="font-mono text-base sm:text-xl font-bold text-brand whitespace-nowrap">R300 <span className="text-[9px] sm:text-xs text-neutral-400 font-sans font-normal">/ 45 min</span></span>
-                </div>
-
-                <div className="bg-neutral-950/45 p-3 sm:p-4 rounded-lg sm:rounded-xl border border-neutral-850 flex flex-row items-center justify-between gap-2">
-                  <div>
-                    <h4 className="font-bold text-white uppercase text-xs sm:text-sm">Bring Your Own Bike</h4>
-                    <span className="text-[10px] sm:text-xs text-neutral-500">All-day unlimited access to open lines</span>
-                  </div>
-                  <span className="font-mono text-base sm:text-xl font-bold text-brand whitespace-nowrap">R150 <span className="text-[9px] sm:text-xs text-neutral-400 font-sans font-normal">/ Day</span></span>
-                </div>
-              </div>
-            </div>
+        {/* Book Online Call to Action */}
+        <div className="max-w-3xl mx-auto mb-10 sm:mb-16 text-center">
+          <div className="bg-neutral-900/40 rounded-2xl sm:rounded-3xl border-2 border-neutral-850 p-6 sm:p-10 flex flex-col items-center gap-5 sm:gap-6 relative overflow-hidden group">
+            {/* Ambient Background Glow inside */}
+            <div className="absolute -top-12 -right-12 w-40 h-40 bg-brand/10 rounded-full blur-[40px] pointer-events-none group-hover:scale-110 transition-transform duration-500" />
+            
+            <span className="px-3 py-1 bg-brand/10 border border-brand/30 text-brand text-[10px] sm:text-xs font-black uppercase tracking-wider rounded-full">
+              Reserve Your Slot Online
+            </span>
+            
+            <h3 className="font-display text-2xl sm:text-3xl font-black text-white uppercase italic tracking-tight max-w-lg leading-tight">
+              Ready for an action-packed ride?
+            </h3>
+            
+            <p className="text-neutral-400 text-xs sm:text-sm max-w-xl leading-relaxed">
+              Book your ride online to guarantee track access and rental gear availability. Choose from our Pit Bike or Quad Bike rentals, or register to bring your own bike. Click below to view available dates and times.
+            </p>
 
             <button
               onClick={() => navigateTo('booking')}
-              className="mt-6 w-full py-3 bg-brand hover:bg-brand-light text-black font-black uppercase tracking-wide text-xs sm:text-sm rounded-xl sm:rounded-2xl shadow-lg shadow-brand/10 hover:shadow-brand/20 transition-all flex items-center justify-center gap-2 active:scale-95 cursor-pointer"
+              className="w-full sm:w-auto px-8 py-4 bg-brand hover:bg-brand-light text-black font-black uppercase tracking-widest text-xs sm:text-sm rounded-xl sm:rounded-2xl shadow-lg shadow-brand/10 hover:shadow-brand/25 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2.5 active:scale-95 cursor-pointer"
             >
-              <Calendar className="w-4 h-4" />
+              <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-black stroke-[3]" />
               <span>Book Online Now</span>
             </button>
-
-            <div className="mt-6 pt-4 border-t border-neutral-850 text-neutral-400 text-xs flex flex-col gap-1">
-              <span className="font-semibold text-white">⏰ Operating Hours:</span>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5 sm:gap-2 text-neutral-400 mt-0.5">
-                <span>• Saturdays: 09:00 – 15:00</span>
-                <span>• Sundays: 09:00 – 14:30</span>
-                <span>• Public Holidays: 09:00 – 17:00</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Weekdays Group Packages Card */}
-          <div className="bg-neutral-900/50 rounded-xl sm:rounded-3xl border-2 border-neutral-850 p-4 sm:p-8 lg:p-10 flex flex-col justify-between hover:border-brand/20 transition-all">
-            <div>
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-0 mb-4 sm:mb-6">
-                <span className="px-2.5 py-1 bg-neutral-800 text-neutral-300 text-[10px] sm:text-xs font-bold uppercase tracking-wider rounded-md sm:rounded-lg">
-                  Monday - Friday
-                </span>
-                <span className="text-brand font-semibold text-[10px] sm:text-xs flex items-center gap-1">Booking Mandatory</span>
-              </div>
-              
-              <h3 className="font-display text-2xl sm:text-3xl font-extrabold text-white uppercase italic tracking-tight mb-1.5 sm:mb-2">
-                Weekday Group Packages
-              </h3>
-              <p className="text-neutral-400 text-xs sm:text-sm mb-4 sm:mb-8 leading-relaxed">
-                Unlock exclusive track reservations for birthday celebrations, team building sessions, or client entertainment.
-              </p>
-              
-              <div className="space-y-3">
-
-                <div className="bg-neutral-950/45 p-3 sm:p-4 rounded-lg sm:rounded-xl border border-neutral-850 flex flex-row items-center justify-between gap-2">
-                  <div>
-                    <h4 className="font-bold text-white uppercase text-xs sm:text-sm">Weekday Quick Session (30 Mins)</h4>
-                    <span className="text-[10px] sm:text-xs text-neutral-500">Perfect for quick, focused private runs</span>
-                  </div>
-                  <div className="flex flex-col items-end">
-                    <span className="font-mono text-base sm:text-xl font-bold text-brand whitespace-nowrap">R1,500 <span className="text-[9px] sm:text-xs text-neutral-400 font-sans font-normal">/ 5 bikes</span></span>
-                    <span className="font-mono text-xs sm:text-sm font-bold text-neutral-400 whitespace-nowrap mt-0.5">R3,000 <span className="text-[9px] sm:text-xs text-neutral-500 font-sans font-normal">/ 10 bikes</span></span>
-                  </div>
-                </div>
-
-                <div className="bg-neutral-950/45 p-3 sm:p-4 rounded-lg sm:rounded-xl border border-neutral-850 flex flex-row items-center justify-between gap-2">
-                  <div>
-                    <h4 className="font-bold text-white uppercase text-xs sm:text-sm">Weekday Standard Session (60 Mins)</h4>
-                    <span className="text-[10px] sm:text-xs text-neutral-500">More track time for transitions & skill building</span>
-                  </div>
-                  <div className="flex flex-col items-end">
-                    <span className="font-mono text-base sm:text-xl font-bold text-brand whitespace-nowrap">R3,000 <span className="text-[9px] sm:text-xs text-neutral-400 font-sans font-normal">/ 5 bikes</span></span>
-                    <span className="font-mono text-xs sm:text-sm font-bold text-neutral-400 whitespace-nowrap mt-0.5">R5,000 <span className="text-[9px] sm:text-xs text-neutral-500 font-sans font-normal">/ 10 bikes</span></span>
-                  </div>
-                </div>
-
-                <div className="bg-neutral-950/45 p-3 sm:p-4 rounded-lg sm:rounded-xl border border-neutral-850 flex flex-row items-center justify-between gap-2">
-                  <div>
-                    <h4 className="font-bold text-white uppercase text-xs sm:text-sm font-display">Weekday Half-Day Exclusive (4 Hours)</h4>
-                    <span className="text-[10px] sm:text-xs text-neutral-500">Exclusive facility use for events, parties & teams</span>
-                  </div>
-                  <div className="flex flex-col items-end">
-                    <span className="font-mono text-base sm:text-xl font-bold text-brand whitespace-nowrap">R8,000 <span className="text-[9px] sm:text-xs text-neutral-400 font-sans font-normal">/ 5 bikes</span></span>
-                    <span className="font-mono text-xs sm:text-sm font-bold text-neutral-400 whitespace-nowrap mt-0.5">R15,200 <span className="text-[9px] sm:text-xs text-neutral-500 font-sans font-normal">/ 10 bikes</span></span>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-
-            <button
-              onClick={() => navigateTo('booking')}
-              className="mt-6 w-full py-3 bg-brand hover:bg-brand-light text-black font-black uppercase tracking-wide text-xs sm:text-sm rounded-xl sm:rounded-2xl shadow-lg shadow-brand/10 hover:shadow-brand/20 transition-all flex items-center justify-center gap-2 active:scale-95 cursor-pointer"
-            >
-              <Calendar className="w-4 h-4" />
-              <span>Book Online Now</span>
-            </button>
-
-            <div className="mt-6 pt-4 border-t border-neutral-850 text-neutral-400 text-xs flex flex-wrap gap-x-3 gap-y-1">
-              <span>🗓️ Weekdays: Booking Required (Monday to Friday)</span>
-              <span>• Custom group builds welcome</span>
-            </div>
-          </div>
-
-        </div>
-
-        {/* BOOKINGS FIRST-COME FIRST-SERVED CALLOUT */}
-        <div className="bg-neutral-950 rounded-xl sm:rounded-2xl border border-brand/20 p-4 sm:p-6 mb-8 sm:mb-16">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
-            <div className="max-w-2xl">
-              <span className="px-2 py-0.5 bg-brand/10 border border-brand/30 text-brand text-[9px] sm:text-[10px] font-mono font-extrabold uppercase tracking-wider rounded">
-                ⚡ Weekend & Public Holiday Bookings
-              </span>
-              <h4 className="font-display text-white font-extrabold text-sm sm:text-base uppercase tracking-tight mt-1 sm:mt-1.5">
-                First-Come, First-Served Basis
-              </h4>
-              <p className="text-neutral-400 text-[11px] sm:text-xs leading-relaxed mt-1">
-                No bookings are required on weekends and public holidays. Rix Compound operates on a first-come, first-served basis, allowing riders the flexibility to arrive and enjoy the track at their convenience within the dedicated time frame of the 30-minute ride.
-              </p>
-            </div>
-            <div className="flex-shrink-0 bg-neutral-900 border border-neutral-800 rounded-lg sm:rounded-xl p-2.5 sm:p-3 text-left sm:text-right">
-              <span className="text-[9px] sm:text-[10px] text-neutral-500 font-mono block uppercase">RIDE WINDOWS</span>
-              <span className="text-white font-bold text-xs sm:text-sm">30-Minute Sessions</span>
-            </div>
           </div>
         </div>
 

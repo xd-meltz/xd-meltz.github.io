@@ -13,17 +13,18 @@ import EventsGallery from './components/EventsGallery';
 import AboutContact from './components/AboutContact';
 import BookingPage from './components/BookingPage';
 import TicketPage from './components/TicketPage';
+import AdminPanel from './components/AdminPanel';
 import { ShieldAlert, X } from 'lucide-react';
 
 // Custom navigation emitter helper
-export function navigateTo(page: 'home' | 'booking' | 'ticket', bookingId?: string) {
+export function navigateTo(page: 'home' | 'booking' | 'ticket' | 'admin', bookingId?: string) {
   window.dispatchEvent(new CustomEvent('navigate', { detail: { page, bookingId } }));
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 export default function App() {
   const [showNotification, setShowNotification] = useState(true);
-  const [currentPage, setCurrentPage] = useState<'home' | 'booking' | 'ticket'>('home');
+  const [currentPage, setCurrentPage] = useState<'home' | 'booking' | 'ticket' | 'admin'>('home');
   const [currentBookingId, setCurrentBookingId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -43,6 +44,8 @@ export default function App() {
         .catch((err) => console.error('Error confirming booking:', err));
     } else if (pageParam === 'booking') {
       setCurrentPage('booking');
+    } else if (pageParam === 'admin') {
+      setCurrentPage('admin');
     }
 
     // Custom router event listener
@@ -168,6 +171,10 @@ export default function App() {
 
         {currentPage === 'ticket' && (
           <TicketPage bookingId={currentBookingId} />
+        )}
+
+        {currentPage === 'admin' && (
+          <AdminPanel />
         )}
       </main>
     </div>

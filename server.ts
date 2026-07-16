@@ -2,11 +2,15 @@ import express from "express";
 import path from "path";
 import fs from "fs";
 import { createServer as createViteServer } from "vite";
+import nodemailer from "nodemailer";
 import { 
   getAvailabilityDirect, 
   createBookingDirect, 
   getBookingDirect, 
-  getAllBookingsDirect 
+  getAllBookingsDirect,
+  getClosedDatesDirect,
+  addClosedDateDirect,
+  removeClosedDateDirect
 } from "./src/lib/firebase";
 
 interface Booking {
@@ -56,6 +60,33 @@ function saveCalendarToken(data: CalendarTokenData): void {
     fs.writeFileSync(CALENDAR_TOKEN_FILE, JSON.stringify(data, null, 2), "utf-8");
   } catch (err) {
     console.error("Error saving calendar token:", err);
+  }
+}
+
+const CLOSED_DATES_FILE = path.join(process.cwd(), "closed-dates.json");
+
+interface ClosedDateBackup {
+  date: string;
+  reason?: string;
+  createdAt: string;
+}
+
+function getLocalClosedDates(): ClosedDateBackup[] {
+  try {
+    if (fs.existsSync(CLOSED_DATES_FILE)) {
+      return JSON.parse(fs.readFileSync(CLOSED_DATES_FILE, "utf-8"));
+    }
+  } catch (err) {
+    console.error("Error reading closed-dates file:", err);
+  }
+  return [];
+}
+
+function saveLocalClosedDates(data: ClosedDateBackup[]): void {
+  try {
+    fs.writeFileSync(CLOSED_DATES_FILE, JSON.stringify(data, null, 2), "utf-8");
+  } catch (err) {
+    console.error("Error saving closed-dates file:", err);
   }
 }
 
@@ -222,6 +253,86 @@ async function deleteCalendarEvent(calendarEventId: string): Promise<boolean> {
   } catch (err) {
     console.error("Failed to delete Google Calendar event:", err);
     return false;
+  }
+}
+
+// Helper to send email confirmation
+async function sendConfirmationEmail(booking: Booking) {
+  const gmailUser = process.env.GMAIL_USER || "rixcompound@gmail.com";
+  const gmailPass = process.env.GMAIL_APP_PASSWORD;
+
+  if (!gmailPass) {
+    console.warn(
+      `[EMAIL WARNING] GMAIL_APP_PASSWORD environment variable is not configured. Email confirmation to ${booking.email} was skipped. To enable, configure GMAIL_APP_PASSWORD in settings.`
+    );
+    return;
+  }
+
+  // Create transporter using standard Gmail SMTP settings
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: gmailUser,
+      pass: gmailPass,
+    },
+  });
+
+  const bikeDetails = booking.bikeType === "Mixed"
+    ? `${booking.pitBikeQty || 0} Pit Bikes, ${booking.quadBikeQty || 0} Quad Bikes`
+    : `${booking.quantity} Unit(s)`;
+
+  const htmlContent = `
+    <div style="font-family: Arial, sans-serif; background-color: #0c0c0c; color: #ffffff; padding: 30px; border-radius: 16px; max-width: 500px; margin: auto; border: 2px solid #222;">
+      <div style="text-align: center; border-bottom: 2px solid #ff8c00; padding-bottom: 15px; margin-bottom: 20px;">
+        <span style="font-size: 11px; font-weight: bold; color: #ff8c00; letter-spacing: 2px;">RIX COMPOUND ADMISSION PASS</span>
+        <h2 style="margin: 5px 0 0; font-size: 24px; color: #ffffff; font-style: italic; font-weight: 900;">RIX<span style="color: #ff8c00;">COMPOUND</span></h2>
+      </div>
+      
+      <div style="background-color: #161616; padding: 15px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #333;">
+        <table style="width: 100%; border-collapse: collapse;">
+          <tr>
+            <td style="padding: 5px 0; font-size: 11px; color: #888; text-transform: uppercase;">Booking Reference</td>
+            <td style="padding: 5px 0; font-size: 11px; color: #888; text-transform: uppercase; text-align: right;">Rider Name</td>
+          </tr>
+          <tr>
+            <td style="font-size: 18px; font-weight: bold; font-family: monospace; color: #ff8c00;">${booking.id}</td>
+            <td style="font-size: 14px; font-weight: bold; color: #ffffff; text-align: right;">${booking.name}</td>
+          </tr>
+        </table>
+      </div>
+
+      <div style="font-size: 13px; line-height: 1.6; margin-bottom: 20px;">
+        <p style="margin: 10px 0;"><strong style="color: #ff8c00;">📅 Date:</strong> ${new Date(booking.date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+        <p style="margin: 10px 0;"><strong style="color: #ff8c00;">⏰ Time Slot:</strong> ${booking.slot} (45-Minute Session)</p>
+        <p style="margin: 10px 0;"><strong style="color: #ff8c00;">🏍️ Rental Info:</strong> ${booking.packageName || booking.bikeType} (${bikeDetails})</p>
+        <p style="margin: 10px 0;"><strong style="color: #ff8c00;">📍 Location:</strong> Protea Farms, Bottelary Road, Cape Town</p>
+        <p style="margin: 10px 0;"><strong style="color: #ff8c00;">💳 Amount Paid:</strong> R${booking.amount.toLocaleString()}</p>
+      </div>
+
+      <div style="background-color: #251c0c; border: 1px solid #ea9a0b; padding: 12px; border-radius: 8px; font-size: 11px; color: #eab308; margin-bottom: 25px;">
+        <strong>⚠️ ADMISSION WARNING:</strong> No beginners permitted. Competent off-road riding experience is strictly mandatory. Under 14 riders must be accompanied by a guardian passenger on ATV rentals.
+      </div>
+
+      <div style="text-align: center; font-size: 11px; color: #666; border-top: 1px solid #222; padding-top: 15px;">
+        <p style="margin: 5px 0;">Please bring a printed or digital copy of this email to the entrance.</p>
+        <p style="margin: 5px 0;">&copy; 2026 Rix Compound. Cape Town, South Africa.</p>
+      </div>
+    </div>
+  `;
+
+  const mailOptions = {
+    from: `"Rix Compound" <${gmailUser}>`,
+    to: booking.email,
+    cc: gmailUser, // Send copy to the owner as well!
+    subject: `🏍️ Booking Confirmation: Reference ${booking.id} - Rix Compound`,
+    html: htmlContent,
+  };
+
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log(`[EMAIL SUCCESS] Confirmation email sent to ${booking.email} for Booking ${booking.id}. MessageId: ${info.messageId}`);
+  } catch (err) {
+    console.error(`[EMAIL ERROR] Failed to send confirmation email to ${booking.email}:`, err);
   }
 }
 
@@ -394,6 +505,24 @@ async function startServer() {
       return;
     }
 
+    // Check if date is closed first
+    let closedList: { date: string }[] = [];
+    try {
+      closedList = await getClosedDatesDirect();
+    } catch (err) {
+      closedList = getLocalClosedDates();
+    }
+    const isDateClosed = closedList.some(c => c.date === date);
+    if (isDateClosed) {
+      const slots = ["09:00", "09:45", "10:30", "11:15", "12:00", "12:45", "13:30", "14:15"];
+      const emptyMap: Record<string, { pitbikes: number; quadbikes: number }> = {};
+      slots.forEach(slot => {
+        emptyMap[slot] = { pitbikes: 0, quadbikes: 0 };
+      });
+      res.json(emptyMap);
+      return;
+    }
+
     try {
       const availabilityMap = await getAvailabilityDirect(date);
       res.json(availabilityMap);
@@ -451,11 +580,24 @@ async function startServer() {
   });
 
   // Create a pending booking
-  app.post("/api/bookings", (req, res) => {
+  app.post("/api/bookings", async (req, res) => {
     const { name, email, phone, date, slot, bikeType, packageName, quantity, amount } = req.body;
 
     if (!name || !email || !phone || !date || !slot || !bikeType || quantity === undefined || !amount) {
       res.status(400).json({ error: "Missing required booking details" });
+      return;
+    }
+
+    // Check if date is closed first
+    let closedList: { date: string }[] = [];
+    try {
+      closedList = await getClosedDatesDirect();
+    } catch (err) {
+      closedList = getLocalClosedDates();
+    }
+    const isDateClosed = closedList.some(c => c.date === date);
+    if (isDateClosed) {
+      res.status(400).json({ error: "The selected date is closed for track operations. Please select another date." });
       return;
     }
 
@@ -593,8 +735,16 @@ async function startServer() {
       return;
     }
 
+    const wasAlreadyPaid = bookings[bookingIndex].paid;
     bookings[bookingIndex].paid = true;
     saveBookings(bookings);
+
+    // Send confirmation email if newly paid
+    if (!wasAlreadyPaid) {
+      sendConfirmationEmail(bookings[bookingIndex]).catch((err) =>
+        console.error("Error sending confirmation email:", err)
+      );
+    }
 
     // Sync status update on Google Calendar in background
     const updatedBooking = bookings[bookingIndex];
@@ -619,9 +769,9 @@ async function startServer() {
 
   // Admin: Get all bookings (passcode protected)
   app.get("/api/admin/bookings", (req, res) => {
-    const { passcode } = req.query;
-    if (passcode !== "rix344") {
-      res.status(401).json({ error: "Unauthorized. Incorrect admin passcode." });
+    const { username, passcode } = req.query;
+    if (username?.toString().toLowerCase() !== "igor rix" || passcode !== "compoundrix.20") {
+      res.status(401).json({ error: "Unauthorized. Incorrect admin credentials." });
       return;
     }
 
@@ -638,9 +788,9 @@ async function startServer() {
 
   // Admin: Toggle paid status of a booking
   app.post("/api/admin/bookings/:id/toggle-paid", (req, res) => {
-    const { passcode } = req.query;
+    const { username, passcode } = req.query;
     const { id } = req.params;
-    if (passcode !== "rix344") {
+    if (username?.toString().toLowerCase() !== "igor rix" || passcode !== "compoundrix.20") {
       res.status(401).json({ error: "Unauthorized" });
       return;
     }
@@ -678,9 +828,9 @@ async function startServer() {
 
   // Admin: Delete a booking
   app.post("/api/admin/bookings/:id/delete", (req, res) => {
-    const { passcode } = req.query;
+    const { username, passcode } = req.query;
     const { id } = req.params;
-    if (passcode !== "rix344") {
+    if (username?.toString().toLowerCase() !== "igor rix" || passcode !== "compoundrix.20") {
       res.status(401).json({ error: "Unauthorized" });
       return;
     }
@@ -727,9 +877,17 @@ async function startServer() {
 
     // In a real sandbox/live env, we check for payment_status === 'COMPLETE'
     if (payment_status === "COMPLETE") {
+      const wasAlreadyPaid = bookings[bookingIndex].paid;
       bookings[bookingIndex].paid = true;
       saveBookings(bookings);
       console.log(`Booking ${m_payment_id} successfully marked as PAID via Payfast ITN.`);
+
+      // Send confirmation email if newly paid
+      if (!wasAlreadyPaid) {
+        sendConfirmationEmail(bookings[bookingIndex]).catch((err) =>
+          console.error("Error sending confirmation email on ITN:", err)
+        );
+      }
 
       // Sync status update on Google Calendar in background
       const updatedBooking = bookings[bookingIndex];
@@ -756,10 +914,149 @@ async function startServer() {
     res.status(200).send("OK");
   });
 
+  // Public: Get all closed dates
+  app.get("/api/closed-dates", async (req, res) => {
+    try {
+      const closedList = await getClosedDatesDirect();
+      // Sync to local backup in the background
+      saveLocalClosedDates(closedList);
+      res.json(closedList);
+    } catch (err) {
+      console.warn("Firestore closed-dates fetch failed, using local backup:", err);
+      res.json(getLocalClosedDates());
+    }
+  });
+
+  // Admin: Get all closed dates
+  app.get("/api/admin/closed-dates", async (req, res) => {
+    const { username, passcode } = req.query;
+    if (username?.toString().toLowerCase() !== "igor rix" || passcode !== "compoundrix.20") {
+      res.status(401).json({ error: "Unauthorized" });
+      return;
+    }
+
+    try {
+      const closedList = await getClosedDatesDirect();
+      saveLocalClosedDates(closedList);
+      res.json(closedList);
+    } catch (err) {
+      console.warn("Firestore closed-dates fetch failed in admin, using local backup:", err);
+      res.json(getLocalClosedDates());
+    }
+  });
+
+  // Helper to generate list of dates in YYYY-MM-DD format between two date strings (inclusive) using UTC to prevent timezone shifts
+  function getDatesInRange(startStr: string, endStr: string): string[] {
+    const dates: string[] = [];
+    const startParts = startStr.split("-").map(Number);
+    const endParts = endStr.split("-").map(Number);
+
+    if (startParts.length !== 3 || endParts.length !== 3) {
+      return [startStr];
+    }
+
+    const start = new Date(Date.UTC(startParts[0], startParts[1] - 1, startParts[2]));
+    const end = new Date(Date.UTC(endParts[0], endParts[1] - 1, endParts[2]));
+
+    if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+      return [startStr];
+    }
+
+    const cursor = new Date(start);
+    while (cursor <= end) {
+      const yyyy = cursor.getUTCFullYear();
+      const mm = String(cursor.getUTCMonth() + 1).padStart(2, "0");
+      const dd = String(cursor.getUTCDate()).padStart(2, "0");
+      dates.push(`${yyyy}-${mm}-${dd}`);
+      cursor.setUTCDate(cursor.getUTCDate() + 1);
+    }
+    return dates;
+  }
+
+  // Admin: Close a day
+  app.post("/api/admin/closed-dates", async (req, res) => {
+    const { username, passcode } = req.query;
+    if (username?.toString().toLowerCase() !== "igor rix" || passcode !== "compoundrix.20") {
+      res.status(401).json({ error: "Unauthorized" });
+      return;
+    }
+
+    const { date, startDate, endDate, reason } = req.body;
+    const start = startDate || date;
+    const end = endDate || startDate || date;
+
+    if (!start) {
+      res.status(400).json({ error: "Start Date (or date) is required" });
+      return;
+    }
+
+    const datesToClose = getDatesInRange(start, end);
+
+    try {
+      for (const d of datesToClose) {
+        try {
+          await addClosedDateDirect(d, reason);
+        } catch (err) {
+          console.warn(`Firestore addClosedDateDirect failed for date ${d}:`, err);
+        }
+      }
+    } catch (err) {
+      console.error("Firestore batch add closed dates failed:", err);
+    }
+
+    try {
+      // Update local backup
+      const local = getLocalClosedDates();
+      const filtered = local.filter((c) => !datesToClose.includes(c.date));
+      for (const d of datesToClose) {
+        filtered.push({ date: d, reason: reason || "", createdAt: new Date().toISOString() });
+      }
+      saveLocalClosedDates(filtered);
+
+      res.json({ success: true, dates: datesToClose });
+    } catch (err: any) {
+      console.error("Failed to close dates locally:", err);
+      res.status(500).json({ error: `Failed to close dates: ${err.message || err}` });
+    }
+  });
+
+  // Admin: Open/remove a closed day
+  app.post("/api/admin/closed-dates/delete", async (req, res) => {
+    const { username, passcode } = req.query;
+    if (username?.toString().toLowerCase() !== "igor rix" || passcode !== "compoundrix.20") {
+      res.status(401).json({ error: "Unauthorized" });
+      return;
+    }
+
+    const { date } = req.body;
+    if (!date) {
+      res.status(400).json({ error: "Date is required" });
+      return;
+    }
+
+    try {
+      await removeClosedDateDirect(date);
+    } catch (err) {
+      console.warn("Firestore removeClosedDateDirect failed, falling back to local JSON backup:", err);
+    }
+
+    try {
+      // Update local backup
+      const local = getLocalClosedDates();
+      const filtered = local.filter((c) => c.date !== date);
+      saveLocalClosedDates(filtered);
+
+      res.json({ success: true, date });
+    } catch (err: any) {
+      console.error("Failed to delete closed date locally:", err);
+      res.status(500).json({ error: `Failed to remove closed date: ${err.message || err}` });
+    }
+  });
+
   // Admin: Get Google Calendar Integration status
   app.get("/api/admin/calendar-status", (req, res) => {
-    const { passcode } = req.query;
-    if (passcode !== "rix344") {
+    const { username, passcode } = req.query;
+    if (username?.toString().toLowerCase() !== "igor rix" || passcode !== "compoundrix.20") {
       res.status(401).json({ error: "Unauthorized" });
       return;
     }
@@ -778,10 +1075,10 @@ async function startServer() {
 
   // Admin: Link or refresh owner's Google Calendar OAuth token
   app.post("/api/admin/set-calendar-token", (req, res) => {
-    const { passcode } = req.query;
+    const { username, passcode } = req.query;
     const { accessToken, linkedEmail } = req.body;
 
-    if (passcode !== "rix344") {
+    if (username?.toString().toLowerCase() !== "igor rix" || passcode !== "compoundrix.20") {
       res.status(401).json({ error: "Unauthorized" });
       return;
     }
@@ -831,10 +1128,10 @@ async function startServer() {
 
   // Admin: Manually force sync a single booking to Google Calendar
   app.post("/api/admin/bookings/:id/sync-calendar", async (req, res) => {
-    const { passcode } = req.query;
+    const { username, passcode } = req.query;
     const { id } = req.params;
 
-    if (passcode !== "rix344") {
+    if (username?.toString().toLowerCase() !== "igor rix" || passcode !== "compoundrix.20") {
       res.status(401).json({ error: "Unauthorized" });
       return;
     }

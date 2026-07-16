@@ -51,6 +51,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
   // Date constraints (You cannot book on the day, and you can only book a month ahead)
   const [minDate, setMinDate] = useState('');
   const [maxDate, setMaxDate] = useState('');
+  const [closedDates, setClosedDates] = useState<string[]>([]);
 
   // Calculate min and max dates on mount
   useEffect(() => {
@@ -75,6 +76,17 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
 
     setMinDate(formatDate(tomorrow));
     setMaxDate(formatDate(oneMonthAhead));
+
+    // Fetch closed dates
+    fetch('/api/closed-dates')
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          const dates = data.map((item: any) => item.date);
+          setClosedDates(dates);
+        }
+      })
+      .catch((err) => console.error('Failed to fetch closed dates:', err));
   }, []);
 
   // Fetch availability when date changes
@@ -345,8 +357,8 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                   key={i}
                   className={`w-1.5 h-1.5 rounded-full transition-all ${
                     isAvailable 
-                      ? 'bg-brand' 
-                      : 'bg-neutral-800 border border-neutral-700'
+                      ? 'bg-emerald-500 shadow-sm shadow-emerald-500/20' 
+                      : 'bg-red-500 border border-red-500/30'
                   }`}
                 />
               );
@@ -367,8 +379,8 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                   key={i}
                   className={`w-1.5 h-1.5 rounded-full transition-all ${
                     isAvailable 
-                      ? 'bg-orange-500' 
-                      : 'bg-neutral-800 border border-neutral-700'
+                      ? 'bg-emerald-500 shadow-sm shadow-emerald-500/20' 
+                      : 'bg-red-500 border border-red-500/30'
                   }`}
                 />
               );
@@ -402,18 +414,17 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
 
         {/* Header */}
         {!isInline && (
-          <div className="mb-10 text-center sm:text-left">
-            <span className="font-mono text-xs font-bold uppercase tracking-widest text-brand block mb-2">
-              Secure Booking Arena
-            </span>
+          <div className="mb-8 text-center sm:text-left">
             <h1 className="font-display text-3xl sm:text-5xl font-black uppercase tracking-tight italic">
-              Online <span className="text-brand">Booking System</span>
+              Online <span className="text-brand">Booking</span>
             </h1>
             <p className="text-neutral-400 text-sm sm:text-base mt-2 max-w-xl">
-              Reserve your riding sessions instantly. Complete payments securely via Payfast sandbox for instant ticketing.
+              You do not need to book if you're bringing your own bike.
             </p>
           </div>
         )}
+
+
 
         {error && (
           <div className="mb-6 bg-red-950/50 border border-red-500/50 p-4 rounded-xl flex items-start gap-3">
@@ -533,7 +544,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
 
                   {/* Calendar Weekday Names */}
                   <div className="grid grid-cols-7 text-center gap-1 sm:gap-2 mb-2">
-                    {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, i) => (
+                    {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((day, i) => (
                       <span key={i} className="text-[10px] font-mono text-neutral-500 uppercase font-bold py-1">
                         {day}
                       </span>
@@ -544,7 +555,8 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                   <div className="grid grid-cols-7 gap-1 sm:gap-2">
                     {(() => {
                       const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-                      const firstDayIndex = new Date(currentYear, currentMonth, 1).getDay(); // 0 = Sun
+                      // Monday starts at index 0, so subtract 1 and wrap with % 7
+                      const firstDayIndex = (new Date(currentYear, currentMonth, 1).getDay() + 6) % 7;
                       
                       const cells = [];
                       
@@ -556,31 +568,35 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                       // Days
                       for (let d = 1; d <= daysInMonth; d++) {
                         const dateString = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-                        const isSelectable = dateString >= minDate && dateString <= maxDate;
-                        const isSelected = date === dateString;
                         const dayOfWeek = new Date(currentYear, currentMonth, d).getDay();
                         const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+                        const isClosed = closedDates.includes(dateString);
+                        // Only available on Saturdays and Sundays (isWeekend) and not closed by admin
+                        const isSelectable = dateString >= minDate && dateString <= maxDate && isWeekend && !isClosed;
+                        const isSelected = date === dateString;
 
                         cells.push(
                           <button
                             type="button"
                             key={`day-${d}`}
-                            disabled={!isSelectable}
+                            disabled={isClosed || !isSelectable}
                             onClick={() => setDate(dateString)}
                             className={`aspect-square w-full rounded-lg text-xs font-mono transition-all flex flex-col items-center justify-center relative cursor-pointer ${
                               isSelected
-                                ? 'bg-brand text-black font-black shadow-lg shadow-brand/35 scale-105 z-10'
-                                : !isSelectable
-                                  ? 'text-neutral-700 bg-neutral-950/25 cursor-not-allowed opacity-20'
-                                  : isWeekend
-                                    ? 'text-amber-500 hover:bg-neutral-800 hover:text-white font-bold bg-neutral-900/30'
-                                    : 'text-neutral-300 hover:bg-neutral-800 hover:text-white'
+                                ? 'bg-emerald-500 text-black font-black shadow-lg shadow-emerald-500/35 scale-105 z-10'
+                                : isClosed
+                                  ? 'bg-red-950/50 border border-red-500/40 text-red-500 cursor-not-allowed font-bold'
+                                  : !isSelectable
+                                    ? 'text-neutral-700 bg-neutral-950/25 cursor-not-allowed opacity-20'
+                                    : 'text-emerald-500 hover:bg-neutral-800 hover:text-white font-bold bg-neutral-900/30'
                             }`}
                           >
                             <span className="text-xs">{d}</span>
-                            {isSelectable && !isSelected && (
-                              <span className={`w-1 h-1 rounded-full absolute bottom-1 ${isWeekend ? 'bg-amber-500' : 'bg-brand/50'}`} />
-                            )}
+                            {isClosed ? (
+                              <span className="text-[7.5px] font-black tracking-tight text-red-400 uppercase leading-none mt-1">Closed</span>
+                            ) : isSelectable && !isSelected ? (
+                              <span className="w-1 h-1 rounded-full absolute bottom-1 bg-emerald-500" />
+                            ) : null}
                           </button>
                         );
                       }
@@ -786,6 +802,24 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                           ⚠️ Please select at least 1 bike to view slot availability.
                         </p>
                       )}
+
+                      {/* Bring Your Own Bike Pay On Site Option */}
+                      <div className="bg-emerald-950/20 border border-emerald-900/30 p-4 rounded-xl mt-4">
+                        <div className="flex items-start gap-3">
+                          <span className="text-lg mt-0.5">🚲</span>
+                          <div>
+                            <h4 className="font-extrabold text-xs uppercase text-emerald-400 tracking-wider flex items-center gap-1.5">
+                              <span>Bringing Your Own Bike?</span>
+                              <span className="px-1.5 py-0.5 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[8px] font-mono rounded font-black">
+                                PAY ON SITE
+                              </span>
+                            </h4>
+                            <p className="text-[11px] text-neutral-300 leading-relaxed mt-1">
+                              If you are bringing your own bike, <span className="text-white font-bold">you do not need to book online</span>. Simply show up at the compound, pay <span className="text-emerald-400 font-black">R150 on site</span>, and you're ready to ride!
+                            </p>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -796,11 +830,20 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                 <div>
                   <h3 className="font-display font-black text-sm uppercase tracking-wider text-brand mb-2 flex items-center gap-1.5">
                     <span className="bg-brand/10 border border-brand/30 text-brand px-2 py-0.5 rounded text-[10px] font-mono">04</span>
-                    Choose Available Time Slot
+                    Choose Available Time Slots
                   </h3>
-                  <p className="text-neutral-400 text-xs mb-4">
-                    The dots below represent available bikes.
-                  </p>
+                  
+                  {/* Interactive Visual Color Legend */}
+                  <div className="flex items-center gap-4 mb-4 bg-neutral-950/60 py-2 px-3 rounded-xl border border-neutral-850 text-xs font-mono">
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/30" />
+                      <span className="text-emerald-400 font-bold uppercase text-[10px]">Available</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-red-500 shadow-sm shadow-red-500/30" />
+                      <span className="text-red-400 font-bold uppercase text-[10px]">Booked</span>
+                    </div>
+                  </div>
 
                   {loadingAvailability ? (
                     <div className="text-center py-6">
@@ -818,21 +861,31 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                             key={slot}
                             disabled={disabled}
                             onClick={() => setSelectedSlot(slot)}
-                            className={`p-3 rounded-xl border text-left flex flex-col justify-between transition-all relative ${
+                            className={`p-3 rounded-xl border text-left flex flex-col justify-between transition-all relative cursor-pointer ${
                               disabled 
-                                ? 'border-neutral-900 bg-neutral-950/40 opacity-40 cursor-not-allowed'
+                                ? 'border-red-900/60 bg-red-950/10 opacity-80 cursor-not-allowed hover:border-red-800'
                                 : selected
-                                  ? 'border-brand bg-brand/15 shadow-md shadow-brand/10'
-                                  : 'border-neutral-800 hover:border-neutral-750 bg-neutral-950 hover:bg-neutral-900/60'
+                                  ? 'border-emerald-400 bg-emerald-950/25 shadow-lg shadow-emerald-500/10 scale-102 ring-1 ring-emerald-500/30'
+                                  : 'border-emerald-900/40 hover:border-emerald-500 bg-neutral-950 hover:bg-neutral-900/50'
                             }`}
                           >
-                            <div className="flex items-center justify-between w-full">
-                              <span className={`font-mono text-xs font-bold ${selected ? 'text-brand' : 'text-white'}`}>
+                            <div className="flex items-center justify-between w-full mb-1">
+                              <span className={`font-mono text-xs font-black tracking-wider ${
+                                selected 
+                                  ? 'text-emerald-400' 
+                                  : disabled 
+                                    ? 'text-red-500 line-through' 
+                                    : 'text-emerald-300'
+                              }`}>
                                 {slot}
                               </span>
-                              {disabled && (
-                                <span className="text-[7px] font-bold text-red-500 uppercase bg-red-950/40 border border-red-900/60 px-1 py-0.5 rounded">
-                                  Full
+                              {disabled ? (
+                                <span className="text-[7.5px] font-extrabold text-red-400 uppercase bg-red-950/80 border border-red-800/50 px-1.5 py-0.5 rounded leading-none">
+                                  Booked
+                                </span>
+                              ) : (
+                                <span className="text-[7.5px] font-extrabold text-emerald-400 uppercase bg-emerald-950/80 border border-emerald-850 px-1.5 py-0.5 rounded leading-none">
+                                  Open
                                 </span>
                               )}
                             </div>
@@ -913,15 +966,6 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                 <CreditCard className="w-4 h-4" />
                 <span>{submitting ? 'Connecting to Payfast...' : 'Proceed to Payfast Checkout'}</span>
               </button>
-            </div>
-
-            {/* Payfast Safety Badge */}
-            <div className="bg-neutral-900/40 border border-neutral-850 p-4 rounded-xl flex items-center gap-3">
-              <span className="text-2xl">🔒</span>
-              <div className="text-[10px] sm:text-xs text-neutral-400 leading-normal">
-                <span className="text-white font-bold block uppercase text-[9px] tracking-wider mb-0.5">Payfast Secure Sandbox</span>
-                Fully sandbox-compliant payment gateway. No real credit card values are processed.
-              </div>
             </div>
           </div>
         </form>

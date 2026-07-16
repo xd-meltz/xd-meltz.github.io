@@ -63,12 +63,36 @@
         }
       },
       "required": ["id", "name", "email", "phone", "date", "slot", "bikeType", "quantity", "amount", "paid"]
+    },
+    "ClosedDate": {
+      "title": "ClosedDate",
+      "description": "Schema representing a date closed by the admin to prevent bookings",
+      "type": "object",
+      "properties": {
+        "date": {
+          "type": "string",
+          "description": "Closed date in YYYY-MM-DD format"
+        },
+        "reason": {
+          "type": "string",
+          "description": "Optional reason for closure"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp of closure creation"
+        }
+      },
+      "required": ["date"]
     }
   },
   "firestore": {
     "/bookings/{bookingId}": {
       "schema": "Booking",
       "description": "Collection of all user track bookings and rentals"
+    },
+    "/closed_dates/{date}": {
+      "schema": "ClosedDate",
+      "description": "Collection of dates that are closed for bookings"
     }
   }
 }

@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import { useState } from 'react';
 import { 
   MapPin, 
   Phone, 
@@ -12,6 +13,7 @@ import {
 import { navigateTo } from '../App';
 
 export default function AboutContact() {
+  const [clickTimestamps, setClickTimestamps] = useState<number[]>([]);
   const socialInstagramHandle = "rix.compound.mini.dirt.track";
   const emailAddress = "rixcompound@gmail.com";
   const phoneFormatted = "0768299919";
@@ -145,7 +147,21 @@ export default function AboutContact() {
           
           {/* Logo & Trademark */}
           <div className="flex flex-col items-center gap-1.5">
-            <div className="flex items-center gap-1.5">
+            <div 
+              onClick={() => {
+                const now = Date.now();
+                // Keep only clicks from the last 1 second
+                const validClicks = [...clickTimestamps, now].filter(t => now - t < 1000);
+                if (validClicks.length >= 5) {
+                  setClickTimestamps([]);
+                  navigateTo('admin');
+                } else {
+                  setClickTimestamps(validClicks);
+                }
+              }}
+              className="flex items-center gap-1.5 cursor-pointer select-none active:scale-95 transition-transform"
+              title="Rix Compound"
+            >
               <Bike className="w-4.5 h-4.5 text-brand" />
               <h4 className="font-display font-black text-white uppercase tracking-wider italic text-sm">
                 RIX<span className="text-brand">COMPOUND</span>
