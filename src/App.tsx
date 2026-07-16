@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import Navigation from './components/Navigation';
 import Hero from './components/Hero';
 import Track from './components/Track';
@@ -26,6 +26,45 @@ export default function App() {
   const [showNotification, setShowNotification] = useState(true);
   const [currentPage, setCurrentPage] = useState<'home' | 'booking' | 'ticket' | 'admin'>('home');
   const [currentBookingId, setCurrentBookingId] = useState<string | null>(null);
+  
+  // Custom high-performance loader states
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [loadText, setLoadText] = useState('IGNITION KEY ENGAGED...');
+
+  useEffect(() => {
+    // Dynamic sequential text to simulate engine/track startup sequence
+    const phrases = [
+      'IGNITION KEY ENGAGED...',
+      'FUEL PRESSURE OPTIMAL...',
+      'SYNCHRONIZING TRACK SEGMENTS...',
+      'WARMING UP TIRES...',
+      'READY TO LAUNCH...'
+    ];
+    let index = 0;
+    const interval = setInterval(() => {
+      if (index < phrases.length - 1) {
+        index++;
+        setLoadText(phrases[index]);
+      }
+    }, 250);
+
+    const handlePageLoad = () => {
+      setTimeout(() => {
+        setIsLoaded(true);
+      }, 1300);
+    };
+
+    if (document.readyState === 'complete') {
+      handlePageLoad();
+    } else {
+      window.addEventListener('load', handlePageLoad);
+      return () => {
+        window.removeEventListener('load', handlePageLoad);
+        clearInterval(interval);
+      };
+    }
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     // Process query parameters on load (e.g. from Payfast redirects)
@@ -66,6 +105,63 @@ export default function App() {
   return (
     <div id="appRoot" className="min-h-screen bg-neutral-950 text-neutral-100 flex flex-col relative font-sans antialiased selection:bg-brand selection:text-black">
       
+      {/* High-Performance Launch Loader Screen */}
+      <AnimatePresence>
+        {!isLoaded && (
+          <motion.div
+            key="loader"
+            initial={{ opacity: 1 }}
+            exit={{ 
+              opacity: 0,
+              y: -20,
+              transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] }
+            }}
+            className="fixed inset-0 bg-neutral-950 z-[9999] flex flex-col items-center justify-center select-none"
+          >
+            {/* Ambient Background Glow */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-82 h-82 bg-brand/10 rounded-full blur-[120px] pointer-events-none" />
+
+            <div className="relative flex flex-col items-center">
+              {/* Pulsating & Rotating Sprocket Ring */}
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
+                className="w-16 h-16 rounded-full border-4 border-brand border-t-transparent shadow-[0_0_20px_rgba(255,140,0,0.5)] flex items-center justify-center mb-6"
+              >
+                <div className="w-10 h-10 rounded-full border-2 border-brand/40 border-b-transparent flex items-center justify-center">
+                  <div className="w-3 h-3 bg-brand rounded-full animate-ping" />
+                </div>
+              </motion.div>
+
+              <h2 className="font-display font-black text-2xl tracking-wider text-white uppercase italic flex items-center gap-1.5">
+                RIX<span className="text-brand">COMPOUND</span>
+              </h2>
+
+              <p className="text-[9px] text-neutral-500 uppercase tracking-widest font-mono mt-1">
+                 Stellenbosch, South Africa
+              </p>
+
+              {/* Smooth Sweeping Progress Bar */}
+              <div className="w-48 h-[3px] bg-neutral-900 rounded-full overflow-hidden mt-8 border border-neutral-800">
+                <motion.div 
+                  initial={{ width: "0%" }}
+                  animate={{ width: "100%" }}
+                  transition={{ duration: 1.2, ease: "easeInOut" }}
+                  className="h-full bg-brand shadow-[0_0_10px_#ff8c00]"
+                />
+              </div>
+
+              {/* Status phrase logs */}
+              <div className="h-4 mt-3 flex items-center justify-center">
+                <span className="text-[9px] font-mono tracking-widest text-brand font-bold uppercase animate-pulse">
+                  {loadText}
+                </span>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Modern Redesigned Header Menu */}
       <Navigation />
 

@@ -69,7 +69,12 @@ export default function TicketPage({ bookingId }: TicketPageProps) {
           }
         } catch (fsErr) {
           console.warn('Firestore fetch failed, falling back to localStorage:', fsErr);
-          const stored = localStorage.getItem(`rix_booking_${bookingId}`);
+          let stored: string | null = null;
+          try {
+            stored = localStorage.getItem(`rix_booking_${bookingId}`);
+          } catch (storageErr) {
+            console.error('Failed to access localStorage:', storageErr);
+          }
           if (stored) {
             try {
               setBooking(JSON.parse(stored));

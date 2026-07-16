@@ -44,6 +44,31 @@ interface Booking {
   syncedToCalendar?: boolean;
 }
 
+const safeLocalStorage = {
+  getItem: (key: string): string | null => {
+    try {
+      return localStorage.getItem(key);
+    } catch (e) {
+      console.warn('safeLocalStorage.getItem failed:', e);
+      return null;
+    }
+  },
+  setItem: (key: string, value: string): void => {
+    try {
+      localStorage.setItem(key, value);
+    } catch (e) {
+      console.warn('safeLocalStorage.setItem failed:', e);
+    }
+  },
+  removeItem: (key: string): void => {
+    try {
+      localStorage.removeItem(key);
+    } catch (e) {
+      console.warn('safeLocalStorage.removeItem failed:', e);
+    }
+  }
+};
+
 export default function AdminPanel() {
   const [username, setUsername] = useState('');
   const [passcode, setPasscode] = useState('');
@@ -71,8 +96,8 @@ export default function AdminPanel() {
 
   // Check if session credentials exist in localStorage
   useEffect(() => {
-    const savedUser = localStorage.getItem('rix_admin_username');
-    const savedPass = localStorage.getItem('rix_admin_passcode');
+    const savedUser = safeLocalStorage.getItem('rix_admin_username');
+    const savedPass = safeLocalStorage.getItem('rix_admin_passcode');
     if (savedUser?.trim().toLowerCase() === 'igor rix' && savedPass?.trim() === 'compoundrix.20') {
       setUsername(savedUser.trim());
       setPasscode(savedPass.trim());
@@ -93,8 +118,8 @@ export default function AdminPanel() {
 
   const fetchClosedDays = () => {
     setFetchingClosedDays(true);
-    const activeUser = (username || localStorage.getItem('rix_admin_username') || '').trim();
-    const activePass = (passcode || localStorage.getItem('rix_admin_passcode') || '').trim();
+    const activeUser = (username || safeLocalStorage.getItem('rix_admin_username') || '').trim();
+    const activePass = (passcode || safeLocalStorage.getItem('rix_admin_passcode') || '').trim();
     fetch(`/api/admin/closed-dates?username=${encodeURIComponent(activeUser)}&passcode=${encodeURIComponent(activePass)}`)
       .then((res) => {
         if (!res.ok) throw new Error('Failed to retrieve closed dates.');
@@ -120,8 +145,8 @@ export default function AdminPanel() {
     }
 
     setSubmittingClose(true);
-    const activeUser = (username || localStorage.getItem('rix_admin_username') || '').trim();
-    const activePass = (passcode || localStorage.getItem('rix_admin_passcode') || '').trim();
+    const activeUser = (username || safeLocalStorage.getItem('rix_admin_username') || '').trim();
+    const activePass = (passcode || safeLocalStorage.getItem('rix_admin_passcode') || '').trim();
 
     fetch(`/api/admin/closed-dates?username=${encodeURIComponent(activeUser)}&passcode=${encodeURIComponent(activePass)}`, {
       method: 'POST',
@@ -156,8 +181,8 @@ export default function AdminPanel() {
   };
 
   const handleReopenDay = (dateToReopen: string) => {
-    const activeUser = (username || localStorage.getItem('rix_admin_username') || '').trim();
-    const activePass = (passcode || localStorage.getItem('rix_admin_passcode') || '').trim();
+    const activeUser = (username || safeLocalStorage.getItem('rix_admin_username') || '').trim();
+    const activePass = (passcode || safeLocalStorage.getItem('rix_admin_passcode') || '').trim();
 
     fetch(`/api/admin/closed-dates/delete?username=${encodeURIComponent(activeUser)}&passcode=${encodeURIComponent(activePass)}`, {
       method: 'POST',
@@ -182,8 +207,8 @@ export default function AdminPanel() {
   };
 
   const fetchBookings = () => {
-    const activeUser = (username || localStorage.getItem('rix_admin_username') || '').trim();
-    const activePass = (passcode || localStorage.getItem('rix_admin_passcode') || '').trim();
+    const activeUser = (username || safeLocalStorage.getItem('rix_admin_username') || '').trim();
+    const activePass = (passcode || safeLocalStorage.getItem('rix_admin_passcode') || '').trim();
     fetch(`/api/admin/bookings?username=${encodeURIComponent(activeUser)}&passcode=${encodeURIComponent(activePass)}`)
       .then((res) => {
         if (!res.ok) throw new Error('Incorrect credentials or unauthorized.');
@@ -196,8 +221,8 @@ export default function AdminPanel() {
       .catch((err) => {
         setError(err.message || 'Failed to retrieve bookings.');
         setIsAuthenticated(false);
-        localStorage.removeItem('rix_admin_username');
-        localStorage.removeItem('rix_admin_passcode');
+        safeLocalStorage.removeItem('rix_admin_username');
+        safeLocalStorage.removeItem('rix_admin_passcode');
       })
       .finally(() => {
         setLoading(false);
@@ -205,8 +230,8 @@ export default function AdminPanel() {
   };
 
   const fetchCalendarStatus = () => {
-    const activeUser = (username || localStorage.getItem('rix_admin_username') || '').trim();
-    const activePass = (passcode || localStorage.getItem('rix_admin_passcode') || '').trim();
+    const activeUser = (username || safeLocalStorage.getItem('rix_admin_username') || '').trim();
+    const activePass = (passcode || safeLocalStorage.getItem('rix_admin_passcode') || '').trim();
     fetch(`/api/admin/calendar-status?username=${encodeURIComponent(activeUser)}&passcode=${encodeURIComponent(activePass)}`)
       .then((res) => res.json())
       .then((data) => setCalendarStatus(data))
@@ -222,8 +247,8 @@ export default function AdminPanel() {
       setPasscode(cleanPass);
       setIsAuthenticated(true);
       setAuthError('');
-      localStorage.setItem('rix_admin_username', cleanUser);
-      localStorage.setItem('rix_admin_passcode', cleanPass);
+      safeLocalStorage.setItem('rix_admin_username', cleanUser);
+      safeLocalStorage.setItem('rix_admin_passcode', cleanPass);
     } else {
       setAuthError('Incorrect admin username or passcode. Please try again.');
     }
@@ -233,8 +258,8 @@ export default function AdminPanel() {
     setIsAuthenticated(false);
     setUsername('');
     setPasscode('');
-    localStorage.removeItem('rix_admin_username');
-    localStorage.removeItem('rix_admin_passcode');
+    safeLocalStorage.removeItem('rix_admin_username');
+    safeLocalStorage.removeItem('rix_admin_passcode');
   };
 
   const handleTogglePaid = (id: string) => {

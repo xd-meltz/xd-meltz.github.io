@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   MapPin, 
   Phone, 
@@ -18,6 +18,15 @@ export default function AboutContact() {
   const emailAddress = "rixcompound@gmail.com";
   const phoneFormatted = "0768299919";
   const whatsappLink = "https://wa.me/27768299919";
+
+  // Defer Map Loading to keep initial main-thread paint super fast
+  const [loadMap, setLoadMap] = useState(false);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoadMap(true);
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -92,15 +101,24 @@ export default function AboutContact() {
                 </p>
               </div>
 
-              <div className="relative rounded-lg sm:rounded-xl overflow-hidden h-40 sm:h-48 border border-neutral-850/70 shadow bg-neutral-950">
-                <iframe 
-                  src="https://www.google.com/maps?q=Rix+Compound+Bottelary+Road+Protea+Farms+Cape+Town&output=embed"
-                  allowFullScreen
-                  loading="lazy"
-                  title="Google maps map of Rix Compound location"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  className="w-full h-full border-0 absolute inset-0"
-                />
+              <div className="relative rounded-lg sm:rounded-xl overflow-hidden h-40 sm:h-48 border border-neutral-850/70 shadow bg-neutral-950 flex items-center justify-center">
+                {loadMap ? (
+                  <iframe 
+                    src="https://www.google.com/maps?q=Rix+Compound+Bottelary+Road+Protea+Farms+Cape+Town&output=embed"
+                    allowFullScreen
+                    loading="lazy"
+                    title="Google maps map of Rix Compound location"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    className="w-full h-full border-0 absolute inset-0"
+                  />
+                ) : (
+                  <div className="flex flex-col items-center gap-2">
+                    <span className="w-5 h-5 rounded-full border-2 border-brand/30 border-t-brand animate-spin" />
+                    <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-widest">
+                      Syncing Location...
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
 

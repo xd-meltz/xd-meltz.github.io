@@ -371,7 +371,7 @@ export default function Navigation() {
 
       {/* Mobile Drawer Overlay */}
       <div
-        className={`fixed inset-0 z-40 bg-black/95 backdrop-blur-lg flex flex-col justify-center transition-all duration-500 lg:hidden ${
+        className={`fixed inset-0 z-40 bg-neutral-950/98 flex flex-col justify-center transition-all duration-500 lg:hidden ${
           mobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         }`}
       >
