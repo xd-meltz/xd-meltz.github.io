@@ -456,7 +456,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Enter your first and last name"
-                    className="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-3 text-sm focus:border-brand focus:outline-none transition-colors"
+                    className="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-3 text-base md:text-sm focus:border-brand focus:outline-none transition-colors"
                   />
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -469,7 +469,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="rider@example.com"
-                      className="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-3 text-sm focus:border-brand focus:outline-none transition-colors"
+                      className="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-3 text-base md:text-sm focus:border-brand focus:outline-none transition-colors"
                     />
                   </div>
                   <div>
@@ -481,7 +481,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       placeholder="e.g. 0768299919"
-                      className="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-3 text-sm focus:border-brand focus:outline-none transition-colors"
+                      className="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-3 text-base md:text-sm focus:border-brand focus:outline-none transition-colors"
                     />
                   </div>
                 </div>

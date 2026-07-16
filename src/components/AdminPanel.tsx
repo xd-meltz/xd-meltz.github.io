@@ -73,9 +73,9 @@ export default function AdminPanel() {
   useEffect(() => {
     const savedUser = localStorage.getItem('rix_admin_username');
     const savedPass = localStorage.getItem('rix_admin_passcode');
-    if (savedUser?.trim().toLowerCase() === 'igor rix' && savedPass === 'compoundrix.20') {
-      setUsername(savedUser);
-      setPasscode(savedPass);
+    if (savedUser?.trim().toLowerCase() === 'igor rix' && savedPass?.trim() === 'compoundrix.20') {
+      setUsername(savedUser.trim());
+      setPasscode(savedPass.trim());
       setIsAuthenticated(true);
     }
   }, []);
@@ -93,8 +93,8 @@ export default function AdminPanel() {
 
   const fetchClosedDays = () => {
     setFetchingClosedDays(true);
-    const activeUser = username || localStorage.getItem('rix_admin_username') || '';
-    const activePass = passcode || localStorage.getItem('rix_admin_passcode') || '';
+    const activeUser = (username || localStorage.getItem('rix_admin_username') || '').trim();
+    const activePass = (passcode || localStorage.getItem('rix_admin_passcode') || '').trim();
     fetch(`/api/admin/closed-dates?username=${encodeURIComponent(activeUser)}&passcode=${encodeURIComponent(activePass)}`)
       .then((res) => {
         if (!res.ok) throw new Error('Failed to retrieve closed dates.');
@@ -120,8 +120,8 @@ export default function AdminPanel() {
     }
 
     setSubmittingClose(true);
-    const activeUser = username || localStorage.getItem('rix_admin_username') || '';
-    const activePass = passcode || localStorage.getItem('rix_admin_passcode') || '';
+    const activeUser = (username || localStorage.getItem('rix_admin_username') || '').trim();
+    const activePass = (passcode || localStorage.getItem('rix_admin_passcode') || '').trim();
 
     fetch(`/api/admin/closed-dates?username=${encodeURIComponent(activeUser)}&passcode=${encodeURIComponent(activePass)}`, {
       method: 'POST',
@@ -156,8 +156,8 @@ export default function AdminPanel() {
   };
 
   const handleReopenDay = (dateToReopen: string) => {
-    const activeUser = username || localStorage.getItem('rix_admin_username') || '';
-    const activePass = passcode || localStorage.getItem('rix_admin_passcode') || '';
+    const activeUser = (username || localStorage.getItem('rix_admin_username') || '').trim();
+    const activePass = (passcode || localStorage.getItem('rix_admin_passcode') || '').trim();
 
     fetch(`/api/admin/closed-dates/delete?username=${encodeURIComponent(activeUser)}&passcode=${encodeURIComponent(activePass)}`, {
       method: 'POST',
@@ -182,8 +182,8 @@ export default function AdminPanel() {
   };
 
   const fetchBookings = () => {
-    const activeUser = username || localStorage.getItem('rix_admin_username') || '';
-    const activePass = passcode || localStorage.getItem('rix_admin_passcode') || '';
+    const activeUser = (username || localStorage.getItem('rix_admin_username') || '').trim();
+    const activePass = (passcode || localStorage.getItem('rix_admin_passcode') || '').trim();
     fetch(`/api/admin/bookings?username=${encodeURIComponent(activeUser)}&passcode=${encodeURIComponent(activePass)}`)
       .then((res) => {
         if (!res.ok) throw new Error('Incorrect credentials or unauthorized.');
@@ -205,8 +205,8 @@ export default function AdminPanel() {
   };
 
   const fetchCalendarStatus = () => {
-    const activeUser = username || localStorage.getItem('rix_admin_username') || '';
-    const activePass = passcode || localStorage.getItem('rix_admin_passcode') || '';
+    const activeUser = (username || localStorage.getItem('rix_admin_username') || '').trim();
+    const activePass = (passcode || localStorage.getItem('rix_admin_passcode') || '').trim();
     fetch(`/api/admin/calendar-status?username=${encodeURIComponent(activeUser)}&passcode=${encodeURIComponent(activePass)}`)
       .then((res) => res.json())
       .then((data) => setCalendarStatus(data))
@@ -215,11 +215,15 @@ export default function AdminPanel() {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (username.trim().toLowerCase() === 'igor rix' && passcode === 'compoundrix.20') {
+    const cleanUser = username.trim();
+    const cleanPass = passcode.trim();
+    if (cleanUser.toLowerCase() === 'igor rix' && cleanPass === 'compoundrix.20') {
+      setUsername(cleanUser);
+      setPasscode(cleanPass);
       setIsAuthenticated(true);
       setAuthError('');
-      localStorage.setItem('rix_admin_username', username.trim());
-      localStorage.setItem('rix_admin_passcode', 'compoundrix.20');
+      localStorage.setItem('rix_admin_username', cleanUser);
+      localStorage.setItem('rix_admin_passcode', cleanPass);
     } else {
       setAuthError('Incorrect admin username or passcode. Please try again.');
     }
@@ -234,7 +238,9 @@ export default function AdminPanel() {
   };
 
   const handleTogglePaid = (id: string) => {
-    fetch(`/api/admin/bookings/${id}/toggle-paid?username=${encodeURIComponent(username)}&passcode=${encodeURIComponent(passcode)}`, { method: 'POST' })
+    const cleanUser = username.trim();
+    const cleanPass = passcode.trim();
+    fetch(`/api/admin/bookings/${id}/toggle-paid?username=${encodeURIComponent(cleanUser)}&passcode=${encodeURIComponent(cleanPass)}`, { method: 'POST' })
       .then((res) => {
         if (!res.ok) throw new Error('Failed to update status');
         return res.json();
@@ -249,7 +255,9 @@ export default function AdminPanel() {
   };
 
   const handleDeleteBooking = (id: string) => {
-    fetch(`/api/admin/bookings/${id}/delete?username=${encodeURIComponent(username)}&passcode=${encodeURIComponent(passcode)}`, { method: 'POST' })
+    const cleanUser = username.trim();
+    const cleanPass = passcode.trim();
+    fetch(`/api/admin/bookings/${id}/delete?username=${encodeURIComponent(cleanUser)}&passcode=${encodeURIComponent(cleanPass)}`, { method: 'POST' })
       .then((res) => {
         if (!res.ok) throw new Error('Failed to delete booking');
         return res.json();
@@ -264,7 +272,9 @@ export default function AdminPanel() {
   };
 
   const handleSyncCalendar = (id: string) => {
-    fetch(`/api/admin/bookings/${id}/sync-calendar?username=${encodeURIComponent(username)}&passcode=${encodeURIComponent(passcode)}`, { method: 'POST' })
+    const cleanUser = username.trim();
+    const cleanPass = passcode.trim();
+    fetch(`/api/admin/bookings/${id}/sync-calendar?username=${encodeURIComponent(cleanUser)}&passcode=${encodeURIComponent(cleanPass)}`, { method: 'POST' })
       .then((res) => {
         if (!res.ok) throw new Error('Calendar synchronization failed');
         return res.json();
@@ -287,7 +297,10 @@ export default function AdminPanel() {
       return;
     }
 
-    fetch(`/api/admin/set-calendar-token?username=${encodeURIComponent(username)}&passcode=${encodeURIComponent(passcode)}`, {
+    const cleanUser = username.trim();
+    const cleanPass = passcode.trim();
+
+    fetch(`/api/admin/set-calendar-token?username=${encodeURIComponent(cleanUser)}&passcode=${encodeURIComponent(cleanPass)}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ accessToken: customToken, linkedEmail: "rixcompound@gmail.com" })
@@ -357,7 +370,7 @@ export default function AdminPanel() {
                 placeholder="Enter Admin Username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full bg-neutral-950 border border-neutral-800 focus:border-brand rounded-xl px-4 py-3 text-sm font-mono text-center text-white outline-none transition-all"
+                className="w-full bg-neutral-950 border border-neutral-800 focus:border-brand rounded-xl px-4 py-3 text-base md:text-sm font-mono text-center text-white outline-none transition-all"
                 autoFocus
                 required
               />
@@ -373,7 +386,7 @@ export default function AdminPanel() {
                 placeholder="••••••••"
                 value={passcode}
                 onChange={(e) => setPasscode(e.target.value)}
-                className="w-full bg-neutral-950 border border-neutral-800 focus:border-brand rounded-xl px-4 py-3 text-sm font-mono text-center tracking-widest text-white outline-none transition-all"
+                className="w-full bg-neutral-950 border border-neutral-800 focus:border-brand rounded-xl px-4 py-3 text-base md:text-sm font-mono text-center tracking-widest text-white outline-none transition-all"
                 required
               />
             </div>

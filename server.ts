@@ -767,10 +767,15 @@ async function startServer() {
     res.json({ success: true, booking: bookings[bookingIndex] });
   });
 
+  // Helper to validate admin credentials with trimming and case-insensitivity
+  const isAdminAuthorized = (username: any, passcode: any): boolean => {
+    return username?.toString().trim().toLowerCase() === "igor rix" && passcode?.toString().trim() === "compoundrix.20";
+  };
+
   // Admin: Get all bookings (passcode protected)
   app.get("/api/admin/bookings", (req, res) => {
     const { username, passcode } = req.query;
-    if (username?.toString().toLowerCase() !== "igor rix" || passcode !== "compoundrix.20") {
+    if (!isAdminAuthorized(username, passcode)) {
       res.status(401).json({ error: "Unauthorized. Incorrect admin credentials." });
       return;
     }
@@ -790,7 +795,7 @@ async function startServer() {
   app.post("/api/admin/bookings/:id/toggle-paid", (req, res) => {
     const { username, passcode } = req.query;
     const { id } = req.params;
-    if (username?.toString().toLowerCase() !== "igor rix" || passcode !== "compoundrix.20") {
+    if (!isAdminAuthorized(username, passcode)) {
       res.status(401).json({ error: "Unauthorized" });
       return;
     }
@@ -830,7 +835,7 @@ async function startServer() {
   app.post("/api/admin/bookings/:id/delete", (req, res) => {
     const { username, passcode } = req.query;
     const { id } = req.params;
-    if (username?.toString().toLowerCase() !== "igor rix" || passcode !== "compoundrix.20") {
+    if (!isAdminAuthorized(username, passcode)) {
       res.status(401).json({ error: "Unauthorized" });
       return;
     }
@@ -930,7 +935,7 @@ async function startServer() {
   // Admin: Get all closed dates
   app.get("/api/admin/closed-dates", async (req, res) => {
     const { username, passcode } = req.query;
-    if (username?.toString().toLowerCase() !== "igor rix" || passcode !== "compoundrix.20") {
+    if (!isAdminAuthorized(username, passcode)) {
       res.status(401).json({ error: "Unauthorized" });
       return;
     }
@@ -976,7 +981,7 @@ async function startServer() {
   // Admin: Close a day
   app.post("/api/admin/closed-dates", async (req, res) => {
     const { username, passcode } = req.query;
-    if (username?.toString().toLowerCase() !== "igor rix" || passcode !== "compoundrix.20") {
+    if (!isAdminAuthorized(username, passcode)) {
       res.status(401).json({ error: "Unauthorized" });
       return;
     }
@@ -1023,7 +1028,7 @@ async function startServer() {
   // Admin: Open/remove a closed day
   app.post("/api/admin/closed-dates/delete", async (req, res) => {
     const { username, passcode } = req.query;
-    if (username?.toString().toLowerCase() !== "igor rix" || passcode !== "compoundrix.20") {
+    if (!isAdminAuthorized(username, passcode)) {
       res.status(401).json({ error: "Unauthorized" });
       return;
     }
@@ -1056,7 +1061,7 @@ async function startServer() {
   // Admin: Get Google Calendar Integration status
   app.get("/api/admin/calendar-status", (req, res) => {
     const { username, passcode } = req.query;
-    if (username?.toString().toLowerCase() !== "igor rix" || passcode !== "compoundrix.20") {
+    if (!isAdminAuthorized(username, passcode)) {
       res.status(401).json({ error: "Unauthorized" });
       return;
     }
@@ -1078,7 +1083,7 @@ async function startServer() {
     const { username, passcode } = req.query;
     const { accessToken, linkedEmail } = req.body;
 
-    if (username?.toString().toLowerCase() !== "igor rix" || passcode !== "compoundrix.20") {
+    if (!isAdminAuthorized(username, passcode)) {
       res.status(401).json({ error: "Unauthorized" });
       return;
     }
@@ -1131,7 +1136,7 @@ async function startServer() {
     const { username, passcode } = req.query;
     const { id } = req.params;
 
-    if (username?.toString().toLowerCase() !== "igor rix" || passcode !== "compoundrix.20") {
+    if (!isAdminAuthorized(username, passcode)) {
       res.status(401).json({ error: "Unauthorized" });
       return;
     }

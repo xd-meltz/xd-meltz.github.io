@@ -99,11 +99,12 @@ export default function Navigation() {
   };
 
   useEffect(() => {
+    let lastScrolled = false;
     const handleScroll = () => {
-      if (window.scrollY > 40) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
+      const scrolled = window.scrollY > 40;
+      if (scrolled !== lastScrolled) {
+        lastScrolled = scrolled;
+        setIsScrolled(scrolled);
       }
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -126,7 +127,7 @@ export default function Navigation() {
         id="mainNav"
         className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
           isScrolled
-            ? 'h-16 bg-neutral-950/85 backdrop-blur-xl border-b border-brand/20 shadow-lg shadow-black/40'
+            ? 'h-16 bg-neutral-950 border-b border-brand/20 shadow-lg shadow-black/40'
             : 'h-20 bg-transparent'
         }`}
       >
@@ -194,10 +195,11 @@ export default function Navigation() {
                       strokeWidth="2.5"
                       strokeLinecap="round"
                       strokeDasharray="5 3.5"
+                      style={{ willChange: 'stroke-dashoffset', transform: 'translate3d(0,0,0)' }}
                     />
 
                     {/* 3. Big Sprocket Group (Behind we go, centered at 24, 24) */}
-                    <g ref={bigSprocketRef} style={{ transformOrigin: '24px 24px' }}>
+                    <g ref={bigSprocketRef} style={{ transformOrigin: '24px 24px', willChange: 'transform', transform: 'translate3d(0,0,0)' }}>
                       {/* Sprocket Base Ring */}
                       <circle cx="24" cy="24" r="18" fill="none" stroke="#ff8c00" strokeWidth="1" className="opacity-90" />
                       <circle cx="24" cy="24" r="14.5" fill="none" stroke="#ff8c00" strokeWidth="0.75" className="opacity-75" />
@@ -245,7 +247,7 @@ export default function Navigation() {
                     </g>
 
                     {/* 4. Small Sprocket Group (Centered at 94.5, 24) */}
-                    <g ref={smallSprocketRef} style={{ transformOrigin: '94.5px 24px' }}>
+                    <g ref={smallSprocketRef} style={{ transformOrigin: '94.5px 24px', willChange: 'transform', transform: 'translate3d(0,0,0)' }}>
                       <circle cx="94.5" cy="24" r="5" fill="none" stroke="#ff8c00" strokeWidth="1" />
                       <circle cx="94.5" cy="24" r="2.5" fill="none" stroke="#ff8c00" strokeWidth="0.75" />
                       

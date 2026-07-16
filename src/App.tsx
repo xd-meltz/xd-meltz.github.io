@@ -101,7 +101,7 @@ export default function App() {
             document.getElementById('rental-requirements')?.scrollIntoView({ behavior: 'smooth' });
           }}
         >
-          <div className="relative overflow-hidden rounded-xl bg-neutral-950/95 border-2 border-amber-500 shadow-[0_15px_35px_rgba(234,179,8,0.3)] backdrop-blur-md p-3 pr-8 hover:border-amber-400 hover:shadow-[0_20px_40px_rgba(234,179,8,0.45)] transition-all duration-300">
+          <div className="relative overflow-hidden rounded-xl bg-neutral-950 border-2 border-amber-500 shadow-[0_15px_35px_rgba(234,179,8,0.3)] p-3 pr-8 hover:border-amber-400 hover:shadow-[0_20px_40px_rgba(234,179,8,0.45)] transition-all duration-300">
             {/* Background Hazard Stripe Accent inside */}
             <div className="absolute top-0 left-0 bottom-0 w-1.5 bg-[repeating-linear-gradient(45deg,#f59e0b,#f59e0b_6px,#000_6px,#000_12px)]" />
             
