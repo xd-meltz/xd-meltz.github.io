@@ -543,9 +543,17 @@ async function startServer() {
         "14:15",
       ];
 
+      const [year, month, day] = date.split("-").map(Number);
+      const dayOfWeek = new Date(year, month - 1, day).getDay();
+
       const availabilityMap: Record<string, { pitbikes: number; quadbikes: number }> = {};
 
       slots.forEach((slot) => {
+        // Sundays: Close at 2:30 PM (14:30) maximum, so exclude the 14:15 slot which runs to 15:00
+        if (dayOfWeek === 0 && slot === "14:15") {
+          return;
+        }
+
         // Base capacities
         let bookedPitbikes = 0;
         let bookedQuadbikes = 0;
@@ -585,6 +593,14 @@ async function startServer() {
 
     if (!name || !email || !phone || !date || !slot || !bikeType || quantity === undefined || !amount) {
       res.status(400).json({ error: "Missing required booking details" });
+      return;
+    }
+
+    // Validate Sunday maximum time constraint (closes 2:30 PM)
+    const [year, month, day] = date.split("-").map(Number);
+    const dayOfWeek = new Date(year, month - 1, day).getDay();
+    if (dayOfWeek === 0 && slot === "14:15") {
+      res.status(400).json({ error: "The 14:15 slot is not available on Sundays as the track closes at 2:30 PM maximum." });
       return;
     }
 
@@ -694,6 +710,13 @@ async function startServer() {
     bookings.push(newBooking);
     saveBookings(bookings);
 
+    // Persist to Firestore from API
+    try {
+      await createBookingDirect(bookingId, newBooking);
+    } catch (fsErr) {
+      console.warn("Saving to Firestore from backend API failed on creation:", fsErr);
+    }
+
     // Sync to Google Calendar in background (non-blocking)
     syncBookingToGoogleCalendar(newBooking).then((eventId) => {
       if (eventId) {
@@ -711,8 +734,24 @@ async function startServer() {
   });
 
   // Retrieve a booking by ID
-  app.get("/api/bookings/:id", (req, res) => {
+  app.get("/api/bookings/:id", async (req, res) => {
     const { id } = req.params;
+    try {
+      const booking = await getBookingDirect(id);
+      if (booking) {
+        // sync to local just in case
+        const localBookings = getBookings();
+        if (!localBookings.some(b => b.id === id)) {
+          localBookings.push(booking as any);
+          saveBookings(localBookings);
+        }
+        res.json(booking);
+        return;
+      }
+    } catch (err) {
+      console.warn("Firestore fetch booking by ID failed, using local backup:", err);
+    }
+
     const bookings = getBookings();
     const booking = bookings.find((b) => b.id === id);
 
@@ -725,33 +764,69 @@ async function startServer() {
   });
 
   // Confirm booking (fallback success redirect handler)
-  app.post("/api/bookings/:id/confirm", (req, res) => {
+  app.post("/api/bookings/:id/confirm", async (req, res) => {
     const { id } = req.params;
-    const bookings = getBookings();
-    const bookingIndex = bookings.findIndex((b) => b.id === id);
+    
+    let booking: Booking | null = null;
+    let wasAlreadyPaid = false;
 
-    if (bookingIndex === -1) {
+    // Try loading from Firestore first
+    try {
+      const fsBooking = await getBookingDirect(id);
+      if (fsBooking) {
+        booking = fsBooking as any;
+        wasAlreadyPaid = fsBooking.paid;
+      }
+    } catch (err) {
+      console.warn("Firestore fetch booking for confirmation failed, using local backup:", err);
+    }
+
+    const bookings = getBookings();
+    const localIdx = bookings.findIndex((b) => b.id === id);
+
+    if (!booking && localIdx === -1) {
       res.status(404).json({ error: "Booking not found" });
       return;
     }
 
-    const wasAlreadyPaid = bookings[bookingIndex].paid;
-    bookings[bookingIndex].paid = true;
-    saveBookings(bookings);
+    if (booking) {
+      // If we got it from Firestore, mark as paid
+      booking.paid = true;
+      // Save back to Firestore
+      try {
+        await createBookingDirect(id, booking);
+      } catch (err) {
+        console.error("Failed to save confirmed booking to Firestore:", err);
+      }
+      // Sync local file too
+      if (localIdx !== -1) {
+        bookings[localIdx].paid = true;
+        saveBookings(bookings);
+      } else {
+        bookings.push(booking);
+        saveBookings(bookings);
+      }
+    } else {
+      // Fallback: only local booking found
+      wasAlreadyPaid = bookings[localIdx].paid;
+      bookings[localIdx].paid = true;
+      saveBookings(bookings);
+    }
+
+    const confirmedBooking = booking || bookings[localIdx];
 
     // Send confirmation email if newly paid
     if (!wasAlreadyPaid) {
-      sendConfirmationEmail(bookings[bookingIndex]).catch((err) =>
+      sendConfirmationEmail(confirmedBooking).catch((err) =>
         console.error("Error sending confirmation email:", err)
       );
     }
 
     // Sync status update on Google Calendar in background
-    const updatedBooking = bookings[bookingIndex];
-    if (updatedBooking.calendarEventId) {
-      updateCalendarEvent(updatedBooking).catch((err) => console.error("Error updating calendar event on confirm:", err));
+    if (confirmedBooking.calendarEventId) {
+      updateCalendarEvent(confirmedBooking).catch((err) => console.error("Error updating calendar event on confirm:", err));
     } else {
-      syncBookingToGoogleCalendar(updatedBooking).then((eventId) => {
+      syncBookingToGoogleCalendar(confirmedBooking).then((eventId) => {
         if (eventId) {
           const latestBookings = getBookings();
           const bIdx = latestBookings.findIndex((b) => b.id === id);
@@ -760,11 +835,19 @@ async function startServer() {
             latestBookings[bIdx].syncedToCalendar = true;
             saveBookings(latestBookings);
           }
+          // Also update Firestore
+          getBookingDirect(id).then(fsB => {
+            if (fsB) {
+              fsB.calendarEventId = eventId;
+              fsB.syncedToCalendar = true;
+              createBookingDirect(id, fsB);
+            }
+          }).catch(e => console.error("Error syncing Firestore calendar details:", e));
         }
       }).catch((err) => console.error("Error syncing calendar event on confirm:", err));
     }
 
-    res.json({ success: true, booking: bookings[bookingIndex] });
+    res.json({ success: true, booking: confirmedBooking });
   });
 
   // Helper to validate admin credentials with trimming and case-insensitivity
@@ -773,26 +856,38 @@ async function startServer() {
   };
 
   // Admin: Get all bookings (passcode protected)
-  app.get("/api/admin/bookings", (req, res) => {
+  app.get("/api/admin/bookings", async (req, res) => {
     const { username, passcode } = req.query;
     if (!isAdminAuthorized(username, passcode)) {
       res.status(401).json({ error: "Unauthorized. Incorrect admin credentials." });
       return;
     }
 
-    const bookings = getBookings();
-    // Sort bookings by date descending, then slot descending
-    const sortedBookings = [...bookings].sort((a, b) => {
-      const dateCompare = b.date.localeCompare(a.date);
-      if (dateCompare !== 0) return dateCompare;
-      return b.slot.localeCompare(a.slot);
-    });
-
-    res.json(sortedBookings);
+    try {
+      const bookings = await getAllBookingsDirect();
+      // Synchronize back to local backup file just in case
+      saveBookings(bookings as any);
+      
+      const sortedBookings = [...bookings].sort((a, b) => {
+        const dateCompare = b.date.localeCompare(a.date);
+        if (dateCompare !== 0) return dateCompare;
+        return b.slot.localeCompare(a.slot);
+      });
+      res.json(sortedBookings);
+    } catch (err) {
+      console.warn("Firestore fetch for admin bookings failed, using local file backup:", err);
+      const bookings = getBookings();
+      const sortedBookings = [...bookings].sort((a, b) => {
+        const dateCompare = b.date.localeCompare(a.date);
+        if (dateCompare !== 0) return dateCompare;
+        return b.slot.localeCompare(a.slot);
+      });
+      res.json(sortedBookings);
+    }
   });
 
   // Admin: Toggle paid status of a booking
-  app.post("/api/admin/bookings/:id/toggle-paid", (req, res) => {
+  app.post("/api/admin/bookings/:id/toggle-paid", async (req, res) => {
     const { username, passcode } = req.query;
     const { id } = req.params;
     if (!isAdminAuthorized(username, passcode)) {
@@ -800,22 +895,49 @@ async function startServer() {
       return;
     }
 
+    let booking: Booking | null = null;
+    try {
+      const fsBooking = await getBookingDirect(id);
+      if (fsBooking) {
+        booking = fsBooking as any;
+      }
+    } catch (err) {
+      console.warn("Firestore fetch for toggle-paid failed:", err);
+    }
+
     const bookings = getBookings();
     const idx = bookings.findIndex((b) => b.id === id);
-    if (idx === -1) {
+
+    if (!booking && idx === -1) {
       res.status(404).json({ error: "Booking not found" });
       return;
     }
 
-    bookings[idx].paid = !bookings[idx].paid;
-    saveBookings(bookings);
+    if (booking) {
+      booking.paid = !booking.paid;
+      try {
+        await createBookingDirect(id, booking);
+      } catch (err) {
+        console.error("Failed to update Firestore on toggle-paid:", err);
+      }
+      if (idx !== -1) {
+        bookings[idx].paid = booking.paid;
+        saveBookings(bookings);
+      } else {
+        bookings.push(booking);
+        saveBookings(bookings);
+      }
+    } else {
+      bookings[idx].paid = !bookings[idx].paid;
+      saveBookings(bookings);
+      booking = bookings[idx];
+    }
 
     // Sync status update on Google Calendar in background
-    const updatedBooking = bookings[idx];
-    if (updatedBooking.calendarEventId) {
-      updateCalendarEvent(updatedBooking).catch((err) => console.error("Error updating calendar event on toggle:", err));
+    if (booking.calendarEventId) {
+      updateCalendarEvent(booking).catch((err) => console.error("Error updating calendar event on toggle:", err));
     } else {
-      syncBookingToGoogleCalendar(updatedBooking).then((eventId) => {
+      syncBookingToGoogleCalendar(booking).then((eventId) => {
         if (eventId) {
           const latestBookings = getBookings();
           const bIdx = latestBookings.findIndex((b) => b.id === id);
@@ -824,15 +946,22 @@ async function startServer() {
             latestBookings[bIdx].syncedToCalendar = true;
             saveBookings(latestBookings);
           }
+          getBookingDirect(id).then(fsB => {
+            if (fsB) {
+              fsB.calendarEventId = eventId;
+              fsB.syncedToCalendar = true;
+              createBookingDirect(id, fsB);
+            }
+          }).catch(e => console.error("Error syncing Firestore calendar details:", e));
         }
       }).catch((err) => console.error("Error syncing calendar event on toggle:", err));
     }
 
-    res.json({ success: true, booking: bookings[idx] });
+    res.json({ success: true, booking });
   });
 
   // Admin: Delete a booking
-  app.post("/api/admin/bookings/:id/delete", (req, res) => {
+  app.post("/api/admin/bookings/:id/delete", async (req, res) => {
     const { username, passcode } = req.query;
     const { id } = req.params;
     if (!isAdminAuthorized(username, passcode)) {
@@ -840,14 +969,25 @@ async function startServer() {
       return;
     }
 
-    const bookings = getBookings();
-    const bookingToDelete = bookings.find((b) => b.id === id);
-    const filtered = bookings.filter((b) => b.id !== id);
-    if (bookings.length === filtered.length) {
-      res.status(404).json({ error: "Booking not found" });
-      return;
+    let bookingToDelete: Booking | null = null;
+    try {
+      const fsBooking = await getBookingDirect(id);
+      if (fsBooking) {
+        bookingToDelete = fsBooking as any;
+        const { doc, deleteDoc } = await import("firebase/firestore");
+        const { db } = await import("./src/lib/firebase");
+        const docRef = doc(db, 'bookings', id);
+        await deleteDoc(docRef);
+      }
+    } catch (err) {
+      console.warn("Firestore booking delete failed, falling back:", err);
     }
 
+    const bookings = getBookings();
+    if (!bookingToDelete) {
+      bookingToDelete = bookings.find((b) => b.id === id) || null;
+    }
+    const filtered = bookings.filter((b) => b.id !== id);
     saveBookings(filtered);
 
     // Delete calendar event in background if it exists
@@ -861,7 +1001,7 @@ async function startServer() {
   });
 
   // Payfast ITN endpoint
-  app.post("/api/payfast-itn", (req, res) => {
+  app.post("/api/payfast-itn", async (req, res) => {
     // Payfast posts information about transaction
     const { m_payment_id, payment_status } = req.body;
 
@@ -872,36 +1012,65 @@ async function startServer() {
       return;
     }
 
-    const bookings = getBookings();
-    const bookingIndex = bookings.findIndex((b) => b.id === m_payment_id);
+    let booking: Booking | null = null;
+    try {
+      const fsBooking = await getBookingDirect(m_payment_id);
+      if (fsBooking) {
+        booking = fsBooking as any;
+      }
+    } catch (err) {
+      console.warn("Firestore fetch in ITN failed:", err);
+    }
 
-    if (bookingIndex === -1) {
+    const bookings = getBookings();
+    const localIdx = bookings.findIndex((b) => b.id === m_payment_id);
+
+    if (!booking && localIdx === -1) {
       res.status(404).send("Booking not found");
       return;
     }
 
     // In a real sandbox/live env, we check for payment_status === 'COMPLETE'
     if (payment_status === "COMPLETE") {
-      const wasAlreadyPaid = bookings[bookingIndex].paid;
-      bookings[bookingIndex].paid = true;
-      saveBookings(bookings);
+      let wasAlreadyPaid = false;
+      if (booking) {
+        wasAlreadyPaid = booking.paid;
+        booking.paid = true;
+        try {
+          await createBookingDirect(m_payment_id, booking);
+        } catch (err) {
+          console.error("Failed to update Firestore on Payfast ITN complete:", err);
+        }
+        if (localIdx !== -1) {
+          bookings[localIdx].paid = true;
+          saveBookings(bookings);
+        } else {
+          bookings.push(booking);
+          saveBookings(bookings);
+        }
+      } else {
+        wasAlreadyPaid = bookings[localIdx].paid;
+        bookings[localIdx].paid = true;
+        saveBookings(bookings);
+        booking = bookings[localIdx];
+      }
+
       console.log(`Booking ${m_payment_id} successfully marked as PAID via Payfast ITN.`);
 
       // Send confirmation email if newly paid
       if (!wasAlreadyPaid) {
-        sendConfirmationEmail(bookings[bookingIndex]).catch((err) =>
+        sendConfirmationEmail(booking).catch((err) =>
           console.error("Error sending confirmation email on ITN:", err)
         );
       }
 
       // Sync status update on Google Calendar in background
-      const updatedBooking = bookings[bookingIndex];
-      if (updatedBooking.calendarEventId) {
-        updateCalendarEvent(updatedBooking).catch((err) =>
+      if (booking.calendarEventId) {
+        updateCalendarEvent(booking).catch((err) =>
           console.error("Error updating calendar event on ITN:", err)
         );
       } else {
-        syncBookingToGoogleCalendar(updatedBooking).then((eventId) => {
+        syncBookingToGoogleCalendar(booking).then((eventId) => {
           if (eventId) {
             const latestBookings = getBookings();
             const bIdx = latestBookings.findIndex((b) => b.id === m_payment_id);
@@ -910,6 +1079,13 @@ async function startServer() {
               latestBookings[bIdx].syncedToCalendar = true;
               saveBookings(latestBookings);
             }
+            getBookingDirect(m_payment_id).then(fsB => {
+              if (fsB) {
+                fsB.calendarEventId = eventId;
+                fsB.syncedToCalendar = true;
+                createBookingDirect(m_payment_id, fsB);
+              }
+            }).catch(e => console.error("Error syncing Firestore calendar details:", e));
           }
         }).catch((err) => console.error("Error syncing calendar event on ITN:", err));
       }

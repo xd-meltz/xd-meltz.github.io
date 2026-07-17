@@ -105,6 +105,7 @@ export default function AdminPanel() {
   const [submittingSlotClose, setSubmittingSlotClose] = useState(false);
   const [fetchingClosedSlots, setFetchingClosedSlots] = useState(false);
   const [reopenConfirmSlotId, setReopenConfirmSlotId] = useState<string | null>(null);
+  const [adminTab, setAdminTab] = useState<'bookings' | 'closures' | 'config'>('bookings');
 
   // Check if session credentials exist in localStorage
   useEffect(() => {
@@ -680,660 +681,525 @@ export default function AdminPanel() {
   }
 
   return (
-    <div className="py-24 sm:py-32 bg-neutral-950 min-h-screen text-white px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto space-y-8">
+    <div className="py-12 bg-neutral-950 min-h-screen text-white px-2">
+      <div className="max-w-md mx-auto space-y-4">
         
-        {/* Header Title section */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between border-b border-neutral-900 pb-6 gap-4">
+        {/* Header Title Section */}
+        <div className="flex items-center justify-between border-b border-neutral-900 pb-2.5">
           <div>
-            <div className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-ping" />
-              <span className="text-[10px] font-mono text-neutral-400 uppercase tracking-widest">
+            <div className="flex items-center gap-1">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping" />
+              <span className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest">
                 Owner Dashboard
               </span>
             </div>
-            <h1 className="font-display text-2xl sm:text-3xl font-black uppercase text-white tracking-tight italic mt-1">
+            <h1 className="font-display text-base font-black uppercase text-white tracking-tight italic">
               RIX<span className="text-brand">COMPOUND</span> MANAGER
             </h1>
           </div>
 
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-1.5">
             <button
               onClick={fetchBookings}
               disabled={loading}
-              className="p-2.5 bg-neutral-900 hover:bg-neutral-850 rounded-xl text-neutral-400 hover:text-white border border-neutral-800 transition-colors cursor-pointer"
-              title="Refresh lists"
+              className="p-1.5 bg-neutral-900 rounded-lg text-neutral-400 hover:text-white border border-neutral-800 transition-colors cursor-pointer"
+              title="Refresh"
             >
-              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-brand' : ''}`} />
+              <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin text-brand' : ''}`} />
             </button>
             <button
               onClick={() => navigateTo('home')}
-              className="px-4 py-2.5 bg-neutral-900 hover:bg-neutral-850 border border-neutral-800 text-xs font-bold uppercase rounded-xl transition-colors flex items-center gap-1.5 cursor-pointer"
+              className="p-1.5 bg-neutral-900 rounded-lg text-neutral-400 hover:text-white border border-neutral-800 transition-colors cursor-pointer"
+              title="Public Site"
             >
               <Home className="w-3.5 h-3.5" />
-              <span>Public Site</span>
             </button>
             <button
               onClick={handleLogout}
-              className="px-4 py-2.5 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-400 hover:text-red-300 text-xs font-bold uppercase rounded-xl transition-colors cursor-pointer"
+              className="px-2 py-1 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-400 text-[9px] font-bold uppercase rounded-lg transition-colors cursor-pointer"
             >
               Logout
             </button>
           </div>
         </div>
 
-        {/* 1. Google Calendar Sync Manager Section */}
-        <div className="bg-neutral-900/40 border border-neutral-850 p-5 rounded-2xl flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div className="flex items-start gap-3">
-            <div className="w-9 h-9 rounded-lg bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-400 flex-shrink-0 mt-0.5">
-              <Calendar className="w-4.5 h-4.5" />
-            </div>
-            <div>
-              <h3 className="font-display text-sm font-extrabold text-white uppercase tracking-tight">
-                Google Calendar Integration
-              </h3>
-              {calendarStatus?.linked ? (
-                <p className="text-[11px] text-neutral-400 mt-0.5 leading-normal">
-                  Linked to <span className="text-blue-400 font-bold">{calendarStatus.linkedEmail}</span>. New bookings automatically sync to your calendar. Last update: {new Date(calendarStatus.updatedAt || '').toLocaleString()}.
-                </p>
-              ) : (
-                <p className="text-[11px] text-neutral-400 mt-0.5 leading-normal">
-                  Connect your Google Calendar account so that bookings sync automatically in real-time.
-                </p>
-              )}
-            </div>
-          </div>
+        {/* Mobile Tab Navigation */}
+        <div className="flex border border-neutral-900 bg-neutral-900/40 p-0.5 rounded-xl gap-0.5">
           <button
-            onClick={handleConnectCalendar}
-            disabled={linkingCalendar}
-            className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-colors flex items-center gap-1.5 self-start md:self-auto cursor-pointer"
+            onClick={() => setAdminTab('bookings')}
+            className={`flex-1 py-1.5 text-center rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer ${adminTab === 'bookings' ? 'bg-brand text-black' : 'text-neutral-400 hover:text-neutral-200'}`}
           >
-            {calendarStatus?.linked ? 'Reconnect Calendar' : 'Connect Google Calendar'}
+            📋 Bookings
+          </button>
+          <button
+            onClick={() => setAdminTab('closures')}
+            className={`flex-1 py-1.5 text-center rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer ${adminTab === 'closures' ? 'bg-brand text-black' : 'text-neutral-400 hover:text-neutral-200'}`}
+          >
+            🔒 Locks
+          </button>
+          <button
+            onClick={() => setAdminTab('config')}
+            className={`flex-1 py-1.5 text-center rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer ${adminTab === 'config' ? 'bg-brand text-black' : 'text-neutral-400 hover:text-neutral-200'}`}
+          >
+            ⚙️ Config
           </button>
         </div>
 
-        {/* 2. Key Metrics Widgets Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-neutral-900 border border-neutral-850 p-4 rounded-2xl">
-            <span className="text-[10px] font-mono text-neutral-500 uppercase block">Total Bookings</span>
-            <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-2xl sm:text-3xl font-extrabold text-white font-mono">{totalBookings}</span>
-              <span className="text-[10px] text-neutral-400 font-mono">slots</span>
+        {/* TAB 1: BOOKINGS */}
+        {adminTab === 'bookings' && (
+          <div className="space-y-3">
+            
+            {/* Key Metrics Widgets */}
+            <div className="grid grid-cols-4 gap-1 bg-neutral-900/60 p-1.5 rounded-xl border border-neutral-850 text-center">
+              <div className="py-1">
+                <span className="text-[8px] font-mono text-neutral-400 block uppercase">Bookings</span>
+                <span className="text-sm font-black font-mono text-white">{totalBookings}</span>
+              </div>
+              <div className="py-1 border-l border-neutral-850">
+                <span className="text-[8px] font-mono text-neutral-400 block uppercase">Paid</span>
+                <span className="text-sm font-black font-mono text-emerald-400">{paidBookings}</span>
+              </div>
+              <div className="py-1 border-l border-neutral-850">
+                <span className="text-[8px] font-mono text-neutral-400 block uppercase">Unpaid</span>
+                <span className="text-sm font-black font-mono text-amber-500">{pendingBookings}</span>
+              </div>
+              <div className="py-1 border-l border-neutral-850">
+                <span className="text-[8px] font-mono text-neutral-400 block uppercase">Revenue</span>
+                <span className="text-xs font-black font-mono text-brand">R{(totalRevenue/1000).toFixed(1)}k</span>
+              </div>
             </div>
-          </div>
 
-          <div className="bg-neutral-900 border border-neutral-850 p-4 rounded-2xl">
-            <span className="text-[10px] font-mono text-neutral-500 uppercase block">Paid & Secured</span>
-            <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-2xl sm:text-3xl font-extrabold text-emerald-400 font-mono">{paidBookings}</span>
-              <span className="text-[10px] text-neutral-500 font-mono">({Math.round(totalBookings ? (paidBookings/totalBookings)*100 : 0)}%)</span>
+            {/* Search and Filters */}
+            <div className="space-y-1.5">
+              <div className="relative">
+                <Search className="w-3.5 h-3.5 text-neutral-500 absolute left-3 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  placeholder="Search bookings..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full bg-neutral-900 border border-neutral-800 rounded-xl pl-8.5 pr-8 py-1.5 text-[11px] text-white outline-none focus:border-brand/50 transition-all font-mono"
+                />
+                {searchQuery && (
+                  <button 
+                    onClick={() => setSearchQuery('')}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 text-neutral-500 hover:text-white"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                )}
+              </div>
+              <div className="flex bg-neutral-900/40 p-0.5 border border-neutral-850 rounded-xl text-[10px] font-bold">
+                <button
+                  onClick={() => setStatusFilter('all')}
+                  className={`flex-1 py-1 rounded-lg transition-colors ${statusFilter === 'all' ? 'bg-neutral-800 text-white' : 'text-neutral-400'}`}
+                >
+                  All
+                </button>
+                <button
+                  onClick={() => setStatusFilter('paid')}
+                  className={`flex-1 py-1 rounded-lg transition-colors ${statusFilter === 'paid' ? 'bg-emerald-500/20 text-emerald-400' : 'text-neutral-400'}`}
+                >
+                  Paid
+                </button>
+                <button
+                  onClick={() => setStatusFilter('pending')}
+                  className={`flex-1 py-1 rounded-lg transition-colors ${statusFilter === 'pending' ? 'bg-amber-500/20 text-amber-500' : 'text-neutral-400'}`}
+                >
+                  Unpaid
+                </button>
+              </div>
             </div>
-          </div>
 
-          <div className="bg-neutral-900 border border-neutral-850 p-4 rounded-2xl">
-            <span className="text-[10px] font-mono text-neutral-500 uppercase block">Awaiting Payment</span>
-            <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-2xl sm:text-3xl font-extrabold text-amber-500 font-mono">{pendingBookings}</span>
-              <span className="text-[10px] text-neutral-400 font-mono">unpaid</span>
-            </div>
-          </div>
+            {/* Dense Bookings List */}
+            <div className="space-y-1.5 overflow-y-auto max-h-[500px] pr-1">
+              {filteredBookings.length === 0 ? (
+                <div className="p-8 text-center text-neutral-500 border border-dashed border-neutral-850 rounded-xl">
+                  {loading ? (
+                    <div className="flex flex-col items-center justify-center gap-1">
+                      <div className="w-4 h-4 border-2 border-brand border-t-transparent rounded-full animate-spin" />
+                      <span className="font-mono text-[9px]">Loading...</span>
+                    </div>
+                  ) : (
+                    <span className="text-[11px] font-mono">No matching bookings.</span>
+                  )}
+                </div>
+              ) : (
+                filteredBookings.map((b) => {
+                  const isConfirmingDelete = confirmDeleteId === b.id;
+                  const bikeDetails = b.bikeType === "Mixed"
+                    ? `${b.pitBikeQty || 0}P, ${b.quadBikeQty || 0}Q`
+                    : `${b.quantity} Unit(s)`;
+                  
+                  return (
+                    <div key={b.id} className="bg-neutral-900 border border-neutral-850/70 p-2 rounded-xl space-y-1.5 hover:border-neutral-800 transition-all">
+                      
+                      {/* Header Line */}
+                      <div className="flex items-center justify-between text-[11px] font-mono">
+                        <span className="font-bold text-brand uppercase tracking-wider">{b.id}</span>
+                        <span className="text-neutral-400 font-medium">
+                          {new Date(b.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} • <span className="text-white font-bold">{b.slot}</span>
+                        </span>
+                      </div>
 
-          <div className="bg-neutral-900 border-2 border-brand/20 p-4 rounded-2xl relative overflow-hidden">
-            <span className="text-[10px] font-mono text-neutral-400 uppercase block">Total Revenue (Secured)</span>
-            <div className="flex items-baseline gap-1 mt-1">
-              <span className="text-xs font-black text-brand mr-1">R</span>
-              <span className="text-2xl sm:text-3xl font-extrabold text-brand font-mono">{totalRevenue.toLocaleString()}</span>
-            </div>
-            {/* Ambient Background Glow */}
-            <div className="absolute -bottom-8 -right-8 w-24 h-24 bg-brand/10 rounded-full blur-xl" />
-          </div>
-        </div>
-
-        {/* 3. Search and Filtering bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-neutral-900 border border-neutral-850 p-4 rounded-2xl">
-          <div className="relative flex-1 max-w-md">
-            <Search className="w-4 h-4 text-neutral-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              placeholder="Search by name, reference, email, date, phone..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-neutral-950 border border-neutral-800 rounded-xl pl-10 pr-4 py-2.5 text-xs text-white outline-none focus:border-brand/50 transition-all"
-            />
-            {searchQuery && (
-              <button 
-                onClick={() => setSearchQuery('')}
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 p-0.5 text-neutral-500 hover:text-white"
-              >
-                <X className="w-3.5 h-3.5" />
-              </button>
-            )}
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Filter className="w-3.5 h-3.5 text-neutral-400 flex-shrink-0" />
-            <span className="text-xs text-neutral-400 uppercase font-mono mr-1">Filter:</span>
-            <div className="flex bg-neutral-950 p-1 border border-neutral-800 rounded-xl text-xs font-medium">
-              <button
-                onClick={() => setStatusFilter('all')}
-                className={`px-3 py-1.5 rounded-lg transition-colors ${statusFilter === 'all' ? 'bg-neutral-800 text-white font-bold' : 'text-neutral-400 hover:text-neutral-200'}`}
-              >
-                All
-              </button>
-              <button
-                onClick={() => setStatusFilter('paid')}
-                className={`px-3 py-1.5 rounded-lg transition-colors ${statusFilter === 'paid' ? 'bg-emerald-500/25 text-emerald-400 font-bold' : 'text-neutral-400 hover:text-neutral-200'}`}
-              >
-                Paid
-              </button>
-              <button
-                onClick={() => setStatusFilter('pending')}
-                className={`px-3 py-1.5 rounded-lg transition-colors ${statusFilter === 'pending' ? 'bg-amber-500/25 text-amber-500 font-bold' : 'text-neutral-400 hover:text-neutral-200'}`}
-              >
-                Unpaid
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* 4. Bookings Data Table */}
-        <div className="bg-neutral-900 border border-neutral-850 rounded-2xl overflow-hidden shadow-xl">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-neutral-950 border-b border-neutral-850 text-[10px] font-mono text-neutral-400 uppercase tracking-wider">
-                  <th className="p-4">Reference</th>
-                  <th className="p-4">Rider Details</th>
-                  <th className="p-4">Schedule</th>
-                  <th className="p-4">Specification</th>
-                  <th className="p-4 text-right">Amount</th>
-                  <th className="p-4 text-center">Status</th>
-                  <th className="p-4 text-center">Google Calendar</th>
-                  <th className="p-4 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-neutral-850/60 text-xs">
-                {filteredBookings.length === 0 ? (
-                  <tr>
-                    <td colSpan={8} className="p-12 text-center text-neutral-500">
-                      {loading ? (
-                        <div className="flex flex-col items-center justify-center gap-2">
-                          <div className="w-5 h-5 border-2 border-brand border-t-transparent rounded-full animate-spin" />
-                          <span className="font-mono text-[10px]">Loading track records...</span>
-                        </div>
-                      ) : (
-                        <div className="flex flex-col items-center justify-center gap-1.5">
-                          <span className="text-lg">📂</span>
-                          <span>No bookings match your query or filters.</span>
-                        </div>
-                      )}
-                    </td>
-                  </tr>
-                ) : (
-                  filteredBookings.map((b) => {
-                    const isConfirmingDelete = confirmDeleteId === b.id;
-                    const bikeDetails = b.bikeType === "Mixed"
-                      ? `${b.pitBikeQty || 0} Pit, ${b.quadBikeQty || 0} Quad`
-                      : `${b.quantity} Unit(s)`;
-
-                    return (
-                      <tr key={b.id} className="hover:bg-neutral-950/30 transition-colors">
-                        {/* Reference */}
-                        <td className="p-4 font-mono font-bold text-brand uppercase tracking-wider">
-                          {b.id}
-                        </td>
-
-                        {/* Rider Details */}
-                        <td className="p-4">
-                          <div className="font-bold text-white leading-normal">{b.name}</div>
-                          <div className="text-[10px] text-neutral-400 mt-0.5">{b.phone}</div>
-                          <div className="text-[10px] text-neutral-500">{b.email}</div>
-                        </td>
-
-                        {/* Schedule */}
-                        <td className="p-4">
-                          <div className="font-semibold text-white">
-                            {new Date(b.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                      {/* Info Line */}
+                      <div className="flex justify-between items-start text-[10px]">
+                        <div className="space-y-0.5">
+                          <div className="font-extrabold text-white">{b.name}</div>
+                          <div className="text-neutral-400 font-mono text-[9px] flex items-center gap-1.5">
+                            <a href={`tel:${b.phone}`} className="hover:underline hover:text-brand">{b.phone}</a>
+                            <span className="text-neutral-600">|</span>
+                            <span className="truncate max-w-[140px]">{b.email}</span>
                           </div>
-                          <div className="font-mono text-[10px] text-neutral-400 mt-0.5 bg-neutral-950/80 px-2 py-0.5 rounded border border-neutral-850/50 inline-block">
-                            🕒 {b.slot}
+                        </div>
+                        <div className="text-right">
+                          <div className="font-mono font-black text-white">R{b.amount.toLocaleString()}</div>
+                          <div className="text-neutral-400 font-mono text-[9px] uppercase">
+                            {b.packageName ? b.packageName : b.bikeType} ({bikeDetails})
                           </div>
-                        </td>
+                        </div>
+                      </div>
 
-                        {/* Bike Spec */}
-                        <td className="p-4">
-                          <div className="font-bold text-neutral-200 capitalize">{b.bikeType}</div>
-                          <div className="text-[10px] text-neutral-400 mt-0.5 font-mono">{bikeDetails}</div>
-                          {b.packageName && (
-                            <div className="text-[9px] font-mono text-brand mt-0.5 uppercase tracking-tight truncate max-w-[120px]">
-                              {b.packageName}
-                            </div>
-                          )}
-                        </td>
-
-                        {/* Amount */}
-                        <td className="p-4 text-right font-mono font-bold text-white text-sm">
-                          R{b.amount.toLocaleString()}
-                        </td>
-
-                        {/* Paid status toggle */}
-                        <td className="p-4 text-center">
+                      {/* Action Line */}
+                      <div className="flex items-center justify-between pt-1 border-t border-neutral-850/50">
+                        <div className="flex items-center gap-1.5">
                           <button
                             onClick={() => handleTogglePaid(b.id)}
-                            className={`px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wide border cursor-pointer transition-all hover:scale-105 active:scale-95 ${
+                            className={`px-2 py-0.5 rounded text-[8px] font-extrabold uppercase border transition-all ${
                               b.paid
-                                ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-red-500/10 hover:border-red-500/20 hover:text-red-400 hover:content-["UNPAY"]'
-                                : 'bg-amber-500/10 border-amber-500/30 text-amber-500 hover:bg-emerald-500/20 hover:text-emerald-400 hover:border-emerald-500/40'
+                                ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
+                                : 'bg-amber-500/10 border-amber-500/20 text-amber-500'
                             }`}
-                            title="Click to toggle paid status"
                           >
-                            {b.paid ? 'PAID' : 'UNPAID'}
+                            {b.paid ? 'Paid' : 'Unpaid'}
                           </button>
-                        </td>
 
-                        {/* Calendar sync status */}
-                        <td className="p-4 text-center">
                           {b.syncedToCalendar ? (
-                            <div className="inline-flex items-center gap-1 bg-blue-500/10 border border-blue-500/20 text-blue-400 px-2.5 py-1 rounded-full text-[10px] font-bold">
-                              <Check className="w-3 h-3" /> Synced
-                            </div>
+                            <span className="inline-flex items-center gap-0.5 bg-blue-500/10 border border-blue-500/15 text-blue-400 px-1.5 py-0.5 rounded text-[8px] font-bold">
+                              <Check className="w-2.5 h-2.5" /> Synced
+                            </span>
                           ) : (
                             <button
                               onClick={() => handleSyncCalendar(b.id)}
-                              className="px-2.5 py-1 bg-neutral-950 hover:bg-neutral-800 border border-neutral-800 text-neutral-400 hover:text-white rounded-full text-[10px] font-bold uppercase transition-colors flex items-center gap-1 mx-auto cursor-pointer"
-                              title="Sync to Google Calendar now"
+                              className="px-1.5 py-0.5 bg-neutral-950 hover:bg-neutral-800 border border-neutral-800 text-neutral-400 hover:text-white rounded text-[8px] font-bold uppercase transition-colors flex items-center gap-0.5"
                             >
-                              <RefreshCw className="w-2.5 h-2.5" /> Force Sync
+                              <RefreshCw className="w-2 h-2" /> Sync
                             </button>
                           )}
-                        </td>
+                        </div>
 
-                        {/* Delete/Action Buttons */}
-                        <td className="p-4 text-right">
+                        <div>
                           {isConfirmingDelete ? (
-                            <div className="flex items-center justify-end gap-1.5 animate-pulse">
-                              <span className="text-[10px] text-red-400 font-bold font-mono mr-1">Confirm delete?</span>
+                            <div className="flex items-center gap-1">
+                              <span className="text-[8px] text-red-400 font-bold font-mono">Del?</span>
                               <button
                                 onClick={() => handleDeleteBooking(b.id)}
-                                className="p-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors cursor-pointer"
-                                title="Yes, delete"
+                                className="p-1 bg-red-600 text-white rounded text-[8px]"
                               >
-                                <Check className="w-3.5 h-3.5" />
+                                <Check className="w-2.5 h-2.5" />
                               </button>
                               <button
                                 onClick={() => setConfirmDeleteId(null)}
-                                className="p-1.5 bg-neutral-800 hover:bg-neutral-750 text-neutral-400 rounded-lg transition-colors cursor-pointer"
-                                title="Cancel"
+                                className="p-1 bg-neutral-800 text-neutral-400 rounded text-[8px]"
                               >
-                                <X className="w-3.5 h-3.5" />
+                                <X className="w-2.5 h-2.5" />
                               </button>
                             </div>
                           ) : (
                             <button
                               onClick={() => setConfirmDeleteId(b.id)}
-                              className="p-2 bg-neutral-950 hover:bg-red-500/10 text-neutral-400 hover:text-red-500 border border-neutral-850 hover:border-red-500/20 rounded-xl transition-all hover:scale-105 cursor-pointer inline-flex items-center"
-                              title="Delete booking slot"
+                              className="p-1 bg-neutral-950 hover:bg-red-500/10 text-neutral-500 hover:text-red-500 border border-neutral-800 rounded transition-colors"
                             >
-                              <Trash2 className="w-4 h-4" />
+                              <Trash2 className="w-3.5 h-3.5" />
                             </button>
                           )}
-                        </td>
-                      </tr>
-                    );
-                  })
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* 5. Close Days Management Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* Close New Date form */}
-          <div className="lg:col-span-5 bg-neutral-900 border border-neutral-850 p-6 rounded-2xl space-y-4">
-            <h3 className="font-display text-sm font-extrabold text-white uppercase tracking-tight flex items-center gap-2">
-              <CalendarOff className="w-4 h-4 text-brand" />
-              Close a Date / Timeline
-            </h3>
-            <p className="text-[11px] text-neutral-400 leading-normal">
-              Prevent public clients from reserving slots on a specific date or a timeline range. Closed dates are immediately disabled in the customer calendar.
-            </p>
-
-            <form onSubmit={handleCloseDay} className="space-y-4">
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-[10px] font-mono uppercase text-neutral-400 mb-1.5 font-bold">
-                    Start Date
-                  </label>
-                  <input
-                    type="date"
-                    required
-                    value={closingStartDate}
-                    onChange={(e) => setClosingStartDate(e.target.value)}
-                    className="w-full bg-neutral-950 border border-neutral-800 focus:border-brand rounded-xl px-3.5 py-2.5 text-xs text-white outline-none transition-all font-mono"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-[10px] font-mono uppercase text-neutral-400 mb-1.5 font-bold flex items-center justify-between">
-                    <span>End Date</span>
-                    <span className="text-[8px] text-neutral-500 font-normal lowercase">optional</span>
-                  </label>
-                  <input
-                    type="date"
-                    value={closingEndDate}
-                    onChange={(e) => setClosingEndDate(e.target.value)}
-                    min={closingStartDate}
-                    className="w-full bg-neutral-950 border border-neutral-800 focus:border-brand rounded-xl px-3.5 py-2.5 text-xs text-white outline-none transition-all font-mono"
-                  />
-                </div>
-              </div>
-
-              {closingStartDate && closingEndDate && closingStartDate !== closingEndDate && (
-                <div className="bg-neutral-950/50 border border-neutral-850 px-3.5 py-2.5 rounded-xl flex items-center justify-between">
-                  <span className="text-[10px] text-neutral-400">Timeline Mode:</span>
-                  <span className="text-[10px] text-brand font-mono font-bold">
-                    Entire range will be closed
-                  </span>
-                </div>
-              )}
-
-              <div>
-                <label className="block text-[10px] font-mono uppercase text-neutral-400 mb-1.5 font-bold">
-                  Reason / Event Label (Optional)
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. Private Track Day, Maintenance"
-                  value={closingReason}
-                  onChange={(e) => setClosingReason(e.target.value)}
-                  className="w-full bg-neutral-950 border border-neutral-800 focus:border-brand rounded-xl px-4 py-2.5 text-xs text-white outline-none transition-all"
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={submittingClose}
-                className="w-full py-2.5 bg-brand hover:bg-brand-light text-black font-extrabold uppercase rounded-xl text-[10px] tracking-wider transition-all cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50"
-              >
-                {submittingClose ? (
-                  <>
-                    <div className="w-3.5 h-3.5 border-2 border-black border-t-transparent rounded-full animate-spin" />
-                    <span>Applying Closure...</span>
-                  </>
-                ) : (
-                  <>
-                    <Plus className="w-3.5 h-3.5" />
-                    <span>Apply Date/Timeline Closure</span>
-                  </>
-                )}
-              </button>
-            </form>
-          </div>
-
-          {/* Currently Closed Dates List */}
-          <div className="lg:col-span-7 bg-neutral-900 border border-neutral-850 p-6 rounded-2xl flex flex-col">
-            <h3 className="font-display text-sm font-extrabold text-white uppercase tracking-tight flex items-center gap-2 mb-4">
-              <ShieldCheck className="w-4 h-4 text-emerald-400" />
-              Active Date Closures
-            </h3>
-
-            <div className="flex-1 overflow-y-auto max-h-[280px] space-y-3 pr-1">
-              {fetchingClosedDays ? (
-                <div className="py-12 flex flex-col items-center justify-center gap-2">
-                  <div className="w-4 h-4 border-2 border-brand border-t-transparent rounded-full animate-spin" />
-                  <span className="font-mono text-[9px] text-neutral-500">Retrieving closures...</span>
-                </div>
-              ) : closedDays.length === 0 ? (
-                <div className="py-12 text-center text-neutral-500 border border-dashed border-neutral-800 rounded-xl flex flex-col items-center justify-center gap-1.5">
-                  <span className="text-xl">✅</span>
-                  <span className="text-xs font-bold text-neutral-400">All days are open</span>
-                  <span className="text-[10px] text-neutral-500">No date locks have been applied.</span>
-                </div>
-              ) : (
-                closedDays.map((item) => (
-                  <div key={item.date} className="flex items-center justify-between p-3.5 bg-neutral-950/60 border border-neutral-850 rounded-xl hover:border-neutral-800 transition-all">
-                    <div>
-                      <div className="font-mono text-xs font-bold text-white flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
-                        {new Date(item.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}
+                        </div>
                       </div>
-                      {item.reason && (
-                        <div className="text-[10px] text-neutral-400 mt-1 font-semibold">
-                          📝 {item.reason}
-                        </div>
-                      )}
-                      {item.createdAt && (
-                        <div className="text-[9px] text-neutral-500 mt-0.5 font-mono">
-                          Locked at: {new Date(item.createdAt).toLocaleDateString()}
-                        </div>
-                      )}
-                    </div>
-
-                    {reopenConfirmDate === item.date ? (
-                      <div className="flex items-center justify-end gap-1.5 animate-pulse">
-                        <span className="text-[10px] text-emerald-400 font-bold font-mono mr-1">Confirm reopen?</span>
-                        <button
-                          onClick={() => handleReopenDay(item.date)}
-                          className="p-1.5 bg-emerald-600 hover:bg-emerald-750 text-white rounded-lg transition-colors cursor-pointer"
-                          title="Yes, reopen"
-                        >
-                          <Check className="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                          onClick={() => setReopenConfirmDate(null)}
-                          className="p-1.5 bg-neutral-800 hover:bg-neutral-750 text-neutral-400 rounded-lg transition-colors cursor-pointer"
-                          title="Cancel"
-                        >
-                          <X className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    ) : (
-                      <button
-                        onClick={() => setReopenConfirmDate(item.date)}
-                        className="px-2.5 py-1.5 bg-neutral-900 hover:bg-emerald-500/10 border border-neutral-800 hover:border-emerald-500/30 text-neutral-400 hover:text-emerald-400 rounded-xl text-[10px] font-extrabold uppercase transition-all cursor-pointer"
-                      >
-                        Reopen
-                      </button>
-                    )}
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Spacer line */}
-        <div className="w-full h-px bg-neutral-850/60 my-8" />
-
-        {/* 6. Close Time Slots Management Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* Close Specific Time Slot form */}
-          <div className="lg:col-span-5 bg-neutral-900 border border-neutral-850 p-6 rounded-2xl space-y-4">
-            <h3 className="font-display text-sm font-extrabold text-white uppercase tracking-tight flex items-center gap-2">
-              <Clock className="w-4 h-4 text-brand" />
-              Close Time Slot Range
-            </h3>
-            <p className="text-[11px] text-neutral-400 leading-normal">
-              Disable a specific 45-minute riding slot or a range of slots over one or more days. The closed time slots will show as "Closed" and be unbookable.
-            </p>
-
-            <form onSubmit={handleCloseSlot} className="space-y-4">
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-[10px] font-mono uppercase text-neutral-400 mb-1.5 font-bold">
-                    Start Date
-                  </label>
-                  <input
-                    type="date"
-                    required
-                    value={closingSlotStartDate}
-                    onChange={(e) => setClosingSlotStartDate(e.target.value)}
-                    className="w-full bg-neutral-950 border border-neutral-800 focus:border-brand rounded-xl px-3.5 py-2.5 text-xs text-white outline-none transition-all font-mono"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-[10px] font-mono uppercase text-neutral-400 mb-1.5 font-bold">
-                    End Date (Optional)
-                  </label>
-                  <input
-                    type="date"
-                    value={closingSlotEndDate}
-                    onChange={(e) => setClosingSlotEndDate(e.target.value)}
-                    className="w-full bg-neutral-950 border border-neutral-800 focus:border-brand rounded-xl px-3.5 py-2.5 text-xs text-white outline-none transition-all font-mono"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-[10px] font-mono uppercase text-neutral-400 mb-1.5 font-bold">
-                    Start Slot
-                  </label>
-                  <select
-                    required
-                    value={closingSlotStartTime}
-                    onChange={(e) => setClosingSlotStartTime(e.target.value)}
-                    className="w-full bg-neutral-950 border border-neutral-800 focus:border-brand rounded-xl px-3.5 py-2.5 text-xs text-white outline-none transition-all font-mono cursor-pointer"
-                  >
-                    <option value="">-- Choose Start --</option>
-                    {["09:00", "09:45", "10:30", "11:15", "12:00", "12:45", "13:30", "14:15"].map(slot => (
-                      <option key={slot} value={slot}>{slot}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-[10px] font-mono uppercase text-neutral-400 mb-1.5 font-bold">
-                    End Slot (Optional)
-                  </label>
-                  <select
-                    value={closingSlotEndTime}
-                    onChange={(e) => setClosingSlotEndTime(e.target.value)}
-                    className="w-full bg-neutral-950 border border-neutral-800 focus:border-brand rounded-xl px-3.5 py-2.5 text-xs text-white outline-none transition-all font-mono cursor-pointer"
-                  >
-                    <option value="">-- Single Slot --</option>
-                    {["09:00", "09:45", "10:30", "11:15", "12:00", "12:45", "13:30", "14:15"].map(slot => (
-                      <option key={slot} value={slot}>{slot}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-[10px] font-mono uppercase text-neutral-400 mb-1.5 font-bold">
-                  Reason (Optional)
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. Private Track Hire, Track Work"
-                  value={closingSlotReason}
-                  onChange={(e) => setClosingSlotReason(e.target.value)}
-                  className="w-full bg-neutral-950 border border-neutral-800 focus:border-brand rounded-xl px-4 py-2.5 text-xs text-white outline-none transition-all"
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={submittingSlotClose}
-                className="w-full py-2.5 bg-brand hover:bg-brand-light text-black font-extrabold uppercase rounded-xl text-[10px] tracking-wider transition-all cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50"
-              >
-                {submittingSlotClose ? (
-                  <>
-                    <div className="w-3.5 h-3.5 border-2 border-black border-t-transparent rounded-full animate-spin" />
-                    <span>Closing Slots...</span>
-                  </>
-                ) : (
-                  <>
-                    <Plus className="w-3.5 h-3.5" />
-                    <span>Apply Slot Closures</span>
-                  </>
-                )}
-              </button>
-            </form>
-          </div>
-
-          {/* Currently Closed Slots List */}
-          <div className="lg:col-span-7 bg-neutral-900 border border-neutral-850 p-6 rounded-2xl flex flex-col">
-            <h3 className="font-display text-sm font-extrabold text-white uppercase tracking-tight flex items-center gap-2 mb-4">
-              <ShieldCheck className="w-4 h-4 text-emerald-400" />
-              Active Time Slot Closures
-            </h3>
-
-            <div className="flex-1 overflow-y-auto max-h-[280px] space-y-3 pr-1">
-              {fetchingClosedSlots ? (
-                <div className="py-12 flex flex-col items-center justify-center gap-2">
-                  <div className="w-4 h-4 border-2 border-brand border-t-transparent rounded-full animate-spin" />
-                  <span className="font-mono text-[9px] text-neutral-500">Retrieving closed slots...</span>
-                </div>
-              ) : closedSlots.length === 0 ? (
-                <div className="py-12 text-center text-neutral-500 border border-dashed border-neutral-800 rounded-xl flex flex-col items-center justify-center gap-1.5">
-                  <span className="text-xl">✅</span>
-                  <span className="text-xs font-bold text-neutral-400">All slots are open</span>
-                  <span className="text-[10px] text-neutral-500">No individual slot closures have been applied.</span>
-                </div>
-              ) : (
-                closedSlots.map((item) => {
-                  const itemKey = `${item.date}_${item.slot}`;
-                  return (
-                    <div key={itemKey} className="flex items-center justify-between p-3.5 bg-neutral-950/60 border border-neutral-850 rounded-xl hover:border-neutral-800 transition-all">
-                      <div>
-                        <div className="font-mono text-xs font-bold text-white flex flex-wrap items-center gap-x-2 gap-y-1">
-                          <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                          <span className="text-brand">🕒 {item.slot}</span>
-                          <span className="text-neutral-400">on</span>
-                          <span>
-                            {new Date(item.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}
-                          </span>
-                        </div>
-                        {item.reason && (
-                          <div className="text-[10px] text-neutral-400 mt-1 font-semibold">
-                            📝 {item.reason}
-                          </div>
-                        )}
-                        {item.createdAt && (
-                          <div className="text-[9px] text-neutral-500 mt-0.5 font-mono">
-                            Locked at: {new Date(item.createdAt).toLocaleDateString()}
-                          </div>
-                        )}
-                      </div>
-
-                      {reopenConfirmSlotId === itemKey ? (
-                        <div className="flex items-center justify-end gap-1.5 animate-pulse">
-                          <span className="text-[10px] text-emerald-400 font-bold font-mono mr-1">Confirm reopen?</span>
-                          <button
-                            onClick={() => handleReopenSlot(item.date, item.slot)}
-                            className="p-1.5 bg-emerald-600 hover:bg-emerald-750 text-white rounded-lg transition-colors cursor-pointer"
-                            title="Yes, reopen"
-                          >
-                            <Check className="w-3.5 h-3.5" />
-                          </button>
-                          <button
-                            onClick={() => setReopenConfirmSlotId(null)}
-                            className="p-1.5 bg-neutral-800 hover:bg-neutral-750 text-neutral-400 rounded-lg transition-colors cursor-pointer"
-                            title="Cancel"
-                          >
-                            <X className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      ) : (
-                        <button
-                          onClick={() => setReopenConfirmSlotId(itemKey)}
-                          className="px-2.5 py-1.5 bg-neutral-900 hover:bg-emerald-500/10 border border-neutral-800 hover:border-emerald-500/30 text-neutral-400 hover:text-emerald-400 rounded-xl text-[10px] font-extrabold uppercase transition-all cursor-pointer"
-                        >
-                          Reopen
-                        </button>
-                      )}
                     </div>
                   );
                 })
               )}
             </div>
           </div>
-        </div>
+        )}
 
+        {/* TAB 2: CLOSURES */}
+        {adminTab === 'closures' && (
+          <div className="space-y-4">
+            
+            {/* Lock Date Range Form */}
+            <div className="bg-neutral-900 border border-neutral-850 p-3 rounded-xl space-y-2">
+              <h3 className="font-display text-xs font-extrabold text-white uppercase tracking-tight flex items-center gap-1.5">
+                <CalendarOff className="w-3.5 h-3.5 text-brand" />
+                Lock Date Range
+              </h3>
+              
+              <form onSubmit={handleCloseDay} className="space-y-2">
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="block text-[8px] font-mono uppercase text-neutral-400 mb-0.5 font-bold">Start Date</label>
+                    <input
+                      type="date"
+                      required
+                      value={closingStartDate}
+                      onChange={(e) => setClosingStartDate(e.target.value)}
+                      className="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-2 py-1 text-[11px] text-white outline-none font-mono"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[8px] font-mono uppercase text-neutral-400 mb-0.5 font-bold">End Date</label>
+                    <input
+                      type="date"
+                      value={closingEndDate}
+                      onChange={(e) => setClosingEndDate(e.target.value)}
+                      min={closingStartDate}
+                      className="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-2 py-1 text-[11px] text-white outline-none font-mono"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-[8px] font-mono uppercase text-neutral-400 mb-0.5 font-bold">Reason (Optional)</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Track work"
+                    value={closingReason}
+                    onChange={(e) => setClosingReason(e.target.value)}
+                    className="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-2 py-1 text-[11px] text-white outline-none"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={submittingClose}
+                  className="w-full py-1.5 bg-brand hover:bg-brand-light text-black font-extrabold uppercase rounded-lg text-[9px] tracking-wider cursor-pointer"
+                >
+                  {submittingClose ? 'Locking...' : 'Apply Date Lock'}
+                </button>
+              </form>
+            </div>
 
+            {/* Lock Time Slot Range Form */}
+            <div className="bg-neutral-900 border border-neutral-850 p-3 rounded-xl space-y-2">
+              <h3 className="font-display text-xs font-extrabold text-white uppercase tracking-tight flex items-center gap-1.5">
+                <Clock className="w-3.5 h-3.5 text-brand" />
+                Lock Time Slot Range
+              </h3>
+              
+              <form onSubmit={handleCloseSlot} className="space-y-2">
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="block text-[8px] font-mono uppercase text-neutral-400 mb-0.5 font-bold">Start Date</label>
+                    <input
+                      type="date"
+                      required
+                      value={closingSlotStartDate}
+                      onChange={(e) => setClosingSlotStartDate(e.target.value)}
+                      className="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-2 py-1 text-[11px] text-white outline-none font-mono"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[8px] font-mono uppercase text-neutral-400 mb-0.5 font-bold">End Date</label>
+                    <input
+                      type="date"
+                      value={closingSlotEndDate}
+                      onChange={(e) => setClosingSlotEndDate(e.target.value)}
+                      className="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-2 py-1 text-[11px] text-white outline-none font-mono"
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="block text-[8px] font-mono uppercase text-neutral-400 mb-0.5 font-bold">Start Slot</label>
+                    <select
+                      required
+                      value={closingSlotStartTime}
+                      onChange={(e) => setClosingSlotStartTime(e.target.value)}
+                      className="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-2 py-1 text-[11px] text-white outline-none font-mono"
+                    >
+                      <option value="">-- Choose --</option>
+                      {["09:00", "09:45", "10:30", "11:15", "12:00", "12:45", "13:30", "14:15"].map(slot => (
+                        <option key={slot} value={slot}>{slot}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-[8px] font-mono uppercase text-neutral-400 mb-0.5 font-bold">End Slot</label>
+                    <select
+                      value={closingSlotEndTime}
+                      onChange={(e) => setClosingSlotEndTime(e.target.value)}
+                      className="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-2 py-1 text-[11px] text-white outline-none font-mono"
+                    >
+                      <option value="">-- Single --</option>
+                      {["09:00", "09:45", "10:30", "11:15", "12:00", "12:45", "13:30", "14:15"].map(slot => (
+                        <option key={slot} value={slot}>{slot}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-[8px] font-mono uppercase text-neutral-400 mb-0.5 font-bold">Reason (Optional)</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Private Hire"
+                    value={closingSlotReason}
+                    onChange={(e) => setClosingSlotReason(e.target.value)}
+                    className="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-2 py-1 text-[11px] text-white outline-none"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={submittingSlotClose}
+                  className="w-full py-1.5 bg-brand hover:bg-brand-light text-black font-extrabold uppercase rounded-lg text-[9px] tracking-wider cursor-pointer"
+                >
+                  {submittingSlotClose ? 'Locking...' : 'Apply Slot Lock'}
+                </button>
+              </form>
+            </div>
+
+            {/* Locked Items Lists */}
+            <div className="space-y-3">
+              {/* Locked Dates */}
+              <div className="bg-neutral-900 border border-neutral-850 p-3 rounded-xl space-y-1.5">
+                <h3 className="font-display text-xs font-extrabold text-white uppercase tracking-tight flex items-center gap-1.5">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                  Date Locks ({closedDays.length})
+                </h3>
+                <div className="max-h-[140px] overflow-y-auto space-y-1 pr-1">
+                  {fetchingClosedDays ? (
+                    <div className="text-center py-4 font-mono text-[9px] text-neutral-500">Retrieving locks...</div>
+                  ) : closedDays.length === 0 ? (
+                    <div className="text-center py-4 text-[10px] text-neutral-500">All days are open</div>
+                  ) : (
+                    closedDays.map((item) => (
+                      <div key={item.date} className="flex items-center justify-between p-1.5 bg-neutral-950 border border-neutral-850/60 rounded-lg">
+                        <div className="text-[10px]">
+                          <div className="font-mono font-bold text-white">
+                            {new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                          </div>
+                          {item.reason && <div className="text-[9px] text-neutral-400">📝 {item.reason}</div>}
+                        </div>
+                        {reopenConfirmDate === item.date ? (
+                          <div className="flex items-center gap-1">
+                            <span className="text-[8px] text-emerald-400 font-mono">Open?</span>
+                            <button onClick={() => handleReopenDay(item.date)} className="p-0.5 bg-emerald-600 text-white rounded"><Check className="w-2.5 h-2.5" /></button>
+                            <button onClick={() => setReopenConfirmDate(null)} className="p-0.5 bg-neutral-800 text-neutral-400 rounded"><X className="w-2.5 h-2.5" /></button>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => setReopenConfirmDate(item.date)}
+                            className="px-1.5 py-0.5 bg-neutral-900 border border-neutral-800 hover:text-emerald-400 text-[8px] font-extrabold uppercase rounded"
+                          >
+                            Open
+                          </button>
+                        )}
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+
+              {/* Locked Slots */}
+              <div className="bg-neutral-900 border border-neutral-850 p-3 rounded-xl space-y-1.5">
+                <h3 className="font-display text-xs font-extrabold text-white uppercase tracking-tight flex items-center gap-1.5">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                  Slot Locks ({closedSlots.length})
+                </h3>
+                <div className="max-h-[140px] overflow-y-auto space-y-1 pr-1">
+                  {fetchingClosedSlots ? (
+                    <div className="text-center py-4 font-mono text-[9px] text-neutral-500">Retrieving locks...</div>
+                  ) : closedSlots.length === 0 ? (
+                    <div className="text-center py-4 text-[10px] text-neutral-500">All slots are open</div>
+                  ) : (
+                    closedSlots.map((item) => {
+                      const itemKey = `${item.date}_${item.slot}`;
+                      return (
+                        <div key={itemKey} className="flex items-center justify-between p-1.5 bg-neutral-950 border border-neutral-850/60 rounded-lg">
+                          <div className="text-[10px]">
+                            <div className="font-mono font-bold text-white">
+                              <span className="text-brand mr-1">{item.slot}</span>
+                              {new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                            </div>
+                            {item.reason && <div className="text-[9px] text-neutral-400">📝 {item.reason}</div>}
+                          </div>
+                          {reopenConfirmSlotId === itemKey ? (
+                            <div className="flex items-center gap-1">
+                              <span className="text-[8px] text-emerald-400 font-mono">Open?</span>
+                              <button onClick={() => handleReopenSlot(item.date, item.slot)} className="p-0.5 bg-emerald-600 text-white rounded"><Check className="w-2.5 h-2.5" /></button>
+                              <button onClick={() => setReopenConfirmSlotId(null)} className="p-0.5 bg-neutral-800 text-neutral-400 rounded"><X className="w-2.5 h-2.5" /></button>
+                            </div>
+                          ) : (
+                            <button
+                              onClick={() => setReopenConfirmSlotId(itemKey)}
+                              className="px-1.5 py-0.5 bg-neutral-900 border border-neutral-800 hover:text-emerald-400 text-[8px] font-extrabold uppercase rounded"
+                            >
+                              Open
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+              </div>
+            </div>
+
+          </div>
+        )}
+
+        {/* TAB 3: CONFIG */}
+        {adminTab === 'config' && (
+          <div className="space-y-4">
+            
+            {/* Google Calendar Link */}
+            <div className="bg-neutral-900 border border-neutral-850 p-4 rounded-xl space-y-2.5">
+              <h3 className="font-display text-xs font-extrabold text-white uppercase tracking-tight flex items-center gap-1.5">
+                <Calendar className="w-3.5 h-3.5 text-blue-400" />
+                Google Calendar Sync
+              </h3>
+              {calendarStatus?.linked ? (
+                <div className="space-y-1 text-[10px]">
+                  <p className="text-neutral-300 leading-normal">
+                    Linked to <span className="text-blue-400 font-bold">{calendarStatus.linkedEmail}</span>. New bookings automatically sync.
+                  </p>
+                  <div className="text-[8px] text-neutral-500 font-mono">
+                    Updated: {new Date(calendarStatus.updatedAt || '').toLocaleString()}
+                  </div>
+                </div>
+              ) : (
+                <p className="text-[10px] text-neutral-400 leading-normal">
+                  Connect your owner account to sync bookings dynamically in real-time.
+                </p>
+              )}
+              <button
+                onClick={handleConnectCalendar}
+                disabled={linkingCalendar}
+                className="w-full py-1.5 bg-blue-500 hover:bg-blue-600 text-white font-extrabold text-[9px] uppercase tracking-wider rounded-lg transition-colors cursor-pointer"
+              >
+                {calendarStatus?.linked ? 'Reconnect Calendar' : 'Connect Account'}
+              </button>
+            </div>
+
+            {/* Session Information */}
+            <div className="bg-neutral-900 border border-neutral-850 p-4 rounded-xl space-y-2">
+              <h3 className="font-display text-xs font-extrabold text-white uppercase tracking-tight flex items-center gap-1.5">
+                <Lock className="w-3.5 h-3.5 text-red-400" />
+                Session Controls
+              </h3>
+              <div className="text-[10px] text-neutral-400 space-y-0.5">
+                <div>Active User: <span className="text-white font-bold font-mono">{username}</span></div>
+                <div>Status: <span className="text-emerald-400 font-bold font-mono">AUTHORIZED</span></div>
+              </div>
+              <div className="pt-2">
+                <button
+                  onClick={handleLogout}
+                  className="w-full py-1.5 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-400 text-[9px] font-extrabold uppercase rounded-lg transition-colors cursor-pointer"
+                >
+                  Logout Session
+                </button>
+              </div>
+            </div>
+
+          </div>
+        )}
 
       </div>
     </div>

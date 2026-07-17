@@ -131,10 +131,13 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
           setAvailability(data);
         } catch (fsErr) {
           console.error('Firestore direct fetch also failed, using default fallback:', fsErr);
-          // Fallback: build default full availability for all slots
+          // Fallback: build default full availability for all slots, checking Sunday limit
+          const [year, month, day] = date.split('-').map(Number);
+          const dayOfWeek = new Date(year, month - 1, day).getDay();
           const defaultSlots = ["09:00", "09:45", "10:30", "11:15", "12:00", "12:45", "13:30", "14:15"];
           const fallbackMap: Record<string, Availability> = {};
           defaultSlots.forEach(slot => {
+            if (dayOfWeek === 0 && slot === "14:15") return;
             fallbackMap[slot] = { pitbikes: 8, quadbikes: 2 };
           });
           setAvailability(fallbackMap);

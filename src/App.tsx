@@ -46,24 +46,17 @@ export default function App() {
         index++;
         setLoadText(phrases[index]);
       }
-    }, 250);
+    }, 220);
 
-    const handlePageLoad = () => {
-      setTimeout(() => {
-        setIsLoaded(true);
-      }, 1300);
+    // Fast and highly predictable loader duration for a smooth experience
+    const timer = setTimeout(() => {
+      setIsLoaded(true);
+    }, 1200);
+
+    return () => {
+      clearInterval(interval);
+      clearTimeout(timer);
     };
-
-    if (document.readyState === 'complete') {
-      handlePageLoad();
-    } else {
-      window.addEventListener('load', handlePageLoad);
-      return () => {
-        window.removeEventListener('load', handlePageLoad);
-        clearInterval(interval);
-      };
-    }
-    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
@@ -174,7 +167,7 @@ export default function App() {
       </AnimatePresence>
 
       {/* Modern Redesigned Header Menu */}
-      <Navigation />
+      {currentPage !== 'admin' && <Navigation />}
 
       {/* Floating Notification Bubble for Rental Requirements (Only visible on home page) */}
       {showNotification && currentPage === 'home' && (
@@ -258,21 +251,15 @@ export default function App() {
             {/* Hero Welcome */}
             <Hero />
 
-            {isLoaded && (
-              <>
-                {/* Tracks Highlight and Video tour */}
-                <Track />
+            {/* Render rest of sections immediately under the loader so they are ready when loader fades out.
+                This completely prevents any post-loader mounting lag on mobile! */}
+            <Track />
 
-                {/* Pricing Lists & Live Quote Booking Forms */}
-                <PricingCalculator />
+            <PricingCalculator />
 
-                {/* Events Schedule & Image grid with lightboxes */}
-                <EventsGallery />
+            <EventsGallery />
 
-                {/* Story, Map integration, hours and footer */}
-                <AboutContact />
-              </>
-            )}
+            <AboutContact />
           </>
         )}
 

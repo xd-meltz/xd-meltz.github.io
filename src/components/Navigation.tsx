@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, X, Bike } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { navigateTo } from '../App';
 
 export default function Navigation() {
@@ -125,10 +125,10 @@ export default function Navigation() {
     <>
       <nav
         id="mainNav"
-        className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
+        className={`fixed top-0 left-0 w-full z-50 transition-[height,background-color,border-color,box-shadow] duration-200 backdrop-blur-md ${
           isScrolled
-            ? 'h-16 bg-neutral-950 border-b border-brand/20 shadow-lg shadow-black/40'
-            : 'h-20 bg-transparent'
+            ? 'h-16 bg-neutral-950/95 border-b border-brand/20 shadow-lg shadow-black/40'
+            : 'h-20 bg-neutral-950/40 border-b border-transparent'
         }`}
       >
         <div className="max-w-7xl mx-auto h-full px-4 sm:px-6 lg:px-8 flex items-center justify-between">
@@ -322,15 +322,6 @@ export default function Navigation() {
                 <span className="relative z-10">{link.name}</span>
               </a>
             ))}
-            <button
-              onClick={() => {
-                triggerTurbo();
-                navigateTo('booking');
-              }}
-              className="ml-3 px-4 py-2 text-xs font-bold text-black uppercase tracking-wider bg-brand hover:bg-brand-light rounded-full shadow-lg shadow-brand/20 hover:shadow-brand/40 transition-all hover:scale-105 active:scale-95 flex items-center gap-1.5 cursor-pointer"
-            >
-              <Bike className="w-3.5 h-3.5" /> Book Online
-            </button>
             <a
               href="https://www.instagram.com/rix.compound.mini.dirt.track?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
               target="_blank"
@@ -398,7 +389,7 @@ export default function Navigation() {
               triggerTurbo();
               navigateTo('booking');
             }}
-            className={`mt-4 px-8 py-3.5 bg-brand hover:bg-brand-light text-black font-extrabold uppercase tracking-wide rounded-full text-center w-full max-w-xs shadow-lg shadow-brand/20 transition-all cursor-pointer ${
+            className={`mt-4 px-8 py-3.5 bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold uppercase tracking-wide rounded-full text-center w-full max-w-xs shadow-lg shadow-emerald-500/20 transition-all cursor-pointer ${
               mobileMenuOpen ? 'scale-100 opacity-100' : 'scale-90 opacity-0'
             }`}
             style={{ transitionDelay: `${navLinks.length * 75}ms` }}
