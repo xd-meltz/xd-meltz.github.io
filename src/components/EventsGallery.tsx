@@ -40,15 +40,6 @@ export default function EventsGallery() {
       imgUrl: "https://lh3.googleusercontent.com/d/1kZyLMKXdsabDqyivA9mGQ3exA1YXYNdW",
       title: "Weekend Open Session Flyer",
       badge: "Weekend Session"
-    },
-    {
-      imgUrl: "https://lh3.googleusercontent.com/d/1CioRbH66qdBVbZsrrPH28PgqQuZcV58E",
-      title: "Public Holidays",
-      badge: "🔥 Public Holiday Hours",
-      highlight: true,
-      schedule: [
-        "09:00 – 17:00"
-      ]
     }
   ];
 

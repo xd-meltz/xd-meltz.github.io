@@ -50,7 +50,7 @@ export default function PricingCalculator() {
             </h3>
             
             <p className="text-neutral-400 text-xs sm:text-sm max-w-xl leading-relaxed">
-              Book your ride online to guarantee track access and rental gear availability. Choose from our Pit Bike or Quad Bike rentals, or register to bring your own bike. Click below to view available dates and times.
+              Book your ride online to guarantee track access and rental gear availability. Choose from our Pit Bike or Quad Bike rentals. Click below to view available dates and times.
             </p>
 
             <button
@@ -135,6 +135,18 @@ export default function PricingCalculator() {
               </p>
 
               <ul className="space-y-3 sm:space-y-4 pl-1">
+                <li className="flex items-start gap-2.5 text-xs sm:text-sm text-neutral-300">
+                  <span className="text-brand mt-0.5 text-xs sm:text-sm">💰</span>
+                  <div>
+                    <strong className="text-white block uppercase text-[9px] sm:text-[10px] tracking-wider text-amber-500 mb-0.5">Weekend Rates & riding time</strong>
+                    <div className="space-y-1 mt-1 text-xs">
+                      <div>• <strong className="text-brand">Pit Bike Rental:</strong> R250 per 30 minutes of active riding time <span className="text-neutral-500">(45-minute slot intervals)</span></div>
+                      <div>• <strong className="text-brand">Quad Bike Rental:</strong> R300 per 30 minutes of active riding time <span className="text-neutral-500">(45-minute slot intervals)</span></div>
+                      <p className="text-amber-400 text-[10px] font-mono uppercase mt-1 leading-snug">⚠️ Each booking slot provides exactly 30 minutes of active track / riding time.</p>
+                    </div>
+                  </div>
+                </li>
+
                 <li className="flex items-start gap-2.5 text-xs sm:text-sm text-neutral-300">
                   <span className="text-brand mt-0.5 text-xs sm:text-sm">🔒</span>
                   <div>

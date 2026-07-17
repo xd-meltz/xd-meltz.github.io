@@ -235,7 +235,7 @@ export default function TicketPage({ bookingId }: TicketPageProps) {
             <div className="flex items-center gap-3 text-xs text-neutral-300 print:text-black">
               <Clock className="w-4.5 h-4.5 text-brand flex-shrink-0 print:text-neutral-600" />
               <div>
-                <span className="text-[9px] text-neutral-500 block leading-tight">TIME SLOT (45 MINS)</span>
+                <span className="text-[9px] text-neutral-500 block leading-tight">TIME SLOT (45 MINS / 30 MIN RIDE)</span>
                 <span className="font-mono font-bold text-white text-xs sm:text-sm print:text-black">
                   {booking.slot}
                 </span>

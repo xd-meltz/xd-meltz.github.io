@@ -4,6 +4,7 @@
  */
 
 import { Flame, CalendarDays, Compass } from 'lucide-react';
+import { navigateTo } from '../App';
 
 export default function Hero() {
   return (
@@ -28,18 +29,9 @@ export default function Hero() {
                 <Compass className="w-2.5 h-2.5" /> Stellenbosch Winelands
               </span>
               <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-neutral-900 border border-neutral-800 text-neutral-300 text-[9px] sm:text-xs font-bold uppercase tracking-wider rounded-md sm:rounded-full">
-                <CalendarDays className="w-2.5 h-2.5" /> Sat 9am-3pm • Sun 9am-2:30pm
+                <CalendarDays className="w-2.5 h-2.5" /> Fri & Sat 9am-3pm • Sun 9am-2:30pm
               </span>
             </div>
-            
-            <a
-              href="#public-holidays-flyer"
-              className="flex flex-wrap justify-center lg:justify-start gap-1.5 sm:gap-2"
-            >
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-brand/10 border border-brand/30 text-brand text-[9px] sm:text-xs font-bold uppercase tracking-wider rounded-md sm:rounded-full">
-                <Compass className="w-2.5 h-2.5" /> 🔥 Public Holiday Hours • Open Wed to Fri
-              </span>
-            </a>
           </div>
 
           <div>
@@ -55,12 +47,12 @@ export default function Hero() {
           </div>
 
           <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-2.5 mt-0.5">
-            <a
-              href="#pricing"
-              className="w-full sm:w-auto text-center px-5 py-2.5 sm:px-6 sm:py-3 bg-brand hover:bg-brand-light text-black font-extrabold uppercase tracking-wider rounded-md sm:rounded-lg shadow-md hover:shadow-brand/20 transition-all text-[10px] sm:text-xs"
+            <button
+              onClick={() => navigateTo('booking')}
+              className="w-full sm:w-auto text-center px-5 py-2.5 sm:px-6 sm:py-3 bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold uppercase tracking-wider rounded-md sm:rounded-lg shadow-md hover:shadow-emerald-500/20 transition-all text-[10px] sm:text-xs cursor-pointer"
             >
-              Packages & Contact
-            </a>
+              Book Online
+            </button>
             <a
               href="#track"
               className="w-full sm:w-auto text-center px-5 py-2.5 sm:px-6 sm:py-3 bg-neutral-900 hover:bg-neutral-800 text-white border border-neutral-800 font-bold uppercase tracking-wider rounded-md sm:rounded-lg transition-all text-[10px] sm:text-xs"

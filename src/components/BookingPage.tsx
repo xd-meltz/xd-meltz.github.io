@@ -86,7 +86,17 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
           setClosedDates(dates);
         }
       })
-      .catch((err) => console.error('Failed to fetch closed dates:', err));
+      .catch(async (err) => {
+        console.warn('Failed to fetch closed dates from server, trying direct Firestore:', err);
+        try {
+          const { getClosedDatesDirect } = await import('../lib/firebase');
+          const data = await getClosedDatesDirect();
+          const dates = data.map((item: any) => item.date);
+          setClosedDates(dates);
+        } catch (fsErr) {
+          console.error('Failed to fetch closed dates from Firestore:', fsErr);
+        }
+      });
   }, []);
 
   // Fetch availability when date changes
@@ -98,8 +108,8 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
     setSelectedSlot('');
 
     // If day of week changes, default the bike type appropriately
-    const dayOfWeek = new Date(date).getDay(); // 0 is Sunday, 6 is Saturday
-    const isWeekday = dayOfWeek >= 1 && dayOfWeek <= 5;
+    const dayOfWeek = new Date(date).getDay(); // 0 is Sunday, 6 is Saturday, 5 is Friday
+    const isWeekday = dayOfWeek >= 1 && dayOfWeek <= 4;
     if (isWeekday) {
       setBikeType('GroupPackage');
     } else {
@@ -138,7 +148,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
   const isWeekendSelected = () => {
     if (!date) return false;
     const dayOfWeek = new Date(date).getDay();
-    return dayOfWeek === 0 || dayOfWeek === 6; // Sunday or Saturday
+    return dayOfWeek === 0 || dayOfWeek === 6 || dayOfWeek === 5; // Sunday, Saturday, or Friday
   };
 
   // Pricing Calculation
@@ -414,15 +424,36 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
 
         {/* Header */}
         {!isInline && (
-          <div className="mb-8 text-center sm:text-left">
+          <div className="mb-6 text-center sm:text-left">
             <h1 className="font-display text-3xl sm:text-5xl font-black uppercase tracking-tight italic">
               Online <span className="text-brand">Booking</span>
             </h1>
             <p className="text-neutral-400 text-sm sm:text-base mt-2 max-w-xl">
-              You do not need to book if you're bringing your own bike.
+              Quickly and easily secure your track time.
             </p>
           </div>
         )}
+
+        {/* Bring Your Own Bike Info Card at the Top */}
+        <div className="bg-emerald-950/20 border border-emerald-900/35 p-4 sm:p-5 rounded-2xl mb-8">
+          <div className="flex items-start gap-3">
+            <span className="text-xl sm:text-2xl mt-0.5">🚲</span>
+            <div>
+              <h4 className="font-black text-xs sm:text-sm uppercase text-emerald-400 tracking-wider flex items-center gap-1.5 flex-wrap">
+                <span>Bringing Your Own Bike?</span>
+                <span className="px-1.5 py-0.5 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[9px] font-mono rounded font-black">
+                  NO ONLINE BOOKING REQUIRED
+                </span>
+                <span className="px-1.5 py-0.5 bg-brand/10 border border-brand/30 text-brand text-[9px] font-mono rounded font-black">
+                  PAY ON SITE
+                </span>
+              </h4>
+              <p className="text-xs text-neutral-300 leading-relaxed mt-1.5">
+                If you are bringing your own bike, <span className="text-white font-bold">you do not need to book online</span>. Simply show up at the compound, pay <span className="text-emerald-400 font-black">R150 on site</span>, and you're ready to ride!
+              </p>
+            </div>
+          </div>
+        </div>
 
 
 
@@ -569,9 +600,9 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                       for (let d = 1; d <= daysInMonth; d++) {
                         const dateString = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
                         const dayOfWeek = new Date(currentYear, currentMonth, d).getDay();
-                        const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+                        const isWeekend = dayOfWeek === 0 || dayOfWeek === 6 || dayOfWeek === 5;
                         const isClosed = closedDates.includes(dateString);
-                        // Only available on Saturdays and Sundays (isWeekend) and not closed by admin
+                        // Only available on Fridays, Saturdays and Sundays (isWeekend) and not closed by admin
                         const isSelectable = dateString >= minDate && dateString <= maxDate && isWeekend && !isClosed;
                         const isSelected = date === dateString;
 
@@ -640,7 +671,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                     <div className="space-y-4">
                       <div className="bg-neutral-950 border border-neutral-850 p-4 rounded-xl">
                         <span className="px-2 py-0.5 bg-neutral-850 text-neutral-300 text-[9px] font-mono font-bold uppercase tracking-wider rounded">
-                          Monday – Friday Only
+                          Monday – Thursday Only
                         </span>
                         <h4 className="text-white font-extrabold text-sm uppercase mt-1.5">Weekday Group Track Package</h4>
                         <p className="text-neutral-400 text-[11px] leading-relaxed mt-1">
@@ -724,11 +755,13 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                   ) : (
                     /* Weekend rentals */
                     <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <span className="px-2 py-0.5 bg-brand/10 border border-brand/30 text-brand text-[9px] font-mono font-bold uppercase tracking-wider rounded">
-                          Saturday & Sunday Only
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5">
+                        <span className="self-start px-2 py-0.5 bg-brand/10 border border-brand/30 text-brand text-[9px] font-mono font-bold uppercase tracking-wider rounded">
+                          Friday, Saturday & Sunday Only
                         </span>
-                        <span className="text-neutral-500 text-[10px] font-mono">Book combinations together</span>
+                        <span className="text-amber-400 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
+                          ⚠️ 30 Minutes of active riding time per slot
+                        </span>
                       </div>
 
                       <div className="space-y-3 bg-neutral-900/30 p-4 rounded-xl border border-neutral-850">
@@ -740,7 +773,9 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                               <h4 className="font-extrabold text-sm uppercase text-white">Pit Bike Rental</h4>
                             </div>
                             <p className="text-[10px] text-neutral-400 mt-0.5">Fun, responsive 125cc pit bike</p>
-                            <span className="font-mono text-xs text-brand font-bold mt-1 block">R250 <span className="text-[9px] text-neutral-500 font-sans font-normal">/ 45 min</span></span>
+                            <span className="font-mono text-xs text-brand font-bold mt-1 block">
+                              R250 <span className="text-[10px] text-neutral-300 font-sans font-medium">per 30 min ride</span> <span className="text-[9px] text-neutral-500 font-sans font-normal">(45 min slots)</span>
+                            </span>
                           </div>
                           
                           <div className="flex items-center gap-2">
@@ -772,7 +807,9 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                               <h4 className="font-extrabold text-sm uppercase text-white">Quad Bike Rental</h4>
                             </div>
                             <p className="text-[10px] text-neutral-400 mt-0.5">Stable and solid quad action</p>
-                            <span className="font-mono text-xs text-brand font-bold mt-1 block">R300 <span className="text-[9px] text-neutral-500 font-sans font-normal">/ 45 min</span></span>
+                            <span className="font-mono text-xs text-brand font-bold mt-1 block">
+                              R300 <span className="text-[10px] text-neutral-300 font-sans font-medium">per 30 min ride</span> <span className="text-[9px] text-neutral-500 font-sans font-normal">(45 min slots)</span>
+                            </span>
                           </div>
                           
                           <div className="flex items-center gap-2">
@@ -802,24 +839,6 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                           ⚠️ Please select at least 1 bike to view slot availability.
                         </p>
                       )}
-
-                      {/* Bring Your Own Bike Pay On Site Option */}
-                      <div className="bg-emerald-950/20 border border-emerald-900/30 p-4 rounded-xl mt-4">
-                        <div className="flex items-start gap-3">
-                          <span className="text-lg mt-0.5">🚲</span>
-                          <div>
-                            <h4 className="font-extrabold text-xs uppercase text-emerald-400 tracking-wider flex items-center gap-1.5">
-                              <span>Bringing Your Own Bike?</span>
-                              <span className="px-1.5 py-0.5 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[8px] font-mono rounded font-black">
-                                PAY ON SITE
-                              </span>
-                            </h4>
-                            <p className="text-[11px] text-neutral-300 leading-relaxed mt-1">
-                              If you are bringing your own bike, <span className="text-white font-bold">you do not need to book online</span>. Simply show up at the compound, pay <span className="text-emerald-400 font-black">R150 on site</span>, and you're ready to ride!
-                            </p>
-                          </div>
-                        </div>
-                      </div>
                     </div>
                   )}
                 </div>
@@ -873,13 +892,17 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                               <span className={`font-mono text-xs font-black tracking-wider ${
                                 selected 
                                   ? 'text-emerald-400' 
-                                  : disabled 
+                                  : disabled || availability[slot]?.isClosed
                                     ? 'text-red-500 line-through' 
                                     : 'text-emerald-300'
                               }`}>
                                 {slot}
                               </span>
-                              {disabled ? (
+                              {availability[slot]?.isClosed ? (
+                                <span className="text-[7.5px] font-extrabold text-amber-500 uppercase bg-amber-950/40 border border-amber-800/40 px-1.5 py-0.5 rounded leading-none">
+                                  Closed
+                                </span>
+                              ) : disabled ? (
                                 <span className="text-[7.5px] font-extrabold text-red-400 uppercase bg-red-950/80 border border-red-800/50 px-1.5 py-0.5 rounded leading-none">
                                   Booked
                                 </span>

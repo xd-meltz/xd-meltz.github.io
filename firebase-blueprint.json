@@ -83,6 +83,30 @@
         }
       },
       "required": ["date"]
+    },
+    "ClosedSlot": {
+      "title": "ClosedSlot",
+      "description": "Schema representing a specific 45-minute riding slot closed by the admin",
+      "type": "object",
+      "properties": {
+        "date": {
+          "type": "string",
+          "description": "Closed date in YYYY-MM-DD format"
+        },
+        "slot": {
+          "type": "string",
+          "description": "Closed time slot"
+        },
+        "reason": {
+          "type": "string",
+          "description": "Optional reason for closure"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp of closure creation"
+        }
+      },
+      "required": ["date", "slot"]
     }
   },
   "firestore": {
@@ -93,6 +117,10 @@
     "/closed_dates/{date}": {
       "schema": "ClosedDate",
       "description": "Collection of dates that are closed for bookings"
+    },
+    "/closed_slots/{slotId}": {
+      "schema": "ClosedSlot",
+      "description": "Collection of specific time slots closed for bookings"
     }
   }
 }

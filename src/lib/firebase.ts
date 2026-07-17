@@ -63,12 +63,12 @@ const DEFAULT_SLOTS = [
 /**
  * Fetch availability directly from Firestore for a given date
  */
-export async function getAvailabilityDirect(date: string): Promise<Record<string, { pitbikes: number; quadbikes: number }>> {
-  const availabilityMap: Record<string, { pitbikes: number; quadbikes: number }> = {};
+export async function getAvailabilityDirect(date: string): Promise<Record<string, { pitbikes: number; quadbikes: number; isClosed?: boolean }>> {
+  const availabilityMap: Record<string, { pitbikes: number; quadbikes: number; isClosed?: boolean }> = {};
   
   // Set default availability
   DEFAULT_SLOTS.forEach((slot) => {
-    availabilityMap[slot] = { pitbikes: 8, quadbikes: 2 };
+    availabilityMap[slot] = { pitbikes: 8, quadbikes: 2, isClosed: false };
   });
 
   try {
@@ -108,6 +108,24 @@ export async function getAvailabilityDirect(date: string): Promise<Record<string
       availabilityMap[slot].pitbikes = Math.max(0, availabilityMap[slot].pitbikes - bookedPit);
       availabilityMap[slot].quadbikes = Math.max(0, availabilityMap[slot].quadbikes - bookedQuad);
     });
+
+    // Fetch and apply closed slots for this date
+    try {
+      const closedSlotsCol = collection(db, 'closed_slots');
+      const csQuery = query(closedSlotsCol, where('date', '==', date));
+      const csSnapshot = await getDocs(csQuery);
+      csSnapshot.forEach((csSnap) => {
+        const data = csSnap.data();
+        const slot = data.slot;
+        if (availabilityMap[slot]) {
+          availabilityMap[slot].pitbikes = 0;
+          availabilityMap[slot].quadbikes = 0;
+          availabilityMap[slot].isClosed = true;
+        }
+      });
+    } catch (csErr) {
+      console.error('Error fetching closed slots in availability calculation:', csErr);
+    }
 
   } catch (error) {
     console.error('Error fetching availability from Firestore:', error);
@@ -196,5 +214,58 @@ export async function addClosedDateDirect(date: string, reason?: string): Promis
  */
 export async function removeClosedDateDirect(date: string): Promise<void> {
   const docRef = doc(db, 'closed_dates', date);
+  await deleteDoc(docRef);
+}
+
+export interface FirestoreClosedSlot {
+  id: string; // "YYYY-MM-DD_HH:MM"
+  date: string;
+  slot: string;
+  reason?: string;
+  createdAt: string;
+}
+
+/**
+ * Fetch all closed slots from Firestore
+ */
+export async function getClosedSlotsDirect(): Promise<FirestoreClosedSlot[]> {
+  try {
+    const colRef = collection(db, 'closed_slots');
+    const querySnapshot = await getDocs(colRef);
+    const closedSlots: FirestoreClosedSlot[] = [];
+    querySnapshot.forEach((docSnap) => {
+      closedSlots.push({ id: docSnap.id, ...docSnap.data() } as FirestoreClosedSlot);
+    });
+    return closedSlots.sort((a, b) => {
+      const dateCompare = a.date.localeCompare(b.date);
+      if (dateCompare !== 0) return dateCompare;
+      return a.slot.localeCompare(b.slot);
+    });
+  } catch (error) {
+    console.error('Error fetching closed slots from Firestore:', error);
+    return [];
+  }
+}
+
+/**
+ * Save a closed slot to Firestore
+ */
+export async function addClosedSlotDirect(date: string, slot: string, reason?: string): Promise<void> {
+  const docId = `${date}_${slot}`;
+  const docRef = doc(db, 'closed_slots', docId);
+  await setDoc(docRef, {
+    date,
+    slot,
+    reason: reason || '',
+    createdAt: new Date().toISOString()
+  });
+}
+
+/**
+ * Remove a closed slot from Firestore
+ */
+export async function removeClosedSlotDirect(date: string, slot: string): Promise<void> {
+  const docId = `${date}_${slot}`;
+  const docRef = doc(db, 'closed_slots', docId);
   await deleteDoc(docRef);
 }

@@ -11,5 +11,9 @@ service cloud.firestore {
       // Allow reading closed dates, and modifying them (since we check credentials on the api layer/or local session)
       allow read, write: if true;
     }
+    match /closed_slots/{slotId} {
+      // Allow reading closed slots, and modifying them (since we check credentials on the api layer/or local session)
+      allow read, write: if true;
+    }
   }
 }

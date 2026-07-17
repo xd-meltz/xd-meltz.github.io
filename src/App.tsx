@@ -80,7 +80,18 @@ export default function App() {
       fetch(`/api/bookings/${bookingIdParam}/confirm`, { method: 'POST' })
         .then((res) => res.json())
         .then((data) => console.log('Booking confirmed:', data))
-        .catch((err) => console.error('Error confirming booking:', err));
+        .catch(async (err) => {
+          console.warn('Error confirming booking via API, attempting direct Firestore update:', err);
+          try {
+            const { doc, updateDoc } = await import('firebase/firestore');
+            const { db } = await import('./lib/firebase');
+            const docRef = doc(db, 'bookings', bookingIdParam);
+            await updateDoc(docRef, { paid: true });
+            console.log('Booking confirmed directly via Firestore.');
+          } catch (fsErr) {
+            console.error('Failed to confirm booking via Firestore:', fsErr);
+          }
+        });
     } else if (pageParam === 'booking') {
       setCurrentPage('booking');
     } else if (pageParam === 'admin') {
@@ -247,17 +258,21 @@ export default function App() {
             {/* Hero Welcome */}
             <Hero />
 
-            {/* Tracks Highlight and Video tour */}
-            <Track />
+            {isLoaded && (
+              <>
+                {/* Tracks Highlight and Video tour */}
+                <Track />
 
-            {/* Pricing Lists & Live Quote Booking Forms */}
-            <PricingCalculator />
+                {/* Pricing Lists & Live Quote Booking Forms */}
+                <PricingCalculator />
 
-            {/* Events Schedule & Image grid with lightboxes */}
-            <EventsGallery />
+                {/* Events Schedule & Image grid with lightboxes */}
+                <EventsGallery />
 
-            {/* Story, Map integration, hours and footer */}
-            <AboutContact />
+                {/* Story, Map integration, hours and footer */}
+                <AboutContact />
+              </>
+            )}
           </>
         )}
 
