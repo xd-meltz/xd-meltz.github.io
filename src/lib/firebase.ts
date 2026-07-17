@@ -96,6 +96,16 @@ export async function getAvailabilityDirect(date: string): Promise<Record<string
       const slot = b.slot;
       if (!availabilityMap[slot]) return;
 
+      // Filter out unpaid bookings older than 10 minutes
+      if (!b.paid) {
+        const createdTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        const now = Date.now();
+        const tenMinutesInMs = 10 * 60 * 1000;
+        if (now - createdTime > tenMinutesInMs) {
+          return;
+        }
+      }
+
       let bookedPit = 0;
       let bookedQuad = 0;
 
@@ -153,7 +163,7 @@ export async function createBookingDirect(bookingId: string, bookingData: any): 
     ...bookingData,
     id: bookingId,
     createdAt: bookingData.createdAt || new Date().toISOString(),
-    paid: bookingData.paid !== undefined ? bookingData.paid : true // Mark paid by default on creation/redirection
+    paid: bookingData.paid !== undefined ? bookingData.paid : false // Default to false (unpaid) on creation/redirection
   };
   await setDoc(docRef, dataToSave);
 }

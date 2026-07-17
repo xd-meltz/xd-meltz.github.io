@@ -529,7 +529,18 @@ async function startServer() {
     } catch (err) {
       console.warn("Firestore fetch for availability failed, using local file backup:", err);
       const bookings = getBookings();
-      const dateBookings = bookings.filter((b) => b.date === date);
+      const dateBookings = bookings.filter((b) => {
+        if (b.date !== date) return false;
+        if (!b.paid) {
+          const createdTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+          const now = Date.now();
+          const tenMinutesInMs = 10 * 60 * 1000;
+          if (now - createdTime > tenMinutesInMs) {
+            return false;
+          }
+        }
+        return true;
+      });
 
       // Initial default capacity for 45-minute slots from 9 AM to 3 PM
       const slots = [

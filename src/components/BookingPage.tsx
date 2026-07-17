@@ -257,6 +257,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
       pitBikeQty: bikeType === 'Mixed' ? pitBikeQty : undefined,
       quadBikeQty: bikeType === 'Mixed' ? quadBikeQty : undefined,
       amount: getPrice(),
+      paid: false, // explicitly set paid to false initially
     };
 
     const proceedWithBookingId = (bookingId: string) => {
@@ -274,7 +275,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
         pitBikeQty: bookingPayload.pitBikeQty,
         quadBikeQty: bookingPayload.quadBikeQty,
         amount: bookingPayload.amount,
-        paid: true, // assume sandbox success on callback redirect
+        paid: false, // do not assume paid yet; it will be marked paid upon successful callback/redirect
         createdAt: new Date().toISOString()
       };
       try {
@@ -999,7 +1000,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
         </form>
       </div>
 
-      {/* Floating "Go to Checkout" green arrow button for PC (desktop) */}
+      {/* Floating "Go to Checkout" green arrow button */}
       <AnimatePresence>
         {date && selectedSlot && (isWeekendSelected() ? (pitBikeQty > 0 || quadBikeQty > 0) : true) && (
           <motion.button
@@ -1016,7 +1017,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }
             }}
-            className="fixed bottom-6 right-6 z-[45] hidden lg:flex items-center gap-2 pl-4 pr-5 py-3 bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold uppercase tracking-wider rounded-full shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 hover:scale-105 active:scale-95 transition-all text-xs cursor-pointer border border-emerald-400/30 group"
+            className="fixed bottom-6 right-6 z-[45] flex items-center gap-2 pl-4 pr-5 py-3 bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold uppercase tracking-wider rounded-full shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 hover:scale-105 active:scale-95 transition-all text-xs cursor-pointer border border-emerald-400/30 group"
             title="Go to Checkout Summary"
           >
             <ArrowUp className="w-4 h-4 group-hover:-translate-y-1 transition-transform" />

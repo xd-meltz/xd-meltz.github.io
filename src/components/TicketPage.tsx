@@ -115,10 +115,36 @@ export default function TicketPage({ bookingId }: TicketPageProps) {
         </p>
         <button
           onClick={() => navigateTo('home')}
-          className="px-6 py-2.5 bg-brand text-black font-extrabold uppercase rounded-lg shadow-lg active:scale-95 text-xs tracking-wider"
+          className="px-6 py-2.5 bg-brand text-black font-extrabold uppercase rounded-lg shadow-lg active:scale-95 text-xs tracking-wider cursor-pointer"
         >
           Return to Home
         </button>
+      </div>
+    );
+  }
+
+  if (!booking.paid) {
+    return (
+      <div className="py-32 bg-neutral-950 min-h-screen text-white flex flex-col items-center justify-center px-4 text-center">
+        <span className="text-4xl mb-4">💳</span>
+        <h1 className="font-display text-2xl font-black uppercase text-white mb-2">Payment Pending</h1>
+        <p className="text-neutral-400 text-sm max-w-md leading-relaxed mb-8">
+          This booking (Reference: <span className="text-brand font-mono font-bold">{booking.id}</span>) has not been verified as paid. If you just completed payment, please wait a few seconds and refresh this page.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-3">
+          <button
+            onClick={() => window.location.reload()}
+            className="px-6 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold uppercase rounded-lg shadow-lg active:scale-95 text-xs tracking-wider cursor-pointer"
+          >
+            Refresh Status
+          </button>
+          <button
+            onClick={() => navigateTo('home')}
+            className="px-6 py-2.5 bg-neutral-900 hover:bg-neutral-800 text-white border border-neutral-800 font-extrabold uppercase rounded-lg shadow-lg active:scale-95 text-xs tracking-wider cursor-pointer"
+          >
+            Return to Dashboard
+          </button>
+        </div>
       </div>
     );
   }
