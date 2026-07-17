@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { 
   Calendar, 
   Clock, 
@@ -14,7 +15,8 @@ import {
   CreditCard, 
   Users,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  ArrowUp
 } from 'lucide-react';
 import { navigateTo } from '../App';
 import { getAvailabilityDirect, createBookingDirect } from '../lib/firebase';
@@ -931,7 +933,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
 
           {/* Sidebar checkout summary */}
           <div className="md:col-span-5 space-y-6">
-            <div className="bg-neutral-900 border border-neutral-800 p-5 sm:p-6 rounded-2xl sm:rounded-3xl shadow-xl">
+            <div id="booking-summary-panel" className="bg-neutral-900 border border-neutral-800 p-5 sm:p-6 rounded-2xl sm:rounded-3xl shadow-xl">
               <h3 className="font-display font-black text-lg uppercase tracking-tight text-white mb-4">
                 Booking <span className="text-brand">Summary</span>
               </h3>
@@ -986,7 +988,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                 className={`w-full py-3.5 px-4 font-black uppercase text-xs tracking-wider rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 ${
                   submitting || !date || !selectedSlot
                     ? 'bg-neutral-850 border border-neutral-800 text-neutral-500 cursor-not-allowed'
-                    : 'bg-brand hover:bg-brand-light text-black shadow-brand/20 hover:shadow-brand/30 active:scale-97'
+                    : 'bg-emerald-500 hover:bg-emerald-400 text-black shadow-emerald-500/20 hover:shadow-emerald-500/30 active:scale-97'
                 }`}
               >
                 <CreditCard className="w-4 h-4" />
@@ -996,6 +998,32 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
           </div>
         </form>
       </div>
+
+      {/* Floating "Go to Checkout" green arrow button for PC (desktop) */}
+      <AnimatePresence>
+        {date && selectedSlot && (isWeekendSelected() ? (pitBikeQty > 0 || quadBikeQty > 0) : true) && (
+          <motion.button
+            key="scroll-top-arrow"
+            initial={{ opacity: 0, y: 50, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 50, scale: 0.9 }}
+            transition={{ duration: 0.3, ease: 'easeOut' }}
+            onClick={() => {
+              const el = document.getElementById('booking-summary-panel');
+              if (el) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              } else {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }
+            }}
+            className="fixed bottom-6 right-6 z-[45] hidden lg:flex items-center gap-2 pl-4 pr-5 py-3 bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold uppercase tracking-wider rounded-full shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 hover:scale-105 active:scale-95 transition-all text-xs cursor-pointer border border-emerald-400/30 group"
+            title="Go to Checkout Summary"
+          >
+            <ArrowUp className="w-4 h-4 group-hover:-translate-y-1 transition-transform" />
+            <span>Go to Checkout</span>
+          </motion.button>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

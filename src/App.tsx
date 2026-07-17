@@ -14,7 +14,7 @@ import AboutContact from './components/AboutContact';
 import BookingPage from './components/BookingPage';
 import TicketPage from './components/TicketPage';
 import AdminPanel from './components/AdminPanel';
-import { ShieldAlert, X } from 'lucide-react';
+import { ShieldAlert, X, Bike } from 'lucide-react';
 
 // Custom navigation emitter helper
 export function navigateTo(page: 'home' | 'booking' | 'ticket' | 'admin', bookingId?: string) {
@@ -26,10 +26,32 @@ export default function App() {
   const [showNotification, setShowNotification] = useState(true);
   const [currentPage, setCurrentPage] = useState<'home' | 'booking' | 'ticket' | 'admin'>('home');
   const [currentBookingId, setCurrentBookingId] = useState<string | null>(null);
+  const [showFloatingBookBtn, setShowFloatingBookBtn] = useState(false);
   
   // Custom high-performance loader states
   const [isLoaded, setIsLoaded] = useState(false);
   const [loadText, setLoadText] = useState('IGNITION KEY ENGAGED...');
+
+  useEffect(() => {
+    if (currentPage !== 'home') {
+      setShowFloatingBookBtn(false);
+      return;
+    }
+
+    const handleScroll = () => {
+      // Show when user scrolls down past 450px (beyond the hero book button)
+      if (window.scrollY > 450) {
+        setShowFloatingBookBtn(true);
+      } else {
+        setShowFloatingBookBtn(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll(); // initial run
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [currentPage]);
 
   useEffect(() => {
     // Dynamic sequential text to simulate engine/track startup sequence
@@ -243,6 +265,24 @@ export default function App() {
           </div>
         </motion.div>
       )}
+
+      {/* Floating "Book Online" Button for PC (desktop) */}
+      <AnimatePresence>
+        {showFloatingBookBtn && currentPage === 'home' && (
+          <motion.button
+            key="floating-book-btn"
+            initial={{ opacity: 0, x: -50, scale: 0.9 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            exit={{ opacity: 0, x: -50, scale: 0.9 }}
+            transition={{ duration: 0.3, ease: 'easeOut' }}
+            onClick={() => navigateTo('booking')}
+            className="fixed bottom-6 left-6 z-[45] hidden lg:flex items-center gap-2 px-5 py-3 bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold uppercase tracking-wider rounded-full shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 hover:scale-105 active:scale-95 transition-all text-xs cursor-pointer border border-emerald-400/30"
+          >
+            <Bike className="w-4 h-4 animate-bounce" />
+            <span>Book Online</span>
+          </motion.button>
+        )}
+      </AnimatePresence>
 
       {/* Main content flow */}
       <main className="flex-1 w-full flex flex-col">
