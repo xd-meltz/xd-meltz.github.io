@@ -16,7 +16,7 @@ import {
   ShieldCheck 
 } from 'lucide-react';
 import { navigateTo } from '../App';
-import { getBookingDirect } from '../lib/firebase';
+import { getBookingDirect, parseSafeTime } from '../lib/firebase';
 
 interface Booking {
   id: string;
@@ -124,6 +124,28 @@ export default function TicketPage({ bookingId }: TicketPageProps) {
   }
 
   if (!booking.paid) {
+    const createdTime = parseSafeTime(booking.createdAt);
+    const elapsedMs = Date.now() - createdTime;
+    const isExpired = createdTime > 0 && elapsedMs > 10 * 60 * 1000;
+
+    if (isExpired) {
+      return (
+        <div className="py-32 bg-neutral-950 min-h-screen text-white flex flex-col items-center justify-center px-4 text-center">
+          <span className="text-4xl mb-4">⏰</span>
+          <h1 className="font-display text-2xl font-black uppercase text-red-500 mb-2">Reservation Expired</h1>
+          <p className="text-neutral-400 text-sm max-w-md leading-relaxed mb-8">
+            Your 10-minute reservation window for this slot (Reference: <span className="text-brand font-mono font-bold">{booking.id}</span>) has expired, and the slots have been released. Please return to the Booking page to start a new reservation.
+          </p>
+          <button
+            onClick={() => navigateTo('booking')}
+            className="px-6 py-2.5 bg-brand text-black font-extrabold uppercase rounded-lg shadow-lg active:scale-95 text-xs tracking-wider cursor-pointer"
+          >
+            Create New Booking
+          </button>
+        </div>
+      );
+    }
+
     return (
       <div className="py-32 bg-neutral-950 min-h-screen text-white flex flex-col items-center justify-center px-4 text-center">
         <span className="text-4xl mb-4">💳</span>

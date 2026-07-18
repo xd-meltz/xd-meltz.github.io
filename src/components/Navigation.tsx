@@ -4,13 +4,13 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Home } from 'lucide-react';
 import { navigateTo } from '../App';
 
 export default function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [currentPage, setCurrentPage] = useState<'home' | 'booking' | 'ticket'>('home');
+  const [currentPage, setCurrentPage] = useState<'home' | 'booking' | 'ticket' | 'mybookings'>('home');
 
   useEffect(() => {
     // Sync current page on load
@@ -20,6 +20,8 @@ export default function Navigation() {
       setCurrentPage('ticket');
     } else if (pageParam === 'booking') {
       setCurrentPage('booking');
+    } else if (pageParam === 'mybookings') {
+      setCurrentPage('mybookings');
     }
 
     const handleNavigate = (e: Event) => {
@@ -32,19 +34,29 @@ export default function Navigation() {
     return () => window.removeEventListener('navigate', handleNavigate);
   }, []);
 
-  const handleNavLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+  const handleNavLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, link: { name: string; href: string; page?: string }) => {
     triggerTurbo();
-    if (currentPage !== 'home') {
-      e.preventDefault();
-      navigateTo('home');
-      // Scroll to the targeted section after a tiny timeout to let the home page mount
-      setTimeout(() => {
-        const targetId = href.replace('#', '');
+    e.preventDefault();
+    if (link.page) {
+      navigateTo(link.page as any);
+    } else {
+      if (currentPage !== 'home') {
+        navigateTo('home');
+        // Scroll to the targeted section after a tiny timeout to let the home page mount
+        setTimeout(() => {
+          const targetId = link.href.replace('#', '');
+          const element = document.getElementById(targetId);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth' });
+          }
+        }, 250);
+      } else {
+        const targetId = link.href.replace('#', '');
         const element = document.getElementById(targetId);
         if (element) {
           element.scrollIntoView({ behavior: 'smooth' });
         }
-      }, 250);
+      }
     }
   };
 
@@ -117,6 +129,7 @@ export default function Navigation() {
     { name: 'Pricing & Packages', href: '#pricing' },
     { name: 'Events', href: '#events' },
     { name: 'Gallery', href: '#gallery' },
+    { name: 'My Bookings', href: '?page=mybookings', page: 'mybookings' },
     { name: 'About', href: '#about' },
     { name: 'Contact', href: '#contact' },
   ];
@@ -314,7 +327,7 @@ export default function Navigation() {
               <a
                 key={link.name}
                 href={link.href}
-                onClick={(e) => handleNavLinkClick(e, link.href)}
+                onClick={(e) => handleNavLinkClick(e, link)}
                 className="relative px-3.5 py-2 text-sm font-medium text-neutral-300 hover:text-black rounded-full transition-all duration-300 overflow-hidden group"
               >
                 {/* Background sliding hover effect */}
@@ -362,25 +375,26 @@ export default function Navigation() {
 
       {/* Mobile Drawer Overlay */}
       <div
-        className={`fixed inset-0 z-40 bg-neutral-950/98 flex flex-col justify-center transition-all duration-500 lg:hidden ${
+        className={`fixed inset-0 z-40 bg-neutral-950/98 flex flex-col justify-start overflow-y-auto pt-24 pb-12 transition-all duration-500 lg:hidden ${
           mobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         }`}
       >
-        <div className="flex flex-col items-center gap-6 px-6">
+        <div className="flex flex-col items-center gap-5 px-6 pb-6">
           {navLinks.map((link, idx) => (
             <a
               key={link.name}
               href={link.href}
               onClick={(e) => {
                 setMobileMenuOpen(false);
-                handleNavLinkClick(e, link.href);
+                handleNavLinkClick(e, link);
               }}
-              className={`font-display text-2xl font-bold tracking-tight text-white hover:text-brand transition-all duration-300 ${
+              className={`font-display text-2xl font-bold tracking-tight text-white hover:text-brand transition-all duration-300 flex items-center gap-2 ${
                 mobileMenuOpen ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'
               }`}
               style={{ transitionDelay: `${idx * 75}ms` }}
             >
-              {link.name}
+              {link.name === 'Home' && <Home className="w-5 h-5 text-brand" />}
+              <span>{link.name}</span>
             </a>
           ))}
           <button

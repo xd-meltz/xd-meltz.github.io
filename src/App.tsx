@@ -14,17 +14,18 @@ import AboutContact from './components/AboutContact';
 import BookingPage from './components/BookingPage';
 import TicketPage from './components/TicketPage';
 import AdminPanel from './components/AdminPanel';
+import MyBookings from './components/MyBookings';
 import { ShieldAlert, X, Bike } from 'lucide-react';
 
 // Custom navigation emitter helper
-export function navigateTo(page: 'home' | 'booking' | 'ticket' | 'admin', bookingId?: string) {
+export function navigateTo(page: 'home' | 'booking' | 'ticket' | 'admin' | 'mybookings', bookingId?: string) {
   window.dispatchEvent(new CustomEvent('navigate', { detail: { page, bookingId } }));
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 export default function App() {
   const [showNotification, setShowNotification] = useState(true);
-  const [currentPage, setCurrentPage] = useState<'home' | 'booking' | 'ticket' | 'admin'>('home');
+  const [currentPage, setCurrentPage] = useState<'home' | 'booking' | 'ticket' | 'admin' | 'mybookings'>('home');
   const [currentBookingId, setCurrentBookingId] = useState<string | null>(null);
   const [showFloatingBookBtn, setShowFloatingBookBtn] = useState(false);
   
@@ -39,8 +40,9 @@ export default function App() {
     }
 
     const handleScroll = () => {
-      // Show when user scrolls down past 450px (beyond the hero book button)
-      if (window.scrollY > 450) {
+      const scrollTop = window.scrollY !== undefined ? window.scrollY : window.pageYOffset || document.documentElement.scrollTop;
+      // Show when user scrolls down past 180px (beyond the hero book button)
+      if (scrollTop > 180) {
         setShowFloatingBookBtn(true);
       } else {
         setShowFloatingBookBtn(false);
@@ -111,6 +113,8 @@ export default function App() {
       setCurrentPage('booking');
     } else if (pageParam === 'admin') {
       setCurrentPage('admin');
+    } else if (pageParam === 'mybookings') {
+      setCurrentPage('mybookings');
     }
 
     // Custom router event listener
@@ -148,16 +152,107 @@ export default function App() {
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-82 h-82 bg-brand/10 rounded-full blur-[120px] pointer-events-none" />
 
             <div className="relative flex flex-col items-center">
-              {/* Pulsating & Rotating Sprocket Ring */}
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
-                className="w-16 h-16 rounded-full border-4 border-brand border-t-transparent shadow-[0_0_20px_rgba(255,140,0,0.5)] flex items-center justify-center mb-6"
-              >
-                <div className="w-10 h-10 rounded-full border-2 border-brand/40 border-b-transparent flex items-center justify-center">
-                  <div className="w-3 h-3 bg-brand rounded-full animate-ping" />
-                </div>
-              </motion.div>
+              {/* Creative Bike Wheelieing Animation */}
+              <div className="relative h-24 w-36 flex items-end justify-center mb-6">
+                {/* Ground/Dirt Line */}
+                <div className="absolute bottom-2 w-32 h-[2px] bg-gradient-to-r from-transparent via-neutral-800 to-transparent" />
+                
+                {/* The Wheelie Bike */}
+                <motion.div
+                  animate={{ 
+                    rotate: [0, -12, -9, -15, 0],
+                    y: [0, -6, -2, -4, 0]
+                  }}
+                  transition={{ 
+                    repeat: Infinity, 
+                    duration: 2.0, 
+                    ease: "easeInOut" 
+                  }}
+                  className="relative origin-bottom-left flex items-center justify-center text-brand pb-2 select-none"
+                >
+                  <svg viewBox="0 0 100 60" className="w-24 h-16 text-brand drop-shadow-[0_0_12px_rgba(255,140,0,0.4)]">
+                    {/* Rear Wheel Spinning Group */}
+                    <motion.g
+                      animate={{ rotate: 360 }}
+                      transition={{ repeat: Infinity, duration: 0.4, ease: "linear" }}
+                      style={{ transformOrigin: "24px 44px" }}
+                    >
+                      {/* Outer Tire */}
+                      <circle cx="24" cy="44" r="10" stroke="currentColor" strokeWidth="2" fill="none" />
+                      {/* Inner Rim */}
+                      <circle cx="24" cy="44" r="7" stroke="currentColor" strokeWidth="0.8" fill="none" opacity="0.6" />
+                      {/* Spokes */}
+                      <line x1="14" y1="44" x2="34" y2="44" stroke="currentColor" strokeWidth="1" opacity="0.8" />
+                      <line x1="24" y1="34" x2="24" y2="54" stroke="currentColor" strokeWidth="1" opacity="0.8" />
+                      <line x1="17" y1="37" x2="31" y2="51" stroke="currentColor" strokeWidth="1" opacity="0.8" />
+                      <line x1="17" y1="51" x2="31" y2="37" stroke="currentColor" strokeWidth="1" opacity="0.8" />
+                    </motion.g>
+
+                    {/* Front Wheel Spinning Group (Airborne) */}
+                    <motion.g
+                      animate={{ rotate: 240 }}
+                      transition={{ repeat: Infinity, duration: 0.8, ease: "linear" }}
+                      style={{ transformOrigin: "76px 24px" }}
+                    >
+                      {/* Outer Tire */}
+                      <circle cx="76" cy="24" r="10" stroke="currentColor" strokeWidth="2" fill="none" />
+                      {/* Inner Rim */}
+                      <circle cx="76" cy="24" r="7" stroke="currentColor" strokeWidth="0.8" fill="none" opacity="0.6" />
+                      {/* Spokes */}
+                      <line x1="66" y1="24" x2="86" y2="24" stroke="currentColor" strokeWidth="1" opacity="0.8" />
+                      <line x1="76" y1="14" x2="76" y2="34" stroke="currentColor" strokeWidth="1" opacity="0.8" />
+                      <line x1="69" y1="17" x2="83" y2="31" stroke="currentColor" strokeWidth="1" opacity="0.8" />
+                      <line x1="69" y1="31" x2="83" y2="17" stroke="currentColor" strokeWidth="1" opacity="0.8" />
+                    </motion.g>
+
+                    {/* Main Chassis / Frame (Static relative to wheels) */}
+                    <g className="text-white">
+                      {/* Rear Swingarm */}
+                      <line x1="24" y1="44" x2="45" y2="41" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+                      
+                      {/* Chain / Drive (Darker) */}
+                      <line x1="24" y1="44" x2="42" y2="42" stroke="currentColor" strokeWidth="1" strokeDasharray="2,2" opacity="0.7" />
+
+                      {/* Engine Area block */}
+                      <rect x="40" y="34" width="11" height="10" rx="2" fill="currentColor" className="text-brand" />
+                      <circle cx="45" cy="39" r="4" fill="black" opacity="0.3" />
+
+                      {/* Front Forks */}
+                      <line x1="76" y1="24" x2="65" y2="7" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+                      
+                      {/* Handlebars */}
+                      <line x1="60" y1="7" x2="70" y2="7" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+                      
+                      {/* Main frame bars */}
+                      <line x1="45" y1="41" x2="65" y2="9" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+                      <line x1="45" y1="41" x2="34" y2="25" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                      <line x1="34" y1="25" x2="65" y2="9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+
+                      {/* Seat (tilted dirt-bike seat) */}
+                      <path d="M30 24 C38 24 48 22 54 20" stroke="currentColor" strokeWidth="4.5" fill="none" strokeLinecap="round" />
+
+                      {/* Exhaust pipe */}
+                      <path d="M43 36 C36 36 30 32 26 29" stroke="currentColor" strokeWidth="1.8" fill="none" strokeLinecap="round" opacity="0.9" />
+                    </g>
+                  </svg>
+                </motion.div>
+
+                {/* Ground Dust/Drift Sparks particle escaping from the back wheel */}
+                <motion.div
+                  animate={{ 
+                    x: [0, -35, -20], 
+                    y: [0, -5, 0],
+                    opacity: [0, 0.9, 0],
+                    scale: [0.5, 1.5, 0.3]
+                  }}
+                  transition={{ 
+                    repeat: Infinity, 
+                    duration: 0.6, 
+                    ease: "easeOut" 
+                  }}
+                  className="absolute bottom-[6px] left-[18px] w-2.5 h-2.5 bg-brand/40 rounded-full blur-[1px]"
+                />
+              </div>
 
               <h2 className="font-display font-black text-2xl tracking-wider text-white uppercase italic flex items-center gap-1.5">
                 RIX<span className="text-brand">COMPOUND</span>
@@ -266,17 +361,17 @@ export default function App() {
         </motion.div>
       )}
 
-      {/* Floating "Book Online" Button for PC (desktop) */}
+      {/* Floating "Book Online" Button */}
       <AnimatePresence>
         {showFloatingBookBtn && currentPage === 'home' && (
           <motion.button
             key="floating-book-btn"
-            initial={{ opacity: 0, x: -50, scale: 0.9 }}
-            animate={{ opacity: 1, x: 0, scale: 1 }}
-            exit={{ opacity: 0, x: -50, scale: 0.9 }}
+            initial={{ opacity: 0, y: 20, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.9 }}
             transition={{ duration: 0.3, ease: 'easeOut' }}
             onClick={() => navigateTo('booking')}
-            className="fixed bottom-6 left-6 z-[45] hidden lg:flex items-center gap-2 px-5 py-3 bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold uppercase tracking-wider rounded-full shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 hover:scale-105 active:scale-95 transition-all text-xs cursor-pointer border border-emerald-400/30"
+            className="fixed bottom-6 right-6 md:left-6 md:right-auto z-[45] flex items-center gap-2 px-5 py-3 bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold uppercase tracking-wider rounded-full shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 hover:scale-105 active:scale-95 transition-all text-xs cursor-pointer border border-emerald-400/30"
           >
             <Bike className="w-4 h-4 animate-bounce" />
             <span>Book Online</span>
@@ -305,6 +400,10 @@ export default function App() {
 
         {currentPage === 'booking' && (
           <BookingPage />
+        )}
+
+        {currentPage === 'mybookings' && (
+          <MyBookings />
         )}
 
         {currentPage === 'ticket' && (

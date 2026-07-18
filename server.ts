@@ -10,7 +10,8 @@ import {
   getAllBookingsDirect,
   getClosedDatesDirect,
   addClosedDateDirect,
-  removeClosedDateDirect
+  removeClosedDateDirect,
+  parseSafeTime
 } from "./src/lib/firebase";
 
 interface Booking {
@@ -532,7 +533,7 @@ async function startServer() {
       const dateBookings = bookings.filter((b) => {
         if (b.date !== date) return false;
         if (!b.paid) {
-          const createdTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+          const createdTime = parseSafeTime(b.createdAt);
           const now = Date.now();
           const tenMinutesInMs = 10 * 60 * 1000;
           if (now - createdTime > tenMinutesInMs) {
@@ -630,7 +631,18 @@ async function startServer() {
 
     // Double check availability
     const bookings = getBookings();
-    const dateBookings = bookings.filter((b) => b.date === date && b.slot === slot);
+    const dateBookings = bookings.filter((b) => {
+      if (b.date !== date || b.slot !== slot) return false;
+      if (!b.paid) {
+        const createdTime = parseSafeTime(b.createdAt);
+        const now = Date.now();
+        const tenMinutesInMs = 10 * 60 * 1000;
+        if (now - createdTime > tenMinutesInMs) {
+          return false;
+        }
+      }
+      return true;
+    });
     
     let bookedPitbikes = 0;
     let bookedQuadbikes = 0;
@@ -772,6 +784,38 @@ async function startServer() {
     }
 
     res.json(booking);
+  });
+
+  // Retrieve bookings by email, phone, or ID
+  app.get("/api/my-bookings", async (req, res) => {
+    const { email, phone, id } = req.query;
+    if (!email && !phone && !id) {
+      res.status(400).json({ error: "At least one search query parameter (email, phone, or id) is required" });
+      return;
+    }
+
+    let results: Booking[] = [];
+
+    try {
+      const allBookings = await getAllBookingsDirect();
+      results = allBookings.filter((b: any) => {
+        if (id && b.id && b.id.toLowerCase() === (id as string).trim().toLowerCase()) return true;
+        if (email && b.email && b.email.toLowerCase() === (email as string).trim().toLowerCase()) return true;
+        if (phone && b.phone && b.phone.replace(/[^0-9]/g, '') === (phone as string).replace(/[^0-9]/g, '')) return true;
+        return false;
+      }) as any;
+    } catch (err) {
+      console.warn("Firestore fetch all bookings for search failed, using local backup:", err);
+      const bookings = getBookings();
+      results = bookings.filter((b) => {
+        if (id && b.id && b.id.toLowerCase() === (id as string).trim().toLowerCase()) return true;
+        if (email && b.email && b.email.toLowerCase() === (email as string).trim().toLowerCase()) return true;
+        if (phone && b.phone && b.phone.replace(/[^0-9]/g, '') === (phone as string).replace(/[^0-9]/g, '')) return true;
+        return false;
+      });
+    }
+
+    res.json(results);
   });
 
   // Confirm booking (fallback success redirect handler)

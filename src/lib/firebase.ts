@@ -32,6 +32,31 @@ const app = initializeApp(firebaseConfig);
 // Initialize Firestore with the specific named database ID
 export const db = initializeFirestore(app, {}, "ai-studio-rixcompound-7aca96af-088b-44d0-8b67-6e7c89062000");
 
+/**
+ * Safely parse any date value (String, Timestamp, Date object, etc.) to a millisecond timestamp
+ */
+export function parseSafeTime(val: any): number {
+  if (!val) return 0;
+  if (typeof val === 'string') {
+    return Date.parse(val) || 0;
+  }
+  if (typeof val === 'number') {
+    return val;
+  }
+  if (val instanceof Date) {
+    return val.getTime();
+  }
+  if (val && typeof val === 'object') {
+    if (typeof val.toMillis === 'function') {
+      return val.toMillis();
+    }
+    if (typeof val.seconds === 'number') {
+      return val.seconds * 1000 + Math.floor((val.nanoseconds || 0) / 1000000);
+    }
+  }
+  return 0;
+}
+
 export interface FirestoreBooking {
   id: string;
   name: string;
@@ -98,7 +123,7 @@ export async function getAvailabilityDirect(date: string): Promise<Record<string
 
       // Filter out unpaid bookings older than 10 minutes
       if (!b.paid) {
-        const createdTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        const createdTime = parseSafeTime(b.createdAt);
         const now = Date.now();
         const tenMinutesInMs = 10 * 60 * 1000;
         if (now - createdTime > tenMinutesInMs) {
