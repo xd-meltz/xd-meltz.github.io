@@ -304,30 +304,56 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
         item_name: `Rix Compound Booking - ${bookingPayload.packageName} on ${date} at ${selectedSlot}`,
       };
 
-      // Generate secure Payfast signature with salt passphrase
-      const passphrase = 'rix_comound.2026/';
-      let pfOutput = "";
+      // Filter out empty or whitespace-only parameters so we only sign and submit valid fields
+      const activeFields: Record<string, string> = {};
       Object.entries(fields).forEach(([key, val]) => {
-        if (val !== "") {
-          pfOutput += `${key}=${encodeURIComponent(val.trim()).replace(/%20/g, "+")}&`;
+        if (val !== undefined && val !== null && val.trim() !== '') {
+          activeFields[key] = val.trim();
         }
       });
-      let signatureString = pfOutput.slice(0, -1);
-      if (passphrase) {
-        signatureString += `&passphrase=${encodeURIComponent(passphrase.trim()).replace(/%20/g, "+")}`;
-      }
-      const signature = CryptoJS.MD5(signatureString).toString();
 
-      // Append standard fields
-      Object.entries(fields).forEach(([key, val]) => {
+      // 1. Sort keys alphabetically (Payfast requirement)
+      const sortedKeys = Object.keys(activeFields).sort();
+
+      // Helper function to match standard PHP urlencode / browser form submission encoding exactly
+      const payfastEncode = (str: string) => {
+        return encodeURIComponent(str)
+          .replace(/%20/g, '+')
+          .replace(/!/g, '%21')
+          .replace(/'/g, '%27')
+          .replace(/\(/g, '%28')
+          .replace(/\)/g, '%29')
+          .replace(/\*/g, '%2A');
+      };
+
+      // 2. Build parameter string for signature
+      let pfOutput = "";
+      sortedKeys.forEach((key) => {
+        pfOutput += `${key}=${payfastEncode(activeFields[key])}&`;
+      });
+      let signatureString = pfOutput.slice(0, -1);
+
+      // 3. No passphrase appended (removed as per instructions)
+      console.group('=== Payfast Signature Generation Debugging ===');
+      console.log('Active fields:', activeFields);
+      console.log('Sorted keys:', sortedKeys);
+      console.log('Final concatenated string to be MD5 hashed:', signatureString);
+
+      // 4. Generate MD5 signature
+      const signature = CryptoJS.MD5(signatureString).toString();
+      console.log('Generated MD5 signature:', signature);
+      console.groupEnd();
+
+      // 5. Append ONLY the signed active fields to the form
+      sortedKeys.forEach((key) => {
         const input = document.createElement('input');
         input.type = 'hidden';
         input.name = key;
-        input.value = val;
+        input.value = activeFields[key];
         payfastForm.appendChild(input);
       });
 
-      // Append signature field
+      // 6. Append signature field
       const sigInput = document.createElement('input');
       sigInput.type = 'hidden';
       sigInput.name = 'signature';

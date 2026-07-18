@@ -17,7 +17,22 @@ import {
   Hash
 } from 'lucide-react';
 import { navigateTo } from '../App';
-import { parseSafeTime } from '../lib/firebase';
+import { parseSafeTime, db } from '../lib/firebase';
+import { collection, query as fsQuery, where, getDocs, doc, getDoc } from 'firebase/firestore';
+
+// Helper to compare phone numbers across different local/international formats
+function comparePhones(phoneA: string, phoneB: string): boolean {
+  const digitsA = phoneA ? phoneA.replace(/[^0-9]/g, '') : '';
+  const digitsB = phoneB ? phoneB.replace(/[^0-9]/g, '') : '';
+  if (!digitsA || !digitsB) return false;
+  if (digitsA === digitsB) return true;
+  const last9A = digitsA.slice(-9);
+  const last9B = digitsB.slice(-9);
+  if (last9A.length === 9 && last9B.length === 9 && last9A === last9B) {
+    return true;
+  }
+  return false;
+}
 
 interface Booking {
   id: string;
@@ -53,12 +68,71 @@ export default function MyBookings() {
       const params = new URLSearchParams();
       params.append(searchType, query.trim());
 
-      const res = await fetch(`/api/my-bookings?${params.toString()}`);
-      if (!res.ok) {
-        throw new Error('Failed to fetch bookings. Please try again.');
+      let data: Booking[] = [];
+      try {
+        const res = await fetch(`/api/my-bookings?${params.toString()}`);
+        if (!res.ok) {
+          throw new Error('Server returned error status');
+        }
+        data = await res.json();
+      } catch (apiErr) {
+        console.warn('API fetch failed, falling back to direct Firestore query:', apiErr);
+        
+        // DIRECT FIRESTORE FALLBACK
+        const bookingsCol = collection(db, 'bookings');
+        const qTrim = query.trim();
+        
+        if (searchType === 'id') {
+          // Direct document lookup by ID
+          const docRef = doc(db, 'bookings', qTrim);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            const b = { id: docSnap.id, ...docSnap.data() } as any;
+            if (b.paid) {
+              data = [b];
+            }
+          }
+        } else if (searchType === 'email') {
+          // Query by email (exact, lower, and upper checks to be safe)
+          const queries = [
+            fsQuery(bookingsCol, where('email', '==', qTrim), where('paid', '==', true)),
+            fsQuery(bookingsCol, where('email', '==', qTrim.toLowerCase()), where('paid', '==', true)),
+            fsQuery(bookingsCol, where('email', '==', qTrim.toUpperCase()), where('paid', '==', true))
+          ];
+          
+          const bookingMap = new Map<string, any>();
+          for (const q of queries) {
+            const snap = await getDocs(q);
+            snap.forEach((docSnap) => {
+              bookingMap.set(docSnap.id, { id: docSnap.id, ...docSnap.data() });
+            });
+          }
+          data = Array.from(bookingMap.values());
+        } else if (searchType === 'phone') {
+          // Since phone format can vary, we query all paid bookings first and then filter in memory
+          // In Firestore, if the database is small, this is extremely fast and robust
+          const qExact = fsQuery(bookingsCol, where('phone', '==', qTrim), where('paid', '==', true));
+          const snapExact = await getDocs(qExact);
+          const bookingMap = new Map<string, any>();
+          snapExact.forEach((docSnap) => {
+            bookingMap.set(docSnap.id, { id: docSnap.id, ...docSnap.data() });
+          });
+          
+          // Fallback: If no exact phone matches, scan all paid bookings
+          if (bookingMap.size === 0) {
+            const qAllPaid = fsQuery(bookingsCol, where('paid', '==', true));
+            const snapAllPaid = await getDocs(qAllPaid);
+            snapAllPaid.forEach((docSnap) => {
+              const b = { id: docSnap.id, ...docSnap.data() } as any;
+              if (b.phone && comparePhones(b.phone, qTrim)) {
+                bookingMap.set(docSnap.id, b);
+              }
+            });
+          }
+          data = Array.from(bookingMap.values());
+        }
       }
-      
-      const data = await res.json();
+
       // Sort bookings: paid first, then upcoming dates
       const sorted = (data as Booking[]).sort((a, b) => {
         // Sort by date descending
