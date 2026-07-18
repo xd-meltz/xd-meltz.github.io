@@ -5,6 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import CryptoJS from 'crypto-js';
 import { 
   Calendar, 
   Clock, 
@@ -289,7 +290,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
       payfastForm.method = 'POST';
       payfastForm.action = 'https://sandbox.payfast.co.za/eng/process';
 
-      const fields = {
+      const fields: Record<string, string> = {
         merchant_id: '10051106',
         merchant_key: 'w3q3a42d6my8m',
         return_url: `${window.location.origin}/?page=ticket&bookingId=${bookingId}`,
@@ -303,6 +304,21 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
         item_name: `Rix Compound Booking - ${bookingPayload.packageName} on ${date} at ${selectedSlot}`,
       };
 
+      // Generate secure Payfast signature with salt passphrase
+      const passphrase = 'rix_comound.2026/';
+      let pfOutput = "";
+      Object.entries(fields).forEach(([key, val]) => {
+        if (val !== "") {
+          pfOutput += `${key}=${encodeURIComponent(val.trim()).replace(/%20/g, "+")}&`;
+        }
+      });
+      let signatureString = pfOutput.slice(0, -1);
+      if (passphrase) {
+        signatureString += `&passphrase=${encodeURIComponent(passphrase.trim()).replace(/%20/g, "+")}`;
+      }
+      const signature = CryptoJS.MD5(signatureString).toString();
+
+      // Append standard fields
       Object.entries(fields).forEach(([key, val]) => {
         const input = document.createElement('input');
         input.type = 'hidden';
@@ -310,6 +326,13 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
         input.value = val;
         payfastForm.appendChild(input);
       });
+
+      // Append signature field
+      const sigInput = document.createElement('input');
+      sigInput.type = 'hidden';
+      sigInput.name = 'signature';
+      sigInput.value = signature;
+      payfastForm.appendChild(sigInput);
 
       document.body.appendChild(payfastForm);
       payfastForm.submit();
