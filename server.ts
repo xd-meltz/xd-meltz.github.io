@@ -337,6 +337,20 @@ async function sendConfirmationEmail(booking: Booking) {
   }
 }
 
+// Helper to compare phone numbers across different local/international formats
+function comparePhones(phoneA: string, phoneB: string): boolean {
+  const digitsA = phoneA ? phoneA.replace(/[^0-9]/g, '') : '';
+  const digitsB = phoneB ? phoneB.replace(/[^0-9]/g, '') : '';
+  if (!digitsA || !digitsB) return false;
+  if (digitsA === digitsB) return true;
+  const last9A = digitsA.slice(-9);
+  const last9B = digitsB.slice(-9);
+  if (last9A.length === 9 && last9B.length === 9 && last9A === last9B) {
+    return true;
+  }
+  return false;
+}
+
 // Helper to load bookings
 function getBookings(): Booking[] {
   try {
@@ -629,19 +643,10 @@ async function startServer() {
       return;
     }
 
-    // Double check availability
+    // Double check availability (only paid bookings block slots)
     const bookings = getBookings();
     const dateBookings = bookings.filter((b) => {
-      if (b.date !== date || b.slot !== slot) return false;
-      if (!b.paid) {
-        const createdTime = parseSafeTime(b.createdAt);
-        const now = Date.now();
-        const tenMinutesInMs = 10 * 60 * 1000;
-        if (now - createdTime > tenMinutesInMs) {
-          return false;
-        }
-      }
-      return true;
+      return b.date === date && b.slot === slot && b.paid === true;
     });
     
     let bookedPitbikes = 0;
@@ -796,23 +801,36 @@ async function startServer() {
 
     let results: Booking[] = [];
 
+    // Local function to match search query
+    const matchBooking = (b: any) => {
+      // ONLY return paid bookings (remove unpaid feature from normal user searches)
+      if (!b.paid) return false;
+
+      if (id && b.id && b.id.toLowerCase() === (id as string).trim().toLowerCase()) return true;
+      if (email && b.email && b.email.toLowerCase().trim() === (email as string).trim().toLowerCase()) return true;
+      if (phone && b.phone && comparePhones(b.phone, phone as string)) return true;
+      return false;
+    };
+
     try {
+      // Merge Firestore and local backup bookings for high availability
       const allBookings = await getAllBookingsDirect();
-      results = allBookings.filter((b: any) => {
-        if (id && b.id && b.id.toLowerCase() === (id as string).trim().toLowerCase()) return true;
-        if (email && b.email && b.email.toLowerCase() === (email as string).trim().toLowerCase()) return true;
-        if (phone && b.phone && b.phone.replace(/[^0-9]/g, '') === (phone as string).replace(/[^0-9]/g, '')) return true;
-        return false;
-      }) as any;
+      const localBookings = getBookings();
+      
+      const combinedMap = new Map<string, any>();
+      localBookings.forEach((b) => combinedMap.set(b.id, b));
+      allBookings.forEach((b: any) => {
+        if (b && b.id) {
+          combinedMap.set(b.id, b);
+        }
+      });
+      
+      const combined = Array.from(combinedMap.values());
+      results = combined.filter(matchBooking);
     } catch (err) {
       console.warn("Firestore fetch all bookings for search failed, using local backup:", err);
       const bookings = getBookings();
-      results = bookings.filter((b) => {
-        if (id && b.id && b.id.toLowerCase() === (id as string).trim().toLowerCase()) return true;
-        if (email && b.email && b.email.toLowerCase() === (email as string).trim().toLowerCase()) return true;
-        if (phone && b.phone && b.phone.replace(/[^0-9]/g, '') === (phone as string).replace(/[^0-9]/g, '')) return true;
-        return false;
-      });
+      results = bookings.filter(matchBooking);
     }
 
     res.json(results);

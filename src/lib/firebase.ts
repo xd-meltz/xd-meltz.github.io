@@ -116,19 +116,14 @@ export async function getAvailabilityDirect(date: string): Promise<Record<string
       bookings.push({ id: docSnap.id, ...docSnap.data() } as FirestoreBooking);
     });
 
-    // Subtract booked slots
+    // Subtract booked slots (only paid bookings block slots)
     bookings.forEach((b) => {
       const slot = b.slot;
       if (!availabilityMap[slot]) return;
 
-      // Filter out unpaid bookings older than 10 minutes
+      // Unpaid bookings do not reserve slots
       if (!b.paid) {
-        const createdTime = parseSafeTime(b.createdAt);
-        const now = Date.now();
-        const tenMinutesInMs = 10 * 60 * 1000;
-        if (now - createdTime > tenMinutesInMs) {
-          return;
-        }
+        return;
       }
 
       let bookedPit = 0;

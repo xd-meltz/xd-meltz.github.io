@@ -228,7 +228,6 @@ export default function MyBookings() {
               </div>
 
               {bookings.map((booking, index) => {
-                const expired = isBookingExpired(booking);
                 return (
                   <motion.div
                     key={booking.id}
@@ -245,22 +244,10 @@ export default function MyBookings() {
                             {booking.id}
                           </span>
                           
-                          {booking.paid ? (
-                            <span className="text-[8px] sm:text-[9px] font-mono font-black uppercase tracking-widest bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full flex items-center gap-1">
-                              <CheckCircle2 className="w-2.5 h-2.5" />
-                              PAID & SECURED
-                            </span>
-                          ) : expired ? (
-                            <span className="text-[8px] sm:text-[9px] font-mono font-black uppercase tracking-widest bg-red-500/10 border border-red-500/20 text-red-400 px-2 py-0.5 rounded-full flex items-center gap-1">
-                              <AlertTriangle className="w-2.5 h-2.5" />
-                              EXPIRED
-                            </span>
-                          ) : (
-                            <span className="text-[8px] sm:text-[9px] font-mono font-black uppercase tracking-widest bg-amber-500/10 border border-amber-500/20 text-amber-400 px-2 py-0.5 rounded-full flex items-center gap-1 animate-pulse">
-                              <Clock className="w-2.5 h-2.5" />
-                              PENDING PAY
-                            </span>
-                          )}
+                          <span className="text-[8px] sm:text-[9px] font-mono font-black uppercase tracking-widest bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full flex items-center gap-1">
+                            <CheckCircle2 className="w-2.5 h-2.5" />
+                            PAID & SECURED
+                          </span>
                         </div>
 
                         <div>
@@ -291,27 +278,13 @@ export default function MyBookings() {
 
                       {/* Action trigger */}
                       <div className="flex items-center sm:self-center mt-1 sm:mt-0">
-                        {expired ? (
-                          <button
-                            onClick={() => navigateTo('booking')}
-                            className="w-full sm:w-auto px-3 py-1.5 sm:px-4 sm:py-2 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 font-bold uppercase rounded-md sm:rounded-lg text-[10px] sm:text-xs tracking-wider transition-all flex items-center justify-center gap-1 cursor-pointer"
-                          >
-                            <span>Rebook</span>
-                            <ChevronRight className="w-3 h-3" />
-                          </button>
-                        ) : (
-                          <button
-                            onClick={() => navigateTo('ticket', booking.id)}
-                            className={`w-full sm:w-auto px-3.5 py-2 sm:px-4 sm:py-2.5 font-extrabold uppercase rounded-md sm:rounded-lg text-[10px] sm:text-xs tracking-wider transition-all flex items-center justify-center gap-1 sm:gap-1.5 cursor-pointer ${
-                              booking.paid 
-                                ? 'bg-brand hover:bg-brand-light text-black shadow-md shadow-brand/10' 
-                                : 'bg-emerald-500 hover:bg-emerald-400 text-black shadow-md shadow-emerald-500/10'
-                            }`}
-                          >
-                            <span>{booking.paid ? 'View Pass' : 'Pay Now'}</span>
-                            <ArrowRight className="w-3 h-3" />
-                          </button>
-                        )}
+                        <button
+                          onClick={() => navigateTo('ticket', booking.id)}
+                          className="w-full sm:w-auto px-3.5 py-2 sm:px-4 sm:py-2.5 font-extrabold uppercase rounded-md sm:rounded-lg text-[10px] sm:text-xs tracking-wider transition-all flex items-center justify-center gap-1 sm:gap-1.5 cursor-pointer bg-brand hover:bg-brand-light text-black shadow-md shadow-brand/10"
+                        >
+                          <span>View Pass</span>
+                          <ArrowRight className="w-3 h-3" />
+                        </button>
                       </div>
                     </div>
                   </motion.div>
