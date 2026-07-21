@@ -13,7 +13,8 @@ import {
   deleteDoc,
   getDocs, 
   query, 
-  where 
+  where,
+  memoryLocalCache
 } from 'firebase/firestore';
 
 // Configuration from firebase-applet-config.json
@@ -29,8 +30,10 @@ const firebaseConfig = {
 // Initialize Firebase App
 const app = initializeApp(firebaseConfig);
 
-// Initialize Firestore with the specific named database ID
-export const db = initializeFirestore(app, {}, "ai-studio-rixcompound-7aca96af-088b-44d0-8b67-6e7c89062000");
+// Initialize Firestore with memory-only cache to prevent corrupted Bloom filter errors in sandboxed iframes
+export const db = initializeFirestore(app, {
+  localCache: memoryLocalCache()
+}, "ai-studio-rixcompound-7aca96af-088b-44d0-8b67-6e7c89062000");
 
 /**
  * Safely parse any date value (String, Timestamp, Date object, etc.) to a millisecond timestamp

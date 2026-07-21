@@ -1,15 +1,9 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
 import React, { useState } from 'react';
 import { ArrowUpRight, X, ChevronLeft, ChevronRight, Eye } from 'lucide-react';
 
 export default function EventsGallery() {
   const [activeLightboxIndex, setActiveLightboxIndex] = useState<number | null>(null);
 
-  // Raw Google Drive hosted files provided in the original code
   const galleryImages = [
     { url: "https://lh3.googleusercontent.com/d/1R9OYQT8Oe161DYKUpb1xMiQ4bAjRUbWs", alt: "Riding Mud Corner" },
     { url: "https://lh3.googleusercontent.com/d/17oCnPzDF_N1YU2ZSbDoh-vTdvHcNi69Z", alt: "Double Pit Bike Jump" },
@@ -26,8 +20,6 @@ export default function EventsGallery() {
     imgUrl: string;
     title: string;
     badge: string;
-    highlight?: boolean;
-    schedule?: string[];
   };
 
   const upcomingEvents: EventItem[] = [
@@ -39,7 +31,7 @@ export default function EventsGallery() {
     {
       imgUrl: "https://lh3.googleusercontent.com/d/1kZyLMKXdsabDqyivA9mGQ3exA1YXYNdW",
       title: "Weekend Open Session Flyer",
-      badge: "Weekend Session"
+      badge: "Open Session"
     }
   ];
 
@@ -60,83 +52,54 @@ export default function EventsGallery() {
   };
 
   return (
-    <div className="space-y-6 sm:space-y-10">
+    <div className="bg-black text-white">
       
-      {/* 1. Upcoming Events Section */}
-      <section id="events" className="py-6 sm:py-10 bg-neutral-950/40 relative border-t border-neutral-900">
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+      {/* 1. Upcoming Events */}
+      <section id="events" className="py-12 bg-black border-b border-zinc-900 scroll-mt-14">
+        <div className="max-w-6xl mx-auto px-4">
           
           {/* Header */}
-          <div className="text-center max-w-2xl mx-auto mb-6 sm:mb-10">
-            <h2 className="font-display text-xs font-bold uppercase tracking-widest text-brand mb-2">
-              Action & Events
+          <div className="mb-8 md:mb-12">
+            <span className="font-mono text-[10px] uppercase tracking-widest text-brand font-bold block mb-1">
+              Action & Schedules
+            </span>
+            <h2 className="font-mono text-2xl sm:text-3xl font-bold uppercase tracking-tight italic">
+              Upcoming Events
             </h2>
-            <p className="font-display text-2xl sm:text-3xl font-extrabold text-white tracking-tight uppercase">
-              Upcoming <span className="text-brand">Events</span>
-            </p>
-            <div className="w-12 h-0.5 bg-brand mx-auto mt-3 rounded-full" />
           </div>
 
-          {/* Compact visual grids of the event posters side-by-side or stacked on mobile */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 max-w-sm sm:max-w-3xl lg:max-w-6xl mx-auto">
+          {/* Grid of Events */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
             {upcomingEvents.map((event, idx) => (
               <div 
                 key={idx} 
-                id={event.highlight ? "public-holidays-flyer" : undefined}
-                className={`group relative overflow-hidden rounded-lg sm:rounded-xl p-2.5 sm:p-4 transition-all block flex flex-col justify-between ${
-                  event.highlight 
-                    ? 'border-2 border-brand bg-gradient-to-b from-brand/20 via-neutral-900/90 to-neutral-950 shadow-[0_0_30px_rgba(255,140,0,0.35)] ring-2 ring-brand/50 transform scale-[1.02]' 
-                    : 'border border-neutral-850 bg-neutral-900/30 hover:border-brand/35'
-                }`}
+                className="border border-zinc-800 bg-zinc-950 p-3 group hover:border-brand/50 transition-colors flex flex-col justify-between"
               >
                 <div>
-                  {/* Image flyer */}
-                  <div className={`rounded-md sm:rounded-lg overflow-hidden bg-neutral-950 relative ${event.highlight ? 'ring-2 ring-brand shadow-lg' : ''}`}>
+                  <div className="relative aspect-[0.75] overflow-hidden bg-black border border-zinc-900">
                     <img
                       src={event.imgUrl}
                       alt={event.title}
                       loading="lazy"
-                      className="w-full h-auto block transition-transform duration-500 group-hover:scale-105"
+                      className="w-full h-full object-cover transition-all duration-300"
                     />
-                    {/* Badge */}
-                    <div className={`absolute top-2 left-2 text-[8px] sm:text-[10px] font-extrabold uppercase tracking-widest px-2 py-0.5 sm:px-2.5 sm:py-1 rounded z-10 ${
-                      event.highlight
-                        ? 'bg-brand text-black shadow-md animate-pulse'
-                        : 'bg-black/85 border border-brand/20 text-brand'
-                    }`}>
+                    <div className="absolute top-3 left-3 bg-black/90 border border-zinc-800 text-brand text-[9px] font-mono uppercase font-bold px-2 py-0.5">
                       {event.badge}
                     </div>
                   </div>
 
-                  <div className="mt-2.5 flex justify-between items-center px-0.5">
-                    <h3 className={`font-display font-extrabold text-xs sm:text-base tracking-wide uppercase ${event.highlight ? 'text-brand drop-shadow' : 'text-neutral-300'}`}>
+                  <div className="mt-3 flex justify-between items-center">
+                    <h3 className="font-mono text-xs font-bold uppercase text-white truncate max-w-[180px]">
                       {event.title}
                     </h3>
                     <a 
-                      href="#contact"
-                      className="text-brand flex items-center gap-0.5 text-[9px] sm:text-xs font-bold uppercase tracking-wider whitespace-nowrap ml-1 bg-black/40 hover:bg-brand hover:text-black px-2 py-1 rounded transition-colors"
+                      href="#about"
+                      className="text-brand hover:text-brand-light flex items-center gap-0.5 text-[10px] font-mono uppercase font-bold"
                     >
-                      Ask <ArrowUpRight className="w-2.5 h-2.5 sm:w-3 h-3" />
+                      Ask <ArrowUpRight className="w-3 h-3" />
                     </a>
                   </div>
                 </div>
-
-                {/* Schedule list underneath flyer if highlighted / scheduled */}
-                {event.schedule && (
-                  <div className="mt-3.5 pt-3 border-t-2 border-brand/40 bg-black/60 rounded-md sm:rounded-xl p-2.5 sm:p-3 shadow-inner">
-                    <div className="text-[9px] sm:text-[10px] uppercase font-mono tracking-wider text-brand mb-1.5 font-bold flex items-center gap-1">
-                      <span></span>
-                    </div>
-                    <ul className="space-y-1">
-                      {event.schedule.map((item, sIdx) => (
-                        <li key={sIdx} className="text-[11px] sm:text-[13px] text-white font-semibold flex items-center gap-1.5 bg-neutral-900/80 px-2 py-1 sm:px-2.5 sm:py-1.5 rounded border border-neutral-800">
-                          <span className="w-1.5 h-1.5 rounded-full bg-brand shadow-[0_0_8px_rgba(255,140,0,0.8)] flex-shrink-0" />
-                          <span>{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
               </div>
             ))}
           </div>
@@ -144,30 +107,28 @@ export default function EventsGallery() {
         </div>
       </section>
 
-      {/* 2. Photo Gallery Section */}
-      <section id="gallery" className="py-6 sm:py-10 bg-neutral-900/10 border-y border-neutral-900/60 relative">
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+      {/* 2. Photo Gallery */}
+      <section id="gallery" className="py-12 bg-black border-b border-zinc-900 scroll-mt-14">
+        <div className="max-w-6xl mx-auto px-4">
           
           {/* Header */}
-          <div className="text-center max-w-2xl mx-auto mb-6 sm:mb-10">
-            <h2 className="font-display text-xs font-bold uppercase tracking-widest text-brand mb-2">
-              Action Captured
+          <div className="mb-8 md:mb-12">
+            <span className="font-mono text-[10px] uppercase tracking-widest text-brand font-bold block mb-1">
+              Compound Action
+            </span>
+            <h2 className="font-mono text-2xl sm:text-3xl font-bold uppercase tracking-tight italic">
+              Photo Gallery
             </h2>
-            <p className="font-display text-2xl sm:text-3xl font-extrabold text-white tracking-tight uppercase">
-              Photo <span className="text-brand">Gallery</span>
-            </p>
-            <div className="w-12 h-0.5 bg-brand mx-auto mt-3 rounded-full" />
           </div>
 
-          {/* Grid layout - Strictly 3x3 block on all screens */}
-          <div className="grid grid-cols-3 gap-1.5 sm:gap-4 max-w-4xl mx-auto">
+          {/* Grid Layout (Strict 3x3 Block) */}
+          <div className="grid grid-cols-3 gap-2 sm:gap-4 max-w-4xl mx-auto">
             {galleryImages.map((img, index) => (
               <div
                 key={index}
                 onClick={() => setActiveLightboxIndex(index)}
-                className="group relative aspect-square rounded-md sm:rounded-xl overflow-hidden border border-neutral-850 bg-neutral-900 cursor-pointer shadow hover:border-brand/45 transition-all duration-300"
+                className="group relative aspect-square border border-zinc-850 bg-zinc-950 cursor-pointer overflow-hidden transition-colors hover:border-brand/60"
               >
-                {/* Visual Image */}
                 <img
                   src={img.url}
                   alt={img.alt}
@@ -175,78 +136,64 @@ export default function EventsGallery() {
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
 
-                {/* Overlaid expansion icon on hover */}
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <div className="bg-brand text-black p-1 sm:p-1.5 rounded-full shadow">
-                    <Eye className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                {/* Overlaid view icon */}
+                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <div className="bg-brand text-black p-1.5 rounded-none">
+                    <Eye className="w-3.5 h-3.5" />
                   </div>
                 </div>
               </div>
             ))}
           </div>
 
-          {/* Instagram Banner */}
-          <div className="mt-6 text-center">
-            <a 
-              href="https://instagram.com/_rix.visuals_"
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-1.5 text-[11px] sm:text-xs font-mono tracking-widest uppercase text-neutral-400 hover:text-brand transition-colors"
-            >
-              <svg viewBox="0 0 24 24" className="w-4 h-4 fill-brand">
-                <path d="M7 2C4.24 2 2 4.24 2 7v10c0 2.76 2.24 5 5 5h10c2.76 0 5-2.24 5-5V7c0-2.76-2.24-5-5-5H7zm10 2c1.65 0 3 1.35 3 3v10c0 1.65-1.35 3-3 3H7c-1.65 0-3-1.35-3-3V7c0-1.65 1.35-3 3-3h10zm-5 3a5 5 0 100 10 5 5 0 000-10zm0 2a3 3 0 110 6 3 3 0 010-6zm4.5-.9a1.1 1.1 0 100 2.2 1.1 1.1 0 000-2.2z"/>
-              </svg>
-              rixvisuals
-            </a>
-          </div>
-
         </div>
       </section>
 
-      {/* Lightbox Popover Component */}
+      {/* Lightbox Modal */}
       {activeLightboxIndex !== null && (
         <div 
+          className="fixed inset-0 bg-black/98 z-[100] flex flex-col items-center justify-center p-4 select-none"
           onClick={() => setActiveLightboxIndex(null)}
-          className="fixed inset-0 bg-black/95 z-[100] flex items-center justify-center p-4"
         >
-          {/* Close Trigger */}
+          {/* Close button */}
           <button 
+            className="absolute top-4 right-4 text-zinc-400 hover:text-white bg-zinc-950 border border-zinc-850 p-2 rounded-none cursor-pointer"
             onClick={() => setActiveLightboxIndex(null)}
-            className="absolute top-4 right-4 text-neutral-400 hover:text-white bg-neutral-900 p-2 rounded-full transition-colors"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
 
-          {/* Left Arrow */}
-          <button 
-            onClick={handlePrev}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-white bg-neutral-900/60 p-2 rounded-full transition-colors z-50"
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </button>
+          <div className="relative max-w-3xl w-full max-h-[80vh] flex items-center justify-center border border-zinc-850 p-1 bg-zinc-950">
+            {/* Nav Left */}
+            <button 
+              className="absolute left-4 z-10 p-2 bg-black/85 border border-zinc-800 text-white hover:text-brand transition-colors"
+              onClick={handlePrev}
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
 
-          {/* Main Visual */}
-          <div 
-            onClick={(e) => e.stopPropagation()}
-            className="max-w-4xl w-full max-h-[80vh] flex flex-col items-center justify-center relative"
-          >
+            {/* Main Image */}
             <img 
               src={galleryImages[activeLightboxIndex].url} 
-              alt={galleryImages[activeLightboxIndex].alt}
-              className="max-w-full max-h-[70vh] object-contain rounded-lg border border-neutral-800 shadow-2xl"
+              alt={galleryImages[activeLightboxIndex].alt} 
+              className="max-w-full max-h-[75vh] object-contain block"
+              onClick={(e) => e.stopPropagation()}
             />
-            <p className="mt-3 font-mono text-[10px] text-neutral-450 uppercase tracking-widest text-center">
-              {activeLightboxIndex + 1} / {galleryImages.length}
-            </p>
+
+            {/* Nav Right */}
+            <button 
+              className="absolute right-4 z-10 p-2 bg-black/85 border border-zinc-800 text-white hover:text-brand transition-colors"
+              onClick={handleNext}
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
           </div>
 
-          {/* Right Arrow */}
-          <button 
-            onClick={handleNext}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-white bg-neutral-900/60 p-2 rounded-full transition-colors z-50"
-          >
-            <ChevronRight className="w-5 h-5" />
-          </button>
+          <div className="mt-3 text-center">
+            <span className="font-mono text-[10px] text-zinc-500 uppercase tracking-widest">
+              Image {activeLightboxIndex + 1} of {galleryImages.length}
+            </span>
+          </div>
         </div>
       )}
 

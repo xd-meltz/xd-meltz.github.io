@@ -17,7 +17,8 @@ import {
   Users,
   ChevronLeft,
   ChevronRight,
-  ArrowUp
+  ArrowUp,
+  ArrowDown
 } from 'lucide-react';
 import { navigateTo } from '../App';
 import { getAvailabilityDirect, createBookingDirect } from '../lib/firebase';
@@ -40,6 +41,12 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
   const [groupSize, setGroupSize] = useState<5 | 10>(5);
   const [groupDuration, setGroupDuration] = useState<30 | 60 | 240>(60);
   const [quantity, setQuantity] = useState(1);
+  const [hasClickedGoToCheckout, setHasClickedGoToCheckout] = useState(false);
+
+  // Reset checkout button click when inputs change
+  useEffect(() => {
+    setHasClickedGoToCheckout(false);
+  }, [date, selectedSlot, name, email, pitBikeQty, quadBikeQty, groupSize, groupDuration, bikeType, quantity]);
 
   // Calendar navigation states
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
@@ -457,20 +464,14 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
   };
 
   return (
-    <div className={isInline ? "w-full text-white" : "py-24 sm:py-32 bg-neutral-950 min-h-screen text-white relative"}>
-      {!isInline && (
-        <>
-          <div className="absolute top-0 right-0 w-96 h-96 bg-brand/10 rounded-full blur-[140px] pointer-events-none" />
-          <div className="absolute bottom-0 left-0 w-96 h-96 bg-brand-dark/10 rounded-full blur-[140px] pointer-events-none" />
-        </>
-      )}
+    <div className={isInline ? "w-full text-white bg-black" : "py-16 sm:py-24 bg-black min-h-screen text-white relative"}>
 
       <div className={isInline ? "w-full" : "max-w-4xl mx-auto px-4"}>
         {/* Navigation back */}
         {!isInline && (
           <button 
             onClick={() => navigateTo('home')}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-neutral-900 border border-neutral-800 hover:border-brand/40 text-neutral-300 hover:text-white rounded-lg mb-8 transition-all active:scale-95 text-xs sm:text-sm"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-neutral-900 border border-neutral-800 hover:border-emerald-500/40 text-neutral-300 hover:text-white rounded-lg mb-8 transition-all active:scale-95 text-xs sm:text-sm"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Back to Home</span>
@@ -481,7 +482,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
         {!isInline && (
           <div className="mb-6 text-center sm:text-left">
             <h1 className="font-display text-3xl sm:text-5xl font-black uppercase tracking-tight italic">
-              Online <span className="text-brand">Booking</span>
+              Online <span className="text-emerald-400">Booking</span>
             </h1>
             <p className="text-neutral-400 text-sm sm:text-base mt-2 max-w-xl">
               Quickly and easily secure your track time.
@@ -490,20 +491,20 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
         )}
 
         {/* Bring Your Own Bike Info Card at the Top */}
-        <div className="bg-emerald-950/20 border border-emerald-900/35 p-4 sm:p-5 rounded-2xl mb-8">
+        <div className="bg-zinc-950 border border-zinc-800 p-4 sm:p-5 mb-8">
           <div className="flex items-start gap-3">
             <span className="text-xl sm:text-2xl mt-0.5">🚲</span>
             <div>
-              <h4 className="font-black text-xs sm:text-sm uppercase text-emerald-400 tracking-wider flex items-center gap-1.5 flex-wrap">
+              <h4 className="font-mono text-xs sm:text-sm uppercase text-emerald-400 tracking-wider flex items-center gap-1.5 flex-wrap">
                 <span>Bringing Your Own Bike?</span>
-                <span className="px-1.5 py-0.5 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[9px] font-mono rounded font-black">
+                <span className="px-1.5 py-0.5 bg-zinc-900 border border-zinc-800 text-zinc-300 text-[9px] font-mono font-black">
                   NO ONLINE BOOKING REQUIRED
                 </span>
-                <span className="px-1.5 py-0.5 bg-brand/10 border border-brand/30 text-brand text-[9px] font-mono rounded font-black">
+                <span className="px-1.5 py-0.5 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[9px] font-mono font-black">
                   PAY ON SITE
                 </span>
               </h4>
-              <p className="text-xs text-neutral-300 leading-relaxed mt-1.5">
+              <p className="text-xs text-zinc-400 leading-relaxed mt-1.5">
                 If you are bringing your own bike, <span className="text-white font-bold">you do not need to book online</span>. Simply show up at the compound, pay <span className="text-emerald-400 font-black">R150 on site</span>, and you're ready to ride!
               </p>
             </div>
@@ -524,17 +525,17 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
 
         <form onSubmit={handleBookingSubmit} className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
           {/* Main inputs */}
-          <div className="md:col-span-7 bg-neutral-900/40 border border-neutral-850 p-5 sm:p-8 rounded-2xl sm:rounded-3xl space-y-6">
+          <div className="md:col-span-7 border border-zinc-800 bg-zinc-950 p-6 space-y-8">
             
             {/* Step 1: Personal info */}
             <div>
-              <h3 className="font-display font-black text-sm uppercase tracking-wider text-brand mb-4 flex items-center gap-1.5">
-                <span className="bg-brand/10 border border-brand/30 text-brand px-2 py-0.5 rounded text-[10px] font-mono">01</span>
+              <h3 className="font-mono text-xs uppercase tracking-wider text-emerald-400 mb-4 flex items-center gap-1.5 font-bold">
+                <span className="bg-zinc-900 border border-zinc-800 text-zinc-300 px-2 py-0.5 text-[10px] font-mono">01</span>
                 Contact Information
               </h3>
               <div className="space-y-4">
                 <div>
-                  <label htmlFor="name" className="block text-xs font-mono uppercase text-neutral-400 mb-1">Full Name</label>
+                  <label htmlFor="name" className="block text-[10px] font-mono uppercase text-zinc-400 mb-1 font-bold">Full Name</label>
                   <input 
                     type="text" 
                     id="name"
@@ -542,12 +543,12 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Enter your first and last name"
-                    className="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-3 text-base md:text-sm focus:border-brand focus:outline-none transition-colors"
+                    className="w-full bg-zinc-950 border border-zinc-800 rounded-none px-4 py-3 text-base md:text-sm focus:border-emerald-500 focus:outline-none transition-colors"
                   />
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label htmlFor="email" className="block text-xs font-mono uppercase text-neutral-400 mb-1">Email Address</label>
+                    <label htmlFor="email" className="block text-[10px] font-mono uppercase text-zinc-400 mb-1 font-bold">Email Address</label>
                     <input 
                       type="email" 
                       id="email"
@@ -555,11 +556,11 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="rider@example.com"
-                      className="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-3 text-base md:text-sm focus:border-brand focus:outline-none transition-colors"
+                      className="w-full bg-zinc-950 border border-zinc-800 rounded-none px-4 py-3 text-base md:text-sm focus:border-emerald-500 focus:outline-none transition-colors"
                     />
                   </div>
                   <div>
-                    <label htmlFor="phone" className="block text-xs font-mono uppercase text-neutral-400 mb-1">Phone Number</label>
+                    <label htmlFor="phone" className="block text-[10px] font-mono uppercase text-zinc-400 mb-1 font-bold">Phone Number</label>
                     <input 
                       type="tel" 
                       id="phone"
@@ -567,26 +568,26 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       placeholder="e.g. 0768299919"
-                      className="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-3 text-base md:text-sm focus:border-brand focus:outline-none transition-colors"
+                      className="w-full bg-zinc-950 border border-zinc-800 rounded-none px-4 py-3 text-base md:text-sm focus:border-emerald-500 focus:outline-none transition-colors"
                     />
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="w-full h-px bg-neutral-800/60" />
+            <div className="w-full h-px bg-zinc-900" />
 
             {/* Step 2: Date Selector */}
             <div>
-              <h3 className="font-display font-black text-sm uppercase tracking-wider text-brand mb-4 flex items-center gap-1.5">
-                <span className="bg-brand/10 border border-brand/30 text-brand px-2 py-0.5 rounded text-[10px] font-mono">02</span>
+              <h3 className="font-mono text-xs uppercase tracking-wider text-emerald-400 mb-4 flex items-center gap-1.5 font-bold">
+                <span className="bg-zinc-900 border border-zinc-800 text-zinc-300 px-2 py-0.5 text-[10px] font-mono">02</span>
                 Choose Date
               </h3>
               <div className="space-y-4">
                 {/* Visual Calendar UI */}
-                <div className="bg-neutral-950 border border-neutral-800 rounded-2xl p-4 sm:p-5 shadow-inner">
+                <div className="bg-black border border-zinc-800 p-4">
                   {/* Calendar Month Selector Header */}
-                  <div className="flex items-center justify-between mb-4 pb-3 border-b border-neutral-850">
+                  <div className="flex items-center justify-between mb-4 pb-3 border-b border-zinc-900">
                     <button
                       type="button"
                       onClick={() => {
@@ -598,12 +599,12 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                         }
                       }}
                       disabled={currentYear === new Date().getFullYear() && currentMonth === new Date().getMonth()}
-                      className="p-1.5 bg-neutral-900 border border-neutral-800 rounded-lg hover:border-brand/40 hover:text-brand disabled:opacity-30 disabled:pointer-events-none transition-all"
+                      className="p-1.5 bg-zinc-950 border border-zinc-800 rounded-none hover:border-emerald-500/45 hover:text-emerald-400 disabled:opacity-30 disabled:pointer-events-none transition-all"
                     >
                       <ChevronLeft className="w-4 h-4" />
                     </button>
                     
-                    <span className="font-display font-extrabold uppercase italic text-xs sm:text-sm tracking-wide text-white">
+                    <span className="font-mono font-bold uppercase italic text-xs tracking-wide text-white">
                       {['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][currentMonth]} {currentYear}
                     </span>
                     
@@ -622,7 +623,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                         nextMonthLimit.setMonth(new Date().getMonth() + 1);
                         return currentYear === nextMonthLimit.getFullYear() && currentMonth === nextMonthLimit.getMonth();
                       })()}
-                      className="p-1.5 bg-neutral-900 border border-neutral-800 rounded-lg hover:border-brand/40 hover:text-brand disabled:opacity-30 disabled:pointer-events-none transition-all"
+                      className="p-1.5 bg-zinc-950 border border-zinc-800 rounded-none hover:border-emerald-500/45 hover:text-emerald-400 disabled:opacity-30 disabled:pointer-events-none transition-all"
                     >
                       <ChevronRight className="w-4 h-4" />
                     </button>
@@ -631,7 +632,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                   {/* Calendar Weekday Names */}
                   <div className="grid grid-cols-7 text-center gap-1 sm:gap-2 mb-2">
                     {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((day, i) => (
-                      <span key={i} className="text-[10px] font-mono text-neutral-500 uppercase font-bold py-1">
+                      <span key={i} className="text-[10px] font-mono text-zinc-500 uppercase font-bold py-1">
                         {day}
                       </span>
                     ))}
@@ -667,40 +668,40 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                             key={`day-${d}`}
                             disabled={isClosed || !isSelectable}
                             onClick={() => setDate(dateString)}
-                            className={`aspect-square w-full rounded-lg text-xs font-mono transition-all flex flex-col items-center justify-center relative cursor-pointer ${
+                            className={`aspect-square w-full rounded-none text-xs font-mono transition-all flex flex-col items-center justify-center relative cursor-pointer ${
                               isSelected
-                                ? 'bg-emerald-500 text-black font-black shadow-lg shadow-emerald-500/35 scale-105 z-10'
+                                ? 'bg-emerald-500 text-black font-black z-10'
                                 : isClosed
-                                  ? 'bg-red-950/50 border border-red-500/40 text-red-500 cursor-not-allowed font-bold'
+                                  ? 'bg-zinc-950 border border-red-900/40 text-red-500 cursor-not-allowed font-bold'
                                   : !isSelectable
-                                    ? 'text-neutral-700 bg-neutral-950/25 cursor-not-allowed opacity-20'
-                                    : 'text-emerald-500 hover:bg-neutral-800 hover:text-white font-bold bg-neutral-900/30'
+                                    ? 'text-zinc-800 bg-zinc-950/10 cursor-not-allowed opacity-25'
+                                    : 'text-emerald-400 hover:bg-emerald-500 hover:text-black font-bold bg-zinc-950 border border-emerald-500/30 shadow-sm shadow-emerald-500/5'
                             }`}
                           >
                             <span className="text-xs">{d}</span>
                             {isClosed ? (
                               <span className="text-[7.5px] font-black tracking-tight text-red-400 uppercase leading-none mt-1">Closed</span>
                             ) : isSelectable && !isSelected ? (
-                              <span className="w-1 h-1 rounded-full absolute bottom-1 bg-emerald-500" />
+                              <span className="w-1.5 h-1.5 rounded-none absolute bottom-1 bg-emerald-500" />
                             ) : null}
                           </button>
                         );
                       }
                       
                       return cells;
-                    })()}
+                     })()}
                   </div>
                 </div>
 
                 {date && (
-                  <p className="text-xs text-brand font-mono">
+                  <p className="text-xs text-emerald-400 font-mono">
                     Selected day: <span className="font-bold underline">{dayOfWeekName}</span>
                   </p>
                 )}
-                <div className="p-3 bg-neutral-950/60 border border-neutral-850/60 rounded-xl text-neutral-400 text-[11px] leading-relaxed flex items-start gap-2">
-                  <span className="text-amber-500">📅</span>
+                <div className="p-3 bg-zinc-950 border border-zinc-800 rounded-none text-zinc-450 text-[11px] leading-relaxed flex items-start gap-2">
+                  <span className="text-emerald-400">📅</span>
                   <div>
-                    <span className="text-white font-bold">Booking Window Constraints:</span>
+                    <span className="text-white font-mono font-bold uppercase tracking-wider text-[10px]">Booking Window Constraints:</span>
                     <ul className="list-disc list-inside mt-1 space-y-0.5">
                       <li>You cannot book on the day of riding.</li>
                       <li>Reservations are strictly capped to 1 month ahead.</li>
@@ -712,12 +713,12 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
 
             {date && (
               <>
-                <div className="w-full h-px bg-neutral-800/60" />
+                <div className="w-full h-px bg-zinc-900" />
 
                 {/* Step 3: Package Selector */}
                 <div>
-                  <h3 className="font-display font-black text-sm uppercase tracking-wider text-brand mb-4 flex items-center gap-1.5">
-                    <span className="bg-brand/10 border border-brand/30 text-brand px-2 py-0.5 rounded text-[10px] font-mono">03</span>
+                  <h3 className="font-mono text-xs uppercase tracking-wider text-emerald-400 mb-4 flex items-center gap-1.5 font-bold">
+                    <span className="bg-zinc-900 border border-zinc-800 text-zinc-300 px-2 py-0.5 text-[10px] font-mono">03</span>
                     Rental Package
                   </h3>
 
@@ -748,10 +749,10 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                                 type="button"
                                 key={dur.value}
                                 onClick={() => setGroupDuration(dur.value as 30 | 60 | 240)}
-                                className={`py-2 px-2 rounded-lg border font-bold text-center text-xs transition-all ${
+                                className={`py-2 px-2 rounded-none border font-mono font-bold text-center text-xs transition-all cursor-pointer ${
                                   groupDuration === dur.value
-                                    ? 'border-brand bg-brand/10 text-brand'
-                                    : 'border-neutral-800 hover:border-neutral-750 bg-neutral-950'
+                                    ? 'border-emerald-500 bg-zinc-900 text-emerald-400'
+                                    : 'border-zinc-800 hover:border-zinc-700 bg-zinc-950 text-zinc-400'
                                 }`}
                               >
                                 {dur.label}
@@ -762,25 +763,25 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
 
                         {/* Group Size Selector */}
                         <div className="mt-4">
-                          <label className="block text-xs font-mono uppercase text-neutral-400 mb-1.5">
+                          <label className="block text-xs font-mono uppercase text-zinc-400 mb-1.5">
                             Group size (Pitbikes included)
                           </label>
                           <div className="grid grid-cols-2 gap-3">
                             <button
                               type="button"
                               onClick={() => {
-                                setBikeType('GroupPackage');
-                                setGroupSize(5);
-                              }}
-                              className={`p-3 rounded-lg border text-center transition-all ${
+                                  setBikeType('GroupPackage');
+                                  setGroupSize(5);
+                                }}
+                              className={`p-3 rounded-none border text-center transition-all cursor-pointer ${
                                 bikeType === 'GroupPackage' && groupSize === 5
-                                  ? 'border-brand bg-brand/10 text-brand'
-                                  : 'border-neutral-800 hover:border-neutral-700 bg-neutral-950'
+                                  ? 'border-emerald-500 bg-zinc-900 text-emerald-400'
+                                  : 'border-zinc-800 hover:border-zinc-700 bg-zinc-950 text-zinc-400'
                               }`}
                             >
-                              <Users className="w-4 h-4 mx-auto mb-1" />
-                              <span className="font-bold text-xs block">5 Bikes Package</span>
-                              <span className="text-[10px] font-mono opacity-80">
+                              <Users className="w-4 h-4 mx-auto mb-1 text-emerald-400" />
+                              <span className="font-mono font-bold text-xs block uppercase">5 Bikes Package</span>
+                              <span className="text-[10px] font-mono text-emerald-400 font-bold">
                                 R{groupDuration === 30 ? '1,500' : groupDuration === 60 ? '3,000' : '8,000'}
                               </span>
                             </button>
@@ -788,18 +789,18 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                             <button
                               type="button"
                               onClick={() => {
-                                setBikeType('GroupPackage');
-                                setGroupSize(10);
-                              }}
-                              className={`p-3 rounded-lg border text-center transition-all ${
+                                  setBikeType('GroupPackage');
+                                  setGroupSize(10);
+                                }}
+                              className={`p-3 rounded-none border text-center transition-all cursor-pointer ${
                                 bikeType === 'GroupPackage' && groupSize === 10
-                                  ? 'border-brand bg-brand/10 text-brand'
-                                  : 'border-neutral-800 hover:border-neutral-700 bg-neutral-950'
+                                  ? 'border-emerald-500 bg-zinc-900 text-emerald-400'
+                                  : 'border-zinc-800 hover:border-zinc-700 bg-zinc-950 text-zinc-400'
                               }`}
                             >
-                              <Users className="w-4 h-4 mx-auto mb-1" />
-                              <span className="font-bold text-xs block">10 Bikes Package</span>
-                              <span className="text-[10px] font-mono opacity-80">
+                              <Users className="w-4 h-4 mx-auto mb-1 text-emerald-400" />
+                              <span className="font-mono font-bold text-xs block uppercase">10 Bikes Package</span>
+                              <span className="text-[10px] font-mono text-emerald-400 font-bold">
                                 R{groupDuration === 30 ? '3,000' : groupDuration === 60 ? '5,000' : '15,200'}
                               </span>
                             </button>
@@ -811,25 +812,25 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                     /* Weekend rentals */
                     <div className="space-y-4">
                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5">
-                        <span className="self-start px-2 py-0.5 bg-brand/10 border border-brand/30 text-brand text-[9px] font-mono font-bold uppercase tracking-wider rounded">
+                        <span className="self-start px-2 py-0.5 bg-zinc-900 border border-zinc-800 text-emerald-400 text-[9px] font-mono font-bold uppercase tracking-wider rounded-none">
                           Friday, Saturday & Sunday Only
                         </span>
-                        <span className="text-amber-400 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
-                          ⚠️ 30 Minutes of active riding time per slot
+                        <span className="text-emerald-400 text-[10px] font-mono uppercase tracking-wider flex items-center gap-1 font-bold">
+                          * 30 Minutes of active riding time per slot
                         </span>
                       </div>
 
-                      <div className="space-y-3 bg-neutral-900/30 p-4 rounded-xl border border-neutral-850">
+                      <div className="space-y-3 bg-zinc-950 p-4 rounded-none border border-zinc-800">
                         {/* Pit Bike Selection */}
-                        <div className="flex items-center justify-between gap-4 py-2 border-b border-neutral-800/40 last:border-b-0">
+                        <div className="flex items-center justify-between gap-4 py-2 border-b border-zinc-900">
                           <div>
                             <div className="flex items-center gap-1.5">
-                              <Bike className="w-4 h-4 text-brand" />
-                              <h4 className="font-extrabold text-sm uppercase text-white">Pit Bike Rental</h4>
+                              <Bike className="w-4 h-4 text-emerald-400" />
+                              <h4 className="font-mono font-bold text-xs uppercase text-white">Pit Bike Rental</h4>
                             </div>
-                            <p className="text-[10px] text-neutral-400 mt-0.5">Fun, responsive 125cc pit bike</p>
-                            <span className="font-mono text-xs text-brand font-bold mt-1 block">
-                              R250 <span className="text-[10px] text-neutral-300 font-sans font-medium">per 30 min ride</span> <span className="text-[9px] text-neutral-500 font-sans font-normal">(45 min slots)</span>
+                            <p className="text-[10px] text-zinc-400 mt-0.5 font-sans">Fun, responsive 125cc pit bike</p>
+                            <span className="font-mono text-xs text-emerald-400 font-bold mt-1 block">
+                              R250 <span className="text-[10px] text-zinc-400 font-sans font-medium">per 30 min ride</span> <span className="text-[9px] text-zinc-500 font-sans font-normal">(45 min slots)</span>
                             </span>
                           </div>
                           
@@ -837,7 +838,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                             <button
                               type="button"
                               onClick={() => setPitBikeQty(Math.max(0, pitBikeQty - 1))}
-                              className="w-8 h-8 rounded-lg bg-neutral-950 border border-neutral-800 flex items-center justify-center text-neutral-400 hover:text-white hover:border-neutral-700 transition-colors text-lg font-bold"
+                              className="w-8 h-8 rounded-none bg-zinc-950 border border-zinc-800 flex items-center justify-center text-zinc-400 hover:text-white hover:border-emerald-500/45 transition-colors text-lg font-bold cursor-pointer"
                             >
                               -
                             </button>
@@ -847,7 +848,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                             <button
                               type="button"
                               onClick={() => setPitBikeQty(Math.min(8, pitBikeQty + 1))}
-                              className="w-8 h-8 rounded-lg bg-neutral-950 border border-neutral-800 flex items-center justify-center text-neutral-400 hover:text-white hover:border-neutral-700 transition-colors text-lg font-bold"
+                              className="w-8 h-8 rounded-none bg-zinc-950 border border-zinc-800 flex items-center justify-center text-zinc-400 hover:text-white hover:border-emerald-500/45 transition-colors text-lg font-bold cursor-pointer"
                             >
                               +
                             </button>
@@ -855,15 +856,15 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                         </div>
 
                         {/* Quad Bike Selection */}
-                        <div className="flex items-center justify-between gap-4 py-2 border-b border-neutral-800/40 last:border-b-0">
+                        <div className="flex items-center justify-between gap-4 py-2 border-b border-zinc-900">
                           <div>
                             <div className="flex items-center gap-1.5">
-                              <Bike className="w-4 h-4 text-orange-500" />
-                              <h4 className="font-extrabold text-sm uppercase text-white">Quad Bike Rental</h4>
+                              <Bike className="w-4 h-4 text-emerald-400" />
+                              <h4 className="font-mono font-bold text-xs uppercase text-white">Quad Bike Rental</h4>
                             </div>
-                            <p className="text-[10px] text-neutral-400 mt-0.5">Stable and solid quad action</p>
-                            <span className="font-mono text-xs text-brand font-bold mt-1 block">
-                              R300 <span className="text-[10px] text-neutral-300 font-sans font-medium">per 30 min ride</span> <span className="text-[9px] text-neutral-500 font-sans font-normal">(45 min slots)</span>
+                            <p className="text-[10px] text-zinc-400 mt-0.5 font-sans">Stable and solid quad action</p>
+                            <span className="font-mono text-xs text-emerald-400 font-bold mt-1 block">
+                              R300 <span className="text-[10px] text-zinc-400 font-sans font-medium">per 30 min ride</span> <span className="text-[9px] text-zinc-500 font-sans font-normal">(45 min slots)</span>
                             </span>
                           </div>
                           
@@ -871,7 +872,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                             <button
                               type="button"
                               onClick={() => setQuadBikeQty(Math.max(0, quadBikeQty - 1))}
-                              className="w-8 h-8 rounded-lg bg-neutral-950 border border-neutral-800 flex items-center justify-center text-neutral-400 hover:text-white hover:border-neutral-700 transition-colors text-lg font-bold"
+                              className="w-8 h-8 rounded-none bg-zinc-950 border border-zinc-800 flex items-center justify-center text-zinc-400 hover:text-white hover:border-emerald-500/45 transition-colors text-lg font-bold cursor-pointer"
                             >
                               -
                             </button>
@@ -881,7 +882,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                             <button
                               type="button"
                               onClick={() => setQuadBikeQty(Math.min(2, quadBikeQty + 1))}
-                              className="w-8 h-8 rounded-lg bg-neutral-950 border border-neutral-800 flex items-center justify-center text-neutral-400 hover:text-white hover:border-neutral-700 transition-colors text-lg font-bold"
+                              className="w-8 h-8 rounded-none bg-zinc-950 border border-zinc-800 flex items-center justify-center text-zinc-400 hover:text-white hover:border-emerald-500/45 transition-colors text-lg font-bold cursor-pointer"
                             >
                               +
                             </button>
@@ -890,38 +891,42 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                       </div>
 
                       {pitBikeQty === 0 && quadBikeQty === 0 && (
-                        <p className="text-[10px] text-red-500 font-mono mt-1">
-                          ⚠️ Please select at least 1 bike to view slot availability.
+                        <p className="text-[10px] text-emerald-400 font-mono mt-1 uppercase">
+                          * Please select at least 1 bike to view slot availability.
                         </p>
                       )}
                     </div>
                   )}
                 </div>
 
-                <div className="w-full h-px bg-neutral-800/60" />
+                <div className="w-full h-px bg-zinc-900" />
 
                 {/* Step 4: Time Slots */}
                 <div>
-                  <h3 className="font-display font-black text-sm uppercase tracking-wider text-brand mb-2 flex items-center gap-1.5">
-                    <span className="bg-brand/10 border border-brand/30 text-brand px-2 py-0.5 rounded text-[10px] font-mono">04</span>
+                  <h3 className="font-mono text-xs uppercase tracking-wider text-emerald-400 mb-2 flex items-center gap-1.5 font-bold">
+                    <span className="bg-zinc-900 border border-zinc-800 text-zinc-300 px-2 py-0.5 text-[10px] font-mono">04</span>
                     Choose Available Time Slots
                   </h3>
                   
                   {/* Interactive Visual Color Legend */}
-                  <div className="flex items-center gap-4 mb-4 bg-neutral-950/60 py-2 px-3 rounded-xl border border-neutral-850 text-xs font-mono">
+                  <div className="flex items-center gap-4 mb-4 bg-zinc-950 py-2 px-3 rounded-none border border-zinc-800 text-xs font-mono">
                     <div className="flex items-center gap-1.5">
                       <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/30" />
                       <span className="text-emerald-400 font-bold uppercase text-[10px]">Available</span>
                     </div>
                     <div className="flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-zinc-600 shadow-sm shadow-zinc-600/30" />
+                      <span className="text-zinc-500 font-bold uppercase text-[10px]">Booked</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
                       <span className="w-2 h-2 rounded-full bg-red-500 shadow-sm shadow-red-500/30" />
-                      <span className="text-red-400 font-bold uppercase text-[10px]">Booked</span>
+                      <span className="text-red-400 font-bold uppercase text-[10px]">Closed</span>
                     </div>
                   </div>
 
                   {loadingAvailability ? (
                     <div className="text-center py-6">
-                      <div className="w-6 h-6 border-2 border-brand border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+                      <div className="w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
                       <span className="text-xs font-mono text-neutral-500">Checking track availability...</span>
                     </div>
                   ) : (
@@ -935,34 +940,38 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                             key={slot}
                             disabled={disabled}
                             onClick={() => setSelectedSlot(slot)}
-                            className={`p-3 rounded-xl border text-left flex flex-col justify-between transition-all relative cursor-pointer ${
+                            className={`p-3 rounded-none border text-left flex flex-col justify-between transition-all relative cursor-pointer ${
                               disabled 
-                                ? 'border-red-900/60 bg-red-950/10 opacity-80 cursor-not-allowed hover:border-red-800'
+                                ? availability[slot]?.isClosed
+                                  ? 'border-red-950/45 bg-red-950/10 opacity-60 cursor-not-allowed'
+                                  : 'border-zinc-900 bg-zinc-950 text-zinc-500 opacity-50 cursor-not-allowed'
                                 : selected
-                                  ? 'border-emerald-400 bg-emerald-950/25 shadow-lg shadow-emerald-500/10 scale-102 ring-1 ring-emerald-500/30'
-                                  : 'border-emerald-900/40 hover:border-emerald-500 bg-neutral-950 hover:bg-neutral-900/50'
+                                  ? 'border-emerald-500 bg-zinc-900 text-emerald-400'
+                                  : 'border-zinc-800 hover:border-emerald-500/45 bg-zinc-950 hover:bg-zinc-900/50'
                             }`}
                           >
                             <div className="flex items-center justify-between w-full mb-1">
                               <span className={`font-mono text-xs font-black tracking-wider ${
                                 selected 
                                   ? 'text-emerald-400' 
-                                  : disabled || availability[slot]?.isClosed
+                                  : availability[slot]?.isClosed
                                     ? 'text-red-500 line-through' 
-                                    : 'text-emerald-300'
+                                    : disabled
+                                      ? 'text-zinc-600 line-through'
+                                      : 'text-zinc-300'
                               }`}>
                                 {slot}
                               </span>
                               {availability[slot]?.isClosed ? (
-                                <span className="text-[7.5px] font-extrabold text-amber-500 uppercase bg-amber-950/40 border border-amber-800/40 px-1.5 py-0.5 rounded leading-none">
+                                <span className="text-[7.5px] font-mono font-bold text-amber-500 uppercase bg-amber-950 border border-amber-900/40 px-1.5 py-0.5 rounded-none leading-none">
                                   Closed
                                 </span>
                               ) : disabled ? (
-                                <span className="text-[7.5px] font-extrabold text-red-400 uppercase bg-red-950/80 border border-red-800/50 px-1.5 py-0.5 rounded leading-none">
+                                <span className="text-[7.5px] font-mono font-bold text-zinc-500 uppercase bg-zinc-900 border border-zinc-800 px-1.5 py-0.5 rounded-none leading-none">
                                   Booked
                                 </span>
                               ) : (
-                                <span className="text-[7.5px] font-extrabold text-emerald-400 uppercase bg-emerald-950/80 border border-emerald-850 px-1.5 py-0.5 rounded leading-none">
+                                <span className="text-[7.5px] font-mono font-bold text-emerald-400 uppercase bg-zinc-900 border border-zinc-800 px-1.5 py-0.5 rounded-none leading-none">
                                   Open
                                 </span>
                               )}
@@ -983,34 +992,34 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
 
           {/* Sidebar checkout summary */}
           <div className="md:col-span-5 space-y-6">
-            <div id="booking-summary-panel" className="bg-neutral-900 border border-neutral-800 p-5 sm:p-6 rounded-2xl sm:rounded-3xl shadow-xl">
-              <h3 className="font-display font-black text-lg uppercase tracking-tight text-white mb-4">
-                Booking <span className="text-brand">Summary</span>
+            <div id="booking-summary-panel" className="bg-zinc-950 border border-zinc-800 p-5 sm:p-6 rounded-none">
+              <h3 className="font-mono font-bold text-sm uppercase tracking-wider text-white mb-4">
+                Booking <span className="text-emerald-400">Summary</span>
               </h3>
 
-              <div className="space-y-4 text-xs sm:text-sm border-b border-neutral-800 pb-4">
+              <div className="space-y-4 text-xs sm:text-sm border-b border-zinc-900 pb-4">
                 <div className="flex justify-between">
-                  <span className="text-neutral-400">Rider</span>
+                  <span className="text-zinc-500">Rider</span>
                   <span className="text-white font-semibold">{name || 'Guest Rider'}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-neutral-400">Date</span>
+                  <span className="text-zinc-500">Date</span>
                   <span className="text-white font-semibold">{date ? `${date} (${dayOfWeekName})` : 'Select Date'}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-neutral-400">Time Slot</span>
+                  <span className="text-zinc-500">Time Slot</span>
                   <span className="text-white font-semibold font-mono">{selectedSlot || 'Select Slot'}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-neutral-400">Package Type</span>
-                  <span className="text-brand font-bold uppercase text-right max-w-[180px] break-words">
+                  <span className="text-zinc-500">Package Type</span>
+                  <span className="text-emerald-400 font-bold uppercase text-right max-w-[180px] break-words">
                     {bikeType === 'GroupPackage' 
                       ? `Weekday Group (${groupDuration === 240 ? '4 Hours' : `${groupDuration} Mins`}, ${groupSize} Bikes)` 
                       : `Weekend Combined Rental`}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-neutral-400">Bike Quantity</span>
+                  <span className="text-zinc-500">Bike Quantity</span>
                   <span className="text-white font-semibold text-right">
                     {bikeType === 'GroupPackage' 
                       ? `${groupSize} Bikes` 
@@ -1020,25 +1029,25 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
               </div>
 
               <div className="pt-4 flex justify-between items-baseline mb-6">
-                <span className="text-sm text-neutral-400 font-mono uppercase">Total Price</span>
-                <span className="text-2xl sm:text-3xl font-mono font-black text-brand">
+                <span className="text-xs text-zinc-500 font-mono uppercase">Total Price</span>
+                <span className="text-xl sm:text-2xl font-mono font-black text-emerald-400">
                   R{getPrice().toLocaleString()}
                 </span>
               </div>
 
               {/* Safety Rules check */}
-              <div className="bg-amber-950/20 border border-amber-500/30 p-3 rounded-xl mb-6 text-[11px] leading-relaxed text-amber-300">
-                <strong className="text-white block uppercase text-[9px] mb-1">🚧 Safety Prerequisite</strong>
+              <div className="bg-zinc-900 border border-zinc-800 p-3 rounded-none mb-6 text-[11px] leading-relaxed text-zinc-400 font-sans">
+                <strong className="text-emerald-400 block uppercase text-[10px] font-mono mb-1">* SAFETY REQUIREMENT</strong>
                 All riders must have competent off-road riding experience. No beginners are permitted to operate rental units.
               </div>
 
               <button
                 type="submit"
                 disabled={submitting || !date || !selectedSlot}
-                className={`w-full py-3.5 px-4 font-black uppercase text-xs tracking-wider rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 ${
+                className={`w-full py-3 px-4 font-mono font-bold uppercase text-xs tracking-wider rounded-none transition-colors flex items-center justify-center gap-2 border ${
                   submitting || !date || !selectedSlot
-                    ? 'bg-neutral-850 border border-neutral-800 text-neutral-500 cursor-not-allowed'
-                    : 'bg-emerald-500 hover:bg-emerald-400 text-black shadow-emerald-500/20 hover:shadow-emerald-500/30 active:scale-97'
+                    ? 'bg-zinc-900 border-zinc-800 text-zinc-500 cursor-not-allowed'
+                    : 'bg-emerald-500 border-emerald-500 hover:bg-emerald-400 text-black cursor-pointer shadow-md shadow-emerald-500/10'
                 }`}
               >
                 <CreditCard className="w-4 h-4" />
@@ -1049,16 +1058,17 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
         </form>
       </div>
 
-      {/* Floating "Go to Checkout" green arrow button */}
+      {/* Floating "Go to Checkout" button */}
       <AnimatePresence>
-        {date && selectedSlot && (isWeekendSelected() ? (pitBikeQty > 0 || quadBikeQty > 0) : true) && (
+        {date && selectedSlot && (isWeekendSelected() ? (pitBikeQty > 0 || quadBikeQty > 0) : true) && !hasClickedGoToCheckout && (
           <motion.button
             key="scroll-top-arrow"
-            initial={{ opacity: 0, y: 50, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 50, scale: 0.9 }}
-            transition={{ duration: 0.3, ease: 'easeOut' }}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 30 }}
+            transition={{ duration: 0.2 }}
             onClick={() => {
+              setHasClickedGoToCheckout(true);
               const el = document.getElementById('booking-summary-panel');
               if (el) {
                 el.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -1066,10 +1076,11 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }
             }}
-            className="fixed bottom-6 right-6 z-[45] flex items-center gap-2 pl-4 pr-5 py-3 bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold uppercase tracking-wider rounded-full shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 hover:scale-105 active:scale-95 transition-all text-xs cursor-pointer border border-emerald-400/30 group"
+            className="fixed bottom-6 right-6 z-[45] flex items-center gap-2 px-4 py-2.5 bg-zinc-950 hover:bg-zinc-900 text-white font-mono uppercase tracking-wider rounded-none shadow-none text-xs cursor-pointer border border-zinc-800 group"
             title="Go to Checkout Summary"
           >
-            <ArrowUp className="w-4 h-4 group-hover:-translate-y-1 transition-transform" />
+            <ArrowUp className="hidden md:block w-4 h-4 group-hover:-translate-y-1 transition-transform" />
+            <ArrowDown className="block md:hidden w-4 h-4 group-hover:translate-y-1 transition-transform" />
             <span>Go to Checkout</span>
           </motion.button>
         )}

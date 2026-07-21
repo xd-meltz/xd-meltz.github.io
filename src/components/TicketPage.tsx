@@ -98,24 +98,24 @@ export default function TicketPage({ bookingId }: TicketPageProps) {
 
   if (loading) {
     return (
-      <div className="py-32 bg-neutral-950 min-h-screen text-white flex flex-col items-center justify-center">
-        <div className="w-8 h-8 border-2 border-brand border-t-transparent rounded-full animate-spin mb-4" />
-        <span className="font-mono text-xs text-neutral-400">Verifying secure Payfast payment...</span>
+      <div className="py-32 bg-black min-h-screen text-white flex flex-col items-center justify-center">
+        <div className="w-8 h-8 border border-brand border-t-transparent rounded-none animate-spin mb-4" />
+        <span className="font-mono text-xs text-zinc-400 uppercase tracking-widest">Verifying secure Payfast payment...</span>
       </div>
     );
   }
 
   if (error || !booking) {
     return (
-      <div className="py-32 bg-neutral-950 min-h-screen text-white flex flex-col items-center justify-center px-4 text-center">
-        <span className="text-4xl mb-4">⚠️</span>
-        <h1 className="font-display text-2xl font-black uppercase text-white mb-2">Ticket Error</h1>
-        <p className="text-neutral-400 text-sm max-w-md leading-relaxed mb-8">
+      <div className="py-32 bg-black min-h-screen text-white flex flex-col items-center justify-center px-4 text-center">
+        <span className="text-2xl mb-4 text-brand">⚠️</span>
+        <h1 className="font-mono text-lg font-bold uppercase text-white mb-2 tracking-wider">Ticket Error</h1>
+        <p className="text-zinc-400 text-xs max-w-md leading-relaxed mb-8">
           {error || "We couldn't retrieve your booking details at this moment."}
         </p>
         <button
           onClick={() => navigateTo('home')}
-          className="px-6 py-2.5 bg-brand text-black font-extrabold uppercase rounded-lg shadow-lg active:scale-95 text-xs tracking-wider cursor-pointer"
+          className="px-6 py-2.5 bg-brand text-black font-mono font-bold uppercase rounded-none text-xs tracking-wider cursor-pointer border border-brand hover:bg-brand-light"
         >
           Return to Home
         </button>
@@ -125,22 +125,22 @@ export default function TicketPage({ bookingId }: TicketPageProps) {
 
   if (!booking.paid) {
     return (
-      <div className="py-32 bg-neutral-950 min-h-screen text-white flex flex-col items-center justify-center px-4 text-center">
-        <span className="text-4xl mb-4">💳</span>
-        <h1 className="font-display text-2xl font-black uppercase text-white mb-2">Payment Pending</h1>
-        <p className="text-neutral-400 text-sm max-w-md leading-relaxed mb-8">
+      <div className="py-32 bg-black min-h-screen text-white flex flex-col items-center justify-center px-4 text-center">
+        <span className="text-2xl mb-4 text-brand">💳</span>
+        <h1 className="font-mono text-lg font-bold uppercase text-white mb-2 tracking-wider">Payment Pending</h1>
+        <p className="text-zinc-400 text-xs max-w-md leading-relaxed mb-8">
           This booking (Reference: <span className="text-brand font-mono font-bold">{booking.id}</span>) has not been verified as paid. If you just completed payment, please wait a few seconds and refresh this page.
         </p>
         <div className="flex flex-col sm:flex-row gap-3 items-center justify-center">
           <button
             onClick={() => window.location.reload()}
-            className="px-6 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold uppercase rounded-lg shadow-lg active:scale-95 text-xs tracking-wider cursor-pointer"
+            className="px-6 py-2.5 bg-brand text-black font-mono font-bold uppercase rounded-none text-xs tracking-wider cursor-pointer border border-brand hover:bg-brand-light"
           >
             Refresh Status
           </button>
           <button
             onClick={() => navigateTo('home')}
-            className="px-6 py-2.5 bg-neutral-900 hover:bg-neutral-800 text-white border border-neutral-800 font-extrabold uppercase rounded-lg shadow-lg active:scale-95 text-xs tracking-wider cursor-pointer"
+            className="px-6 py-2.5 bg-zinc-900 hover:bg-zinc-800 text-white border border-zinc-800 font-mono font-bold uppercase rounded-none text-xs tracking-wider cursor-pointer"
           >
             Return to Dashboard
           </button>
@@ -150,7 +150,7 @@ export default function TicketPage({ bookingId }: TicketPageProps) {
   }
 
   return (
-    <div className="py-24 sm:py-32 bg-neutral-950 min-h-screen text-white relative flex flex-col items-center justify-center px-4">
+    <div className="py-24 sm:py-32 bg-black min-h-screen text-white relative flex flex-col items-center justify-center px-4">
       {/* Print Styles: centers and targets only the #printTicket block */}
       <style dangerouslySetInnerHTML={{ __html: `
         @media print {
@@ -175,9 +175,9 @@ export default function TicketPage({ bookingId }: TicketPageProps) {
             width: 100% !important;
             max-width: 460px !important;
             margin: 0 !important;
-            padding: 10px !important;
+            padding: 20px !important;
             border: 2px solid #000000 !important;
-            border-radius: 16px !important;
+            border-radius: 0 !important;
             background: white !important;
             color: black !important;
             box-shadow: none !important;
@@ -189,57 +189,50 @@ export default function TicketPage({ bookingId }: TicketPageProps) {
         }
       `}} />
 
-      {/* Background ambient lights */}
-      <div className="absolute top-1/4 right-0 w-80 h-80 bg-emerald-500/10 rounded-full blur-[120px] pointer-events-none animate-pulse" />
-      <div className="absolute bottom-1/4 left-0 w-80 h-80 bg-brand/10 rounded-full blur-[120px] pointer-events-none animate-pulse" />
-
       {/* Hero Welcome confirmation */}
       <div className="text-center max-w-xl mb-10 print:hidden">
-        <div className="w-16 h-16 bg-emerald-500/10 border border-emerald-500/30 rounded-full flex items-center justify-center text-emerald-400 mx-auto mb-4 animate-bounce">
-          <ShieldCheck className="w-8 h-8" />
+        <div className="w-12 h-12 bg-zinc-900 border border-zinc-800 rounded-none flex items-center justify-center text-emerald-400 mx-auto mb-4">
+          <ShieldCheck className="w-6 h-6" />
         </div>
-        <h1 className="font-display text-3xl sm:text-4xl font-black uppercase italic tracking-tight">
-          Payment <span className="text-emerald-400">Successful!</span>
+        <h1 className="font-mono text-xl sm:text-2xl font-bold uppercase tracking-wider">
+          Payment <span className="text-emerald-400">Confirmed</span>
         </h1>
-        <p className="text-neutral-400 text-sm mt-2">
+        <p className="text-zinc-400 text-xs mt-2 font-sans">
           Your slot has been reserved. Please print or download your access ticket below to present at the Rix Compound entrance.
         </p>
       </div>
 
       {/* Ticket Layout Card */}
-      <div id="printTicket" className="w-full max-w-lg bg-neutral-900 border-2 border-neutral-800 rounded-3xl overflow-hidden shadow-2xl shadow-black/80 relative print:bg-white print:text-black print:border-black print:shadow-none print:rounded-none">
+      <div id="printTicket" className="w-full max-w-lg bg-zinc-950 border border-zinc-850 rounded-none overflow-hidden relative print:bg-white print:text-black print:border-black print:shadow-none print:rounded-none">
         
         {/* Top Header */}
-        <div className="bg-gradient-to-r from-neutral-900 to-neutral-950 px-6 py-5 border-b border-neutral-800/80 flex justify-between items-center print:bg-white print:border-b-2 print:border-black">
+        <div className="bg-black px-6 py-5 border-b border-zinc-900 flex justify-between items-center print:bg-white print:border-b-2 print:border-black">
           <div>
-            <span className="text-[10px] font-mono text-brand font-black uppercase tracking-widest print:text-neutral-500">
+            <span className="text-[9px] font-mono text-zinc-500 font-bold uppercase tracking-widest">
               RIDER COMPLIANCE PASS
             </span>
-            <h2 className="font-display text-xl font-black italic uppercase text-white print:text-black">
-              RIX<span className="text-brand">COMPOUND</span>
+            <h2 className="font-mono text-sm font-bold uppercase text-white print:text-black">
+              RIX<span className="text-emerald-400">COMPOUND</span>
             </h2>
           </div>
-          <span className="px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-full text-[10px] font-mono font-bold uppercase print:border-black print:text-black">
+          <span className="px-3 py-1 bg-zinc-900 border border-zinc-800 text-emerald-400 text-[10px] font-mono font-bold uppercase print:border-black print:text-black">
             PAID
           </span>
         </div>
-
-        {/* Diagonal caution stripes accent */}
-        <div className="h-1.5 bg-[repeating-linear-gradient(45deg,#ff8c00,#ff8c00_10px,#1a1a1a_10px,#1a1a1a_20px)] print:hidden" />
 
         {/* Ticket Details Body */}
         <div className="p-6 space-y-6 print:p-4">
           
           {/* Main Info Blocks */}
           <div className="grid grid-cols-2 gap-4">
-            <div className="bg-neutral-950/50 border border-neutral-850/60 p-3 rounded-xl print:bg-white print:border-black">
-              <span className="text-[9px] font-mono uppercase text-neutral-500 block mb-0.5">Booking Reference</span>
-              <span className="font-mono text-base font-black text-white uppercase tracking-wider print:text-black">
+            <div className="bg-black border border-zinc-900 p-3 rounded-none print:bg-white print:border-black">
+              <span className="text-[9px] font-mono uppercase text-zinc-500 block mb-0.5 font-bold">Booking Reference</span>
+              <span className="font-mono text-sm font-bold text-white uppercase tracking-wider print:text-black">
                 {booking.id}
               </span>
             </div>
-            <div className="bg-neutral-950/50 border border-neutral-850/60 p-3 rounded-xl print:bg-white print:border-black">
-              <span className="text-[9px] font-mono uppercase text-neutral-500 block mb-0.5">Rider Name</span>
+            <div className="bg-black border border-zinc-900 p-3 rounded-none print:bg-white print:border-black">
+              <span className="text-[9px] font-mono uppercase text-zinc-500 block mb-0.5 font-bold">Rider Name</span>
               <span className="text-xs font-bold text-white truncate block print:text-black">
                 {booking.name}
               </span>
@@ -247,77 +240,76 @@ export default function TicketPage({ bookingId }: TicketPageProps) {
           </div>
 
           {/* Location & Slot details */}
-          <div className="space-y-3.5">
-            <div className="flex items-center gap-3 text-xs text-neutral-300 print:text-black">
-              <Calendar className="w-4.5 h-4.5 text-brand flex-shrink-0 print:text-neutral-600" />
+          <div className="space-y-4">
+            <div className="flex items-center gap-3 text-xs text-zinc-300 print:text-black">
+              <Calendar className="w-4 h-4 text-emerald-400 flex-shrink-0 print:text-neutral-600" />
               <div>
-                <span className="text-[9px] text-neutral-500 block leading-tight">SCHEDULED DATE</span>
-                <span className="font-bold text-white text-xs sm:text-sm print:text-black">
+                <span className="text-[9px] text-zinc-500 block leading-tight font-mono font-bold uppercase">Scheduled Date</span>
+                <span className="font-bold text-white text-xs print:text-black">
                   {new Date(booking.date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                 </span>
               </div>
             </div>
 
-            <div className="flex items-center gap-3 text-xs text-neutral-300 print:text-black">
-              <Clock className="w-4.5 h-4.5 text-brand flex-shrink-0 print:text-neutral-600" />
+            <div className="flex items-center gap-3 text-xs text-zinc-300 print:text-black">
+              <Clock className="w-4 h-4 text-emerald-400 flex-shrink-0 print:text-neutral-600" />
               <div>
-                <span className="text-[9px] text-neutral-500 block leading-tight">TIME SLOT (45 MINS / 30 MIN RIDE)</span>
-                <span className="font-mono font-bold text-white text-xs sm:text-sm print:text-black">
+                <span className="text-[9px] text-zinc-500 block leading-tight font-mono font-bold uppercase">Time Slot</span>
+                <span className="font-mono font-bold text-white text-xs print:text-black">
                   {booking.slot}
                 </span>
               </div>
             </div>
 
-            <div className="flex items-center gap-3 text-xs text-neutral-300 print:text-black">
-              <Bike className="w-4.5 h-4.5 text-brand flex-shrink-0 print:text-neutral-600" />
+            <div className="flex items-center gap-3 text-xs text-zinc-300 print:text-black">
+              <Bike className="w-4 h-4 text-emerald-400 flex-shrink-0 print:text-neutral-600" />
               <div>
-                <span className="text-[9px] text-neutral-500 block leading-tight">RENTAL SPECIFICATION</span>
-                <span className="font-bold text-white text-xs sm:text-sm print:text-black uppercase">
+                <span className="text-[9px] text-zinc-500 block leading-tight font-mono font-bold uppercase">Rental Specification</span>
+                <span className="font-bold text-white text-xs print:text-black uppercase">
                   {booking.packageName}
                 </span>
               </div>
             </div>
 
-            <div className="flex items-center gap-3 text-xs text-neutral-300 print:text-black">
-              <MapPin className="w-4.5 h-4.5 text-brand flex-shrink-0 print:text-neutral-600" />
+            <div className="flex items-center gap-3 text-xs text-zinc-300 print:text-black">
+              <MapPin className="w-4 h-4 text-emerald-400 flex-shrink-0 print:text-neutral-600" />
               <div>
-                <span className="text-[9px] text-neutral-500 block leading-tight">TRACK ARENA LOCATION</span>
-                <span className="font-bold text-white text-xs sm:text-sm print:text-black">
+                <span className="text-[9px] text-zinc-500 block leading-tight font-mono font-bold uppercase">Track Location</span>
+                <span className="font-bold text-white text-xs print:text-black">
                   Protea Farms, Bottelary Road, Cape Town
                 </span>
               </div>
             </div>
           </div>
 
-          <div className="w-full h-px bg-neutral-800 print:bg-black" />
+          <div className="w-full h-px bg-zinc-900 print:bg-black" />
 
           {/* Quantity and receipt pricing */}
-          <div className="flex justify-between items-center text-xs sm:text-sm">
+          <div className="flex justify-between items-center text-xs">
             <div>
-              <span className="text-neutral-400 block print:text-neutral-600">Total Units Reserved</span>
-              <span className="font-extrabold text-white text-base print:text-black">
+              <span className="text-zinc-500 block uppercase font-mono text-[9px] font-bold">Total Units Reserved</span>
+              <span className="font-mono font-bold text-white text-sm print:text-black">
                 {booking.quantity} Unit{booking.quantity > 1 ? 's' : ''}
               </span>
             </div>
             <div className="text-right">
-              <span className="text-neutral-400 block print:text-neutral-600">Amount Paid Securely</span>
-              <span className="font-mono font-black text-brand text-lg sm:text-xl print:text-black">
+              <span className="text-zinc-500 block uppercase font-mono text-[9px] font-bold">Amount Paid</span>
+              <span className="font-mono font-bold text-emerald-400 text-sm print:text-black">
                 R{booking.amount.toLocaleString()}
               </span>
             </div>
           </div>
 
           {/* Compliance notice */}
-          <div className="p-3 bg-neutral-950/60 border border-neutral-850/60 rounded-xl text-[10px] text-neutral-400 leading-relaxed print:bg-white print:border-black print:text-black">
-            <strong className="text-amber-500 block mb-0.5 print:text-black uppercase text-[9px]">⚠️ ADMISSION COMPLIANCE WARNING</strong>
+          <div className="p-3 bg-zinc-950 border border-zinc-900 rounded-none text-[10px] text-zinc-400 leading-relaxed print:bg-white print:border-black print:text-black font-sans">
+            <strong className="text-emerald-400 block mb-0.5 print:text-black uppercase text-[9px] font-mono">* ADMISSION MANDATE</strong>
             No beginners permitted. Competent off-road handling experience is mandatory. Under 14 riders must be accompanied by a guardian passenger on ATV rentals only.
           </div>
 
           {/* SVG Vector Barcode for instant scanning */}
           <div className="flex flex-col items-center justify-center pt-2 gap-1.5">
-            <svg className="w-full h-12 max-w-[280px]" viewBox="0 0 100 20" preserveAspectRatio="none">
-              {/* Generate random-ish but aesthetic lines representing barcode */}
-              <g fill="currentColor" className="text-white print:text-black">
+            <svg className="w-full h-10 max-w-[280px]" viewBox="0 0 100 20" preserveAspectRatio="none">
+              <g fill="currentColor" className="text-zinc-500 print:text-black">
                 <rect x="0" y="0" width="1" height="20" />
                 <rect x="2" y="0" width="0.5" height="20" />
                 <rect x="3" y="0" width="1.5" height="20" />
@@ -367,7 +359,7 @@ export default function TicketPage({ bookingId }: TicketPageProps) {
                 <rect x="99.5" y="0" width="0.5" height="20" />
               </g>
             </svg>
-            <span className="font-mono text-[9px] text-neutral-500 tracking-widest uppercase block">
+            <span className="font-mono text-[9px] text-zinc-500 tracking-widest uppercase block">
               RIXPASS-{booking.id}
             </span>
           </div>
@@ -380,7 +372,7 @@ export default function TicketPage({ bookingId }: TicketPageProps) {
       <div className="flex flex-col sm:flex-row gap-3 mt-8 print:hidden w-full max-w-lg mx-auto">
         <button
           onClick={handlePrint}
-          className="flex-1 px-4 py-3 bg-neutral-900 hover:bg-neutral-800 text-white font-extrabold uppercase rounded-xl transition-all border border-neutral-850 hover:border-neutral-700 shadow-md flex items-center justify-center gap-2 active:scale-95 text-xs"
+          className="flex-1 px-4 py-3 bg-zinc-950 hover:bg-zinc-900 text-white font-mono font-bold uppercase rounded-none transition-all border border-zinc-850 hover:border-zinc-700 flex items-center justify-center gap-2 text-xs cursor-pointer"
         >
           <Printer className="w-4 h-4 text-brand" />
           <span>Print Ticket</span>
@@ -388,7 +380,7 @@ export default function TicketPage({ bookingId }: TicketPageProps) {
 
         <button
           onClick={() => navigateTo('home')}
-          className="flex-1 px-4 py-3 bg-brand hover:bg-brand-light text-black font-black uppercase rounded-xl transition-all shadow-lg shadow-brand/20 hover:shadow-brand/35 flex items-center justify-center gap-2 active:scale-95 text-xs"
+          className="flex-1 px-4 py-3 bg-brand hover:bg-brand-light text-black font-mono font-bold uppercase rounded-none transition-all flex items-center justify-center gap-2 text-xs cursor-pointer"
         >
           <Home className="w-4 h-4" />
           <span>Home Dashboard</span>

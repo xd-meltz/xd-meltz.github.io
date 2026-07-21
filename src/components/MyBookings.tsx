@@ -162,11 +162,11 @@ export default function MyBookings() {
     <div className="pt-28 pb-16 sm:pt-32 sm:pb-24 bg-neutral-950 min-h-screen text-neutral-100 flex flex-col px-3 sm:px-6 lg:px-8">
       {/* Visual Header */}
       <div className="max-w-3xl mx-auto w-full text-center mb-8 sm:mb-12">
-        <div className="inline-flex bg-brand/10 border border-brand/20 p-1.5 sm:p-2 rounded-full mb-3 sm:mb-4">
-          <Ticket className="w-4 h-4 sm:w-5 sm:h-5 text-brand" />
+        <div className="inline-flex bg-emerald-500/10 border border-emerald-500/20 p-1.5 sm:p-2 rounded-full mb-3 sm:mb-4">
+          <Ticket className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-400" />
         </div>
         <h1 className="font-display font-black text-2xl sm:text-4xl text-white uppercase italic tracking-tight">
-          MY <span className="text-brand">BOOKINGS</span>
+          MY <span className="text-emerald-400">BOOKINGS</span>
         </h1>
         <p className="text-neutral-400 text-[11px] sm:text-sm mt-1.5 max-w-lg mx-auto font-sans px-2">
           Retrieve your reservation passes, view session statuses, or complete secure Payfast checkout for pending sessions.
@@ -177,7 +177,7 @@ export default function MyBookings() {
       <div className="max-w-2xl mx-auto w-full mb-6 sm:mb-8">
         <div className="bg-neutral-900 border border-neutral-800 rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-xl relative overflow-hidden">
           {/* Subtle Accent Line */}
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-brand to-brand-light" />
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-emerald-400" />
           
           <form onSubmit={handleSearch} className="space-y-4 sm:space-y-6">
             <div>
@@ -191,7 +191,7 @@ export default function MyBookings() {
                   onClick={() => { setSearchType('email'); setQuery(''); setError(null); }}
                   className={`py-1.5 sm:py-2 px-2 sm:px-3 text-[10px] sm:text-xs font-mono font-black uppercase tracking-wider rounded-md sm:rounded-lg flex items-center justify-center gap-1 sm:gap-1.5 transition-all ${
                     searchType === 'email' 
-                      ? 'bg-brand text-black shadow-md shadow-brand/10' 
+                      ? 'bg-emerald-500 text-black shadow-md shadow-emerald-500/10' 
                       : 'text-neutral-400 hover:text-white hover:bg-neutral-900'
                   }`}
                 >
@@ -204,7 +204,7 @@ export default function MyBookings() {
                   onClick={() => { setSearchType('phone'); setQuery(''); setError(null); }}
                   className={`py-1.5 sm:py-2 px-2 sm:px-3 text-[10px] sm:text-xs font-mono font-black uppercase tracking-wider rounded-md sm:rounded-lg flex items-center justify-center gap-1 sm:gap-1.5 transition-all ${
                     searchType === 'phone' 
-                      ? 'bg-brand text-black shadow-md shadow-brand/10' 
+                      ? 'bg-emerald-500 text-black shadow-md shadow-emerald-500/10' 
                       : 'text-neutral-400 hover:text-white hover:bg-neutral-900'
                   }`}
                 >
@@ -217,7 +217,7 @@ export default function MyBookings() {
                   onClick={() => { setSearchType('id'); setQuery(''); setError(null); }}
                   className={`py-1.5 sm:py-2 px-2 sm:px-3 text-[10px] sm:text-xs font-mono font-black uppercase tracking-wider rounded-md sm:rounded-lg flex items-center justify-center gap-1 sm:gap-1.5 transition-all ${
                     searchType === 'id' 
-                      ? 'bg-brand text-black shadow-md shadow-brand/10' 
+                      ? 'bg-emerald-500 text-black shadow-md shadow-emerald-500/10' 
                       : 'text-neutral-400 hover:text-white hover:bg-neutral-900'
                   }`}
                 >
@@ -240,7 +240,7 @@ export default function MyBookings() {
                       ? 'e.g. 0821234567 or +27...' 
                       : 'e.g. BK-123456'
                 }
-                className="w-full bg-neutral-950 border border-neutral-800 rounded-lg sm:rounded-xl px-3 py-2.5 sm:py-3.5 pl-9 sm:pl-11 pr-24 sm:pr-28 text-xs sm:text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand font-sans transition-all"
+                className="w-full bg-neutral-950 border border-neutral-800 rounded-lg sm:rounded-xl px-3 py-2.5 sm:py-3.5 pl-9 sm:pl-11 pr-24 sm:pr-28 text-xs sm:text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 font-sans transition-all"
               />
               <div className="absolute inset-y-0 left-3 sm:left-4 flex items-center pointer-events-none text-neutral-600">
                 {searchType === 'email' && <Mail className="w-3.5 h-3.5" />}
@@ -251,7 +251,7 @@ export default function MyBookings() {
               <button
                 type="submit"
                 disabled={loading || !query.trim()}
-                className="absolute right-1.5 top-1.5 bottom-1.5 px-3 sm:px-4 bg-brand text-black font-extrabold uppercase rounded-md sm:rounded-lg hover:bg-brand-light active:scale-95 disabled:opacity-50 disabled:scale-100 flex items-center gap-1 sm:gap-1.5 transition-all text-[10px] sm:text-xs cursor-pointer"
+                className="absolute right-1.5 top-1.5 bottom-1.5 px-3 sm:px-4 bg-emerald-500 text-black font-extrabold uppercase rounded-md sm:rounded-lg hover:bg-emerald-400 active:scale-95 disabled:opacity-50 disabled:scale-100 flex items-center gap-1 sm:gap-1.5 transition-all text-[10px] sm:text-xs cursor-pointer"
               >
                 {loading ? (
                   <Loader2 className="w-3 h-3 animate-spin" />
@@ -314,7 +314,7 @@ export default function MyBookings() {
                       {/* Booking Summary */}
                       <div className="space-y-2 sm:space-y-3">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-[10px] font-mono font-black text-brand tracking-wider bg-brand/10 px-2 py-0.5 rounded border border-brand/20">
+                          <span className="text-[10px] font-mono font-black text-emerald-400 tracking-wider bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
                             {booking.id}
                           </span>
                           
@@ -336,15 +336,15 @@ export default function MyBookings() {
                         {/* Timing / Detail Blocks */}
                         <div className="flex items-center gap-3 sm:gap-4 text-[10px] sm:text-xs font-mono text-neutral-400 flex-wrap">
                           <div className="flex items-center gap-1">
-                            <Calendar className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-brand" />
+                            <Calendar className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-400" />
                             <span>{booking.date}</span>
                           </div>
                           <div className="flex items-center gap-1">
-                            <Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-brand" />
+                            <Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-400" />
                             <span>{booking.slot}</span>
                           </div>
                           <div className="flex items-center gap-1">
-                            <Receipt className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-brand" />
+                            <Receipt className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-400" />
                             <span>R {booking.amount}</span>
                           </div>
                         </div>
@@ -354,7 +354,7 @@ export default function MyBookings() {
                       <div className="flex items-center sm:self-center mt-1 sm:mt-0">
                         <button
                           onClick={() => navigateTo('ticket', booking.id)}
-                          className="w-full sm:w-auto px-3.5 py-2 sm:px-4 sm:py-2.5 font-extrabold uppercase rounded-md sm:rounded-lg text-[10px] sm:text-xs tracking-wider transition-all flex items-center justify-center gap-1 sm:gap-1.5 cursor-pointer bg-brand hover:bg-brand-light text-black shadow-md shadow-brand/10"
+                          className="w-full sm:w-auto px-3.5 py-2 sm:px-4 sm:py-2.5 font-extrabold uppercase rounded-md sm:rounded-lg text-[10px] sm:text-xs tracking-wider transition-all flex items-center justify-center gap-1 sm:gap-1.5 cursor-pointer bg-emerald-500 hover:bg-emerald-400 text-black shadow-md shadow-emerald-500/10"
                         >
                           <span>View Pass</span>
                           <ArrowRight className="w-3 h-3" />
