@@ -1,4 +1,7 @@
 import { Photo, GearItem, Album } from './types';
+import greenCarImg from './assets/images/green_car_misty_1782210470106.jpg';
+import cockpitImg from './assets/images/driver_cockpit_view_1782210484649.jpg';
+import igorImg from './assets/images/igor_photographer_1782210450713.jpg';
 
 export const samplePhotos: Photo[] = [
   {
@@ -8,7 +11,7 @@ export const samplePhotos: Photo[] = [
     tagline: 'HIGH SPEED APEX',
     date: 'OCTOBER 2025',
     location: 'PHILLIP ISLAND CIRCUIT',
-    imageUrl: '/src/assets/images/green_car_misty_1782210470106.jpg',
+    imageUrl: greenCarImg,
     specs: { camera: 'Sony Alpha 7R V', lens: '70-200mm f/2.8 GM', shutter: '1/2000s', aperture: 'f/2.8', iso: '100' },
     story: 'Captured mid-corner at 180km/h through the misty morning track fog.'
   },
@@ -19,7 +22,7 @@ export const samplePhotos: Photo[] = [
     tagline: 'LIFE THROUGH OPTICS',
     date: 'DECEMBER 2025',
     location: 'SHIBUYA EXPRESSWAY',
-    imageUrl: '/src/assets/images/driver_cockpit_view_1782210484649.jpg',
+    imageUrl: cockpitImg,
     specs: { camera: 'Leica M11', lens: 'Summicron-M 35mm f/2', shutter: '1/60s', aperture: 'f/2.0', iso: '800' },
     story: 'First person perspective steering through the neon lit tollways of midnight Tokyo.'
   },
@@ -30,7 +33,7 @@ export const samplePhotos: Photo[] = [
     tagline: 'CREATIVE DIRECTION',
     date: 'JANUARY 2026',
     location: 'MELBOURNE STUDIO',
-    imageUrl: '/src/assets/images/igor_photographer_1782210450713.jpg',
+    imageUrl: igorImg,
     specs: { camera: 'Hasselblad 907X', lens: 'XCD 80mm f/1.9', shutter: '1/250s', aperture: 'f/1.9', iso: '100' },
     story: 'Behind the scenes at Rixvisuals headquarters.'
   }
@@ -43,7 +46,7 @@ export const albumsData: Album[] = [
     id: 'album_porsche',
     title: 'PORSCHE CIRCUIT ARCHIVES',
     folderCode: 'DIR_PORSCHE_CIRCUIT',
-    coverImageUrl: '/src/assets/images/green_car_misty_1782210470106.jpg',
+    coverImageUrl: greenCarImg,
     date: 'OCT 2025',
     location: 'PHILLIP ISLAND',
     photos: [samplePhotos[0]]
@@ -52,7 +55,7 @@ export const albumsData: Album[] = [
     id: 'album_tokyo',
     title: 'MIDNIGHT EXPRESSWAY',
     folderCode: 'DIR_TOKYO_NIGHTS',
-    coverImageUrl: '/src/assets/images/driver_cockpit_view_1782210484649.jpg',
+    coverImageUrl: cockpitImg,
     date: 'DEC 2025',
     location: 'TOKYO, JAPAN',
     photos: [samplePhotos[1]]
@@ -61,7 +64,7 @@ export const albumsData: Album[] = [
     id: 'album_studio',
     title: 'BESPOKE STUDIO SESSIONS',
     folderCode: 'DIR_STUDIO_WORKS',
-    coverImageUrl: '/src/assets/images/igor_photographer_1782210450713.jpg',
+    coverImageUrl: igorImg,
     date: 'JAN 2026',
     location: 'MELBOURNE, AUS',
     photos: [samplePhotos[2]]
@@ -89,7 +92,7 @@ export const aboutContent = {
     "Over the following two years, Igor documented his journey as a photographer everyday, doing his very best to share his knowledge and provide value to everyone around him.",
     "And after amassing a combined audience of over 800,000 people and building a six-figure photography business, he was able to quit his job in 2023 and live his dream."
   ],
-  avatarUrl: '/src/assets/images/igor_photographer_1782210450713.jpg',
-  portfolioOwnerPhotoLeft: '/src/assets/images/green_car_misty_1782210470106.jpg',
-  portfolioOwnerPhotoRight: '/src/assets/images/driver_cockpit_view_1782210484649.jpg'
+  avatarUrl: igorImg,
+  portfolioOwnerPhotoLeft: greenCarImg,
+  portfolioOwnerPhotoRight: cockpitImg
 };

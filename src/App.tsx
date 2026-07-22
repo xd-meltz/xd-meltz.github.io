@@ -24,7 +24,7 @@ export default function App() {
   
   // Localized state for the hero image to support custom upload directly
   const [userHeroImg, setUserHeroImg] = useState<string>(() => {
-    return localStorage.getItem('rixvisuals_hero_image') || '/src/assets/images/igor_photographer_1782210450713.jpg';
+    return localStorage.getItem('rixvisuals_hero_image') || aboutContent.avatarUrl || '/avatar.jpg';
   });
 
   const handleHeroImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -41,7 +41,7 @@ export default function App() {
   };
 
   const handleResetHeroImage = () => {
-    setUserHeroImg('/src/assets/images/igor_photographer_1782210450713.jpg');
+    setUserHeroImg(aboutContent.avatarUrl || '/avatar.jpg');
     localStorage.removeItem('rixvisuals_hero_image');
   };
   
