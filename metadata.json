@@ -1,0 +1,6 @@
+{
+  "name": "RixVisuals",
+  "description": "A minimalist photography portfolio website for RixVisuals, featuring high-speed automotive photography, visual stories, and galleries.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
