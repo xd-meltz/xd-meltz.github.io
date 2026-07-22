@@ -150,43 +150,47 @@ export default function Header({
         </div>
       </div>
 
-      {/* Mobile Menu Dropdown Panel - Identical clean white styling to PC */}
+      {/* Mobile Menu Dropdown Panel - Identical minimalist typography & active underline as PC */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.25, ease: "easeInOut" }}
-            className="md:hidden bg-white border-t border-neutral-100 shadow-xl overflow-hidden"
+            transition={{ duration: 0.2, ease: "easeInOut" }}
+            className="md:hidden bg-white/98 backdrop-blur-md border-t border-neutral-100 shadow-lg overflow-hidden"
           >
-            <div className="px-6 py-6 space-y-3">
-              {tabs.map((tab) => {
-                const isTabActive = activeTab === tab.action && !showDashboard;
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => handleTabClick(tab)}
-                    className={`w-full text-left font-sans text-xs font-bold tracking-[0.25em] py-3 px-4 rounded-xl transition-all uppercase flex items-center justify-between border ${
-                      isTabActive
-                        ? 'bg-black text-white border-black font-black'
-                        : 'border-neutral-100 text-neutral-700 hover:text-black hover:bg-neutral-50'
-                    }`}
-                  >
-                    <span>{tab.label}</span>
-                    {isTabActive && (
-                      <span className="w-1.5 h-1.5 rounded-full bg-white" />
-                    )}
-                  </button>
-                );
-              })}
+            <div className="px-6 py-5 flex flex-col space-y-4">
+              <div className="flex items-center space-x-6 sm:space-x-8">
+                {tabs.map((tab) => {
+                  const isTabActive = activeTab === tab.action && !showDashboard;
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => handleTabClick(tab)}
+                      className={`font-sans text-xs tracking-[0.2em] uppercase font-semibold transition-colors relative py-2 cursor-pointer ${
+                        isTabActive ? 'text-black font-black' : 'text-neutral-400 hover:text-black'
+                      }`}
+                    >
+                      {tab.label}
+                      {isTabActive && (
+                        <motion.span
+                          layoutId="mobileActiveTabLine"
+                          className="absolute left-0 right-0 -bottom-1 h-[2.5px] bg-black rounded-full"
+                          transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                        />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
 
-              <div className="pt-4 border-t border-neutral-100 flex items-center justify-between text-xs font-sans">
+              <div className="pt-3 border-t border-neutral-100 flex items-center justify-between text-xs font-sans text-neutral-500">
                 <a
                   href="https://instagram.com/_rix.visuals_"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-bold text-neutral-800 hover:text-black uppercase tracking-wider flex items-center gap-2"
+                  className="font-bold text-neutral-800 hover:text-black uppercase tracking-widest text-[11px] flex items-center gap-2"
                 >
                   <span className="w-2 h-2 rounded-full bg-gradient-to-r from-pink-500 to-amber-500" />
                   <span>@_RIX.VISUALS_</span>
@@ -198,9 +202,9 @@ export default function Header({
                       setMobileMenuOpen(false);
                       onOpenCartInfo();
                     }}
-                    className="font-mono text-[11px] text-neutral-900 font-bold uppercase underline tracking-wider"
+                    className="font-mono text-[11px] text-black font-bold uppercase tracking-widest underline"
                   >
-                    Cart ({printRequestsCount})
+                    CART ({printRequestsCount})
                   </button>
                 )}
               </div>

@@ -79,7 +79,7 @@ const extractFolderId = (url?: string): string | null => {
 };
 
 export default function Gallery({ onOrderPrint, searchQuery = '' }: GalleryProps) {
-  const [albums, setAlbums] = useState<Album[]>([]);
+  const [albums, setAlbums] = useState<Album[]>(albumsData);
   const [selectedAlbumId, setSelectedAlbumId] = useState<string | null>(null);
   const [activePhotoIndex, setActivePhotoIndex] = useState<number | null>(null);
 
