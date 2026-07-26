@@ -63,7 +63,7 @@ export default function Navigation() {
   const navLinks = [
     { name: 'Home', href: '#home' },
     { name: 'The Track', href: '#track' },
-    { name: 'Pricing & Packages', href: '#pricing' },
+    { name: 'Pricing', href: '#pricing' },
     { name: 'Events', href: '#events' },
     { name: 'Gallery', href: '#gallery' },
     { name: 'My Bookings', href: '?page=mybookings', page: 'mybookings' },

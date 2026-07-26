@@ -501,13 +501,13 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
           </div>
         )}
 
-        {/* Bring Your Own Bike Info Card at the Top */}
+        {/* Bring Your Own Bike/Pit Bike Info Card at the Top */}
         <div className="bg-zinc-950 border border-zinc-800 p-3 sm:p-5 mb-4 sm:mb-8">
           <div className="flex items-start gap-2.5 sm:gap-3">
             <span className="text-lg sm:text-2xl mt-0.5">🚲</span>
             <div>
               <h4 className="font-mono text-xs sm:text-sm uppercase text-emerald-400 tracking-wider flex items-center gap-1.5 flex-wrap">
-                <span>Bringing Your Own Bike?</span>
+                <span>Bringing Your Own Bike/Pit Bike?</span>
                 <span className="px-1.5 py-0.5 bg-zinc-900 border border-zinc-800 text-zinc-300 text-[9px] font-mono font-black">
                   NO ONLINE BOOKING REQUIRED
                 </span>
@@ -516,7 +516,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                 </span>
               </h4>
               <p className="text-[11px] sm:text-xs text-zinc-400 leading-relaxed mt-1">
-                If you are bringing your own bike, <span className="text-white font-bold">you do not need to book online</span>. Simply show up at the compound, pay <span className="text-emerald-400 font-black">R150 on site</span>, and you're ready to ride!
+                If you are bringing your own bike/pit bike, <span className="text-white font-bold">you do not need to book online</span>. Simply show up at the compound, pay <span className="text-emerald-400 font-black">R150 on site</span>, and you're ready to ride!
               </p>
             </div>
           </div>

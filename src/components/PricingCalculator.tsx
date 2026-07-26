@@ -17,7 +17,7 @@ export default function PricingCalculator() {
       note: "80cc quad bike. 45-minute slot intervals (30 min active ride time). Beginners are permitted on rental quad bikes!"
     },
     {
-      item: "Bring Your Own Bike",
+      item: "Bring Your Own Bike/Pit Bike",
       price: "R150",
       duration: "per day",
       note: "Pay on-site. No online booking required. Show up and ride during open hours."
@@ -34,7 +34,7 @@ export default function PricingCalculator() {
             Rates & Guidelines
           </span>
           <h2 className="font-mono text-2xl sm:text-3xl font-bold uppercase tracking-tight italic">
-            Pricing & Packages
+            Pricing
           </h2>
         </div>
 

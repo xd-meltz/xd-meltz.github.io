@@ -50,7 +50,7 @@ export default function Hero() {
               </span>
             </h1>
             <p className="mt-1.5 sm:mt-2 text-[11px] sm:text-sm text-zinc-400 max-w-xl leading-relaxed font-sans">
-              A private pit bike and junior MX track on Bottelary Road. Bring your own bike (R150) or rent ours for a thrilling, secure day out on the dirt. Simple as that!
+              A private pit bike and junior MX track on Bottelary Road. Bring your own bike/pit bike (R150) or rent ours for a thrilling, secure day out on the dirt. Simple as that!
             </p>
           </div>
 
