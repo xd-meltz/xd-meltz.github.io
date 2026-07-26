@@ -1,6 +1,6 @@
 {
-  "name": "RixVisuals",
-  "description": "A minimalist photography portfolio website for RixVisuals, featuring high-speed automotive photography, visual stories, and galleries.",
+  "name": "Rix Compound",
+  "description": "The ultimate pit bike & junior MX track in Cape Winelands, Stellenbosch. Offering weekend rides, rentals, birthday parties, weekday corporate packages, and events.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

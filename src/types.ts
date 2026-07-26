@@ -1,58 +1,30 @@
-export interface Photo {
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+export interface PricingPlan {
   id: string;
+  category: 'weekends' | 'weekdays';
   title: string;
-  category: 'automotive' | 'street' | 'monochrome' | 'landscape';
-  tagline: string;
-  date: string;
-  location: string;
-  imageUrl: string;
-  specs: {
-    camera: string;
-    lens: string;
-    shutter: string;
-    aperture: string;
-    iso: string;
-  };
-  story: string;
+  subtitle?: string;
+  priceText: string;
+  features: string[];
+  notes?: string;
 }
 
-export interface Inquiry {
+export interface GalleryItem {
   id: string;
+  url: string;
+  altText: string;
+}
+
+export interface BookingFormState {
   name: string;
-  email: string;
-  subject: string;
-  message: string;
-  photoChoice?: string;
-  createdAt: string;
-  status: 'unread' | 'read' | 'replied';
-}
-
-export interface GearItem {
-  name: string;
-  type: string;
-  description: string;
-}
-
-export interface InstagramMetadata {
-  handle: string;
-  isMocked: boolean;
-  followers: string;
-  following: string;
-  posts: number;
-  hasActiveStory: boolean;
-  lastPostTime: string;
-  fetchedAt: string;
-}
-
-export interface Album {
-  id: string;
-  title: string;
-  folderCode: string;
-  coverImageUrl: string;
+  bookingType: 'weekday' | 'weekend';
+  packageName: '30min' | '60min' | '4hour' | 'weekend-rental' | 'weekend-own-bike';
+  bikesCount: 5 | 10;
+  riderType?: 'PitBike' | 'QuadBike';
   date: string;
-  location: string;
-  photos: Photo[];
-  driveUrl?: string;
+  time: string;
 }
-
-
