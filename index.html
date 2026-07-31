@@ -1,24 +1,789 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WH8MRQKMG1"></script>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Summer Kick | Watermelon Spirit Cooler</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* --- CSS VARIABLES & BRAND COLORS --- */
+        :root {
+            --brand-pink: #F2294E;
+            --brand-pink-dark: #D11A3D;
+            --brand-teal: #48C0B5;
+            --bg-light-pink: #FFF0F4;
+            --bg-mid-pink: #FFD6E0;
+            --bg-mint: #E6F7F5;
+            --text-dark: #1A1A1A;
+            --text-light: #FFFFFF;
+        }
+
+        /* --- HIDE SCROLLBAR (Across all browsers) --- */
+        ::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
+        }
+        html, body {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+
+        /* --- GLOBAL STYLES --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-light-pink);
+            color: var(--text-dark);
+            overflow-x: hidden;
+        }
+        
+        body.no-scroll { overflow: hidden; }
+
+        h1, h2, h3, h4 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            text-transform: uppercase;
+        }
+
+        a { text-decoration: none; color: inherit; }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        /* --- BUTTONS --- */
+        .btn {
+            display: inline-block;
+            padding: 14px 32px;
+            border-radius: 50px;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            font-family: 'Inter', sans-serif;
+            text-align: center;
+        }
+
+        .btn-pink {
+            background-color: var(--brand-pink);
+            color: var(--text-light);
+            box-shadow: 0 4px 15px rgba(242, 41, 78, 0.3);
+        }
+
+        .btn-pink:hover {
+            background-color: var(--brand-pink-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            border-color: var(--brand-pink);
+            color: var(--brand-pink);
+            background: transparent;
+        }
+
+        .btn-outline:hover {
+            background-color: var(--brand-pink);
+            color: var(--text-light);
+        }
+
+        .btn-dark {
+            background-color: var(--text-dark);
+            color: var(--text-light);
+            border: none;
+        }
+
+        .btn-dark:hover {
+            background-color: var(--brand-teal);
+            color: var(--text-dark);
+        }
+
+        /* --- STICKY NAVIGATION --- */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 40px;
+            background-color: var(--bg-light-pink);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 10px 30px rgba(242, 41, 78, 0.05);
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            position: relative;
+            z-index: 1001; 
+        }
+
+        .nav-brand img {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .logo {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: var(--brand-pink);
+            letter-spacing: -1px;
+        }
+
+        .nav-links { display: flex; gap: 20px; }
+
+        .nav-links a {
+            padding: 8px 16px;
+            border: 1px solid var(--text-dark);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        
+        .nav-links a:hover {
+            background: var(--brand-pink);
+            border-color: var(--brand-pink);
+            color: var(--text-light);
+        }
+
+        /* --- HAMBURGER MENU --- */
+        .hamburger {
+            display: none;
+            cursor: pointer;
+            flex-direction: column;
+            justify-content: space-between;
+            width: 28px;
+            height: 20px;
+            z-index: 1001; 
+        }
+
+        .hamburger .bar {
+            height: 3px;
+            width: 100%;
+            background-color: var(--brand-pink);
+            border-radius: 5px;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        /* --- MOBILE MENU OVERLAY --- */
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background-color: var(--bg-light-pink);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 25px;
+            transform: translateY(-100%);
+            transition: transform 0.4s ease-in-out;
+            z-index: 999;
+        }
+
+        .mobile-menu.active { transform: translateY(0); }
+
+        .mobile-menu a {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: var(--text-dark);
+            text-transform: uppercase;
+        }
+        
+        .mobile-menu a.btn {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.1rem;
+            margin-top: 15px;
+        }
+
+        /* --- FLOATING INSTAGRAM BUTTON --- */
+        .floating-ig-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: var(--brand-pink);
+            color: var(--text-light);
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 25px rgba(242, 41, 78, 0.4);
+            z-index: 1002; 
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+
+        .floating-ig-btn:hover {
+            transform: scale(1.1) translateY(-5px);
+            background-color: var(--brand-pink-dark);
+        }
+
+        .floating-ig-btn svg {
+            width: 32px;
+            height: 32px;
+            fill: currentColor;
+        }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            background-color: var(--bg-light-pink);
+            padding: 40px 0 100px 0;
+        }
+
+        .hero .container { display: flex; align-items: center; justify-content: space-between; }
+        .hero-text { flex: 1; padding-right: 50px; }
+        .hero-text h1 { font-size: 4.8rem; line-height: 1; margin-bottom: 20px; color: var(--text-dark); }
+        .hero-text h1 span { color: var(--brand-pink); }
+        .hero-text p { font-size: 1.15rem; margin-bottom: 35px; max-width: 420px; line-height: 1.6; }
+        
+        .hero-image { flex: 1; display: flex; justify-content: center; position: relative; }
+        .hero-image img {
+            width: 100%;
+            max-width: 500px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(242, 41, 78, 0.4);
+            object-fit: cover;
+        }
+
+        /* --- ANIMATED RIBBON (MARQUEE) --- */
+        .trust-ribbon {
+            background-color: var(--brand-pink);
+            color: var(--text-light);
+            padding: 25px 0;
+            border-top: 4px solid var(--text-dark);
+            border-bottom: 4px solid var(--text-dark);
+            overflow: hidden; 
+            display: flex;
+            white-space: nowrap;
+        }
+
+        .ribbon-track {
+            display: flex;
+            width: max-content;
+            animation: scrollRibbon 25s linear infinite; 
+        }
+        
+        .trust-ribbon:hover .ribbon-track { animation-play-state: paused; }
+
+        .ribbon-half { display: flex; align-items: center; justify-content: space-around; }
+        .ribbon-item { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 40px; }
+        .ribbon-item h4 { font-size: 1.3rem; margin-bottom: 5px; }
+        .ribbon-item p { font-size: 0.95rem; opacity: 0.95; margin: 0; }
+        .ribbon-separator { font-size: 1.5rem; color: var(--text-dark); opacity: 0.5; padding: 0 10px; }
+
+        @keyframes scrollRibbon {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); } 
+        }
+
+        /* --- BIG STATEMENT (TEXT + SCROLL VIDEO) --- */
+        .statement { 
+            background-color: var(--bg-mid-pink); 
+            padding: 100px 0; 
+        }
+        .statement-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 60px;
+        }
+        .statement-text {
+            flex: 1;
+        }
+        .statement-text h2 { 
+            font-size: 3.5rem; 
+            line-height: 1.1; 
+            color: var(--text-dark); 
+            margin-bottom: 20px;
+        }
+        .statement-text h2 .highlight {
+            background-color: var(--brand-pink);
+            color: var(--text-light);
+            padding: 0 15px;
+            border-radius: 10px;
+            display: inline-block;
+            margin: 5px 0;
+        }
+        .statement-text p { 
+            font-size: 1.15rem; 
+            line-height: 1.6; 
+            max-width: 500px;
+        }
+        
+        /* Video Side */
+        .statement-video {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+        }
+        .statement-video video {
+            width: 100%;
+            max-width: 600px;
+            aspect-ratio: 16 / 9;
+            object-fit: cover;
+            border-radius: 20px;
+            border: 4px solid var(--text-dark);
+            box-shadow: 12px 12px 0px rgba(0,0,0,0.1);
+            background-color: #000;
+        }
+
+        /* --- PRODUCT HIGHLIGHT --- */
+        .product-highlight { padding: 80px 0; background-color: var(--text-light); }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+        .flavor-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 40px; } 
+        
+        .flavor-card { text-align: center; transition: transform 0.3s ease; display: flex; flex-direction: column; align-items: center; }
+        .flavor-card:hover { transform: translateY(-10px); }
+        
+        .flavor-card img { 
+            width: 100%; 
+            max-width: 220px;
+            aspect-ratio: 3 / 4; 
+            object-fit: cover; 
+            margin-bottom: 25px; 
+            border-radius: 20px; 
+            box-shadow: 0 15px 30px rgba(0,0,0,0.08); 
+        }
+        
+        .flavor-card h4 { font-size: 1.15rem; color: var(--brand-pink); letter-spacing: 0.5px; }
+
+        /* --- EVENT INQUIRY SECTION --- */
+        .inquiry-section { background-color: var(--brand-pink); padding: 100px 0; position: relative; color: var(--text-light); }
+        .inquiry-container { display: flex; align-items: center; gap: 60px; }
+        .inquiry-image, .inquiry-details { flex: 1; }
+        .inquiry-image img {
+            width: 100%;
+            max-width: 500px;
+            border-radius: 20px;
+            border: 4px solid var(--text-dark);
+            box-shadow: -15px 15px 0px var(--text-dark);
+        }
+        .inquiry-details h2 { font-size: 3.5rem; margin-bottom: 15px; line-height: 1; }
+        .inquiry-details h2 span { color: var(--text-dark); }
+        .inquiry-details p { margin-bottom: 30px; font-size: 1.1rem; line-height: 1.5; opacity: 0.95; }
+
+        /* THE FORM */
+        .event-form {
+            background: var(--text-light);
+            padding: 30px;
+            border-radius: 20px;
+            border: 4px solid var(--text-dark);
+            box-shadow: 8px 8px 0px var(--text-dark);
+        }
+        .form-row { display: flex; gap: 15px; margin-bottom: 15px; }
+        .event-form input, .event-form textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #E0E0E0;
+            border-radius: 10px;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            transition: 0.3s;
+        }
+        .event-form input:focus, .event-form textarea:focus { outline: none; border-color: var(--brand-pink); }
+        .event-form input { margin-bottom: 15px; }
+        .form-row input { margin-bottom: 0; }
+        .event-form textarea { resize: vertical; margin-bottom: 20px; }
+        .event-form .btn-dark { width: 100%; text-align: center; font-size: 1.1rem; padding: 16px; border-radius: 10px; cursor: pointer; }
+
+        /* --- SOCIAL GRID --- */
+        .social-section { padding: 100px 0; background-color: var(--bg-light-pink); }
+        .social-header { margin-bottom: 40px; text-align: center; }
+        .social-header h2 { color: var(--brand-pink); font-size: 2.5rem; margin: 10px 0; }
+        
+        .ig-bio {
+            font-size: 1.1rem;
+            color: var(--text-dark);
+            opacity: 0.8;
+            line-height: 1.6;
+            margin-top: 10px;
+        }
+
+        .social-grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-rows: 350px; gap: 20px; }
+        .social-grid img { width: 100%; height: 100%; object-fit: cover; border-radius: 20px; border: 2px solid var(--bg-mid-pink); }
+        .social-item-large { grid-column: span 2; grid-row: span 2; }
+
+        /* --- FOOTER --- */
+        footer { background-color: var(--text-dark); color: var(--text-light); padding: 80px 40px 40px 40px; text-align: center; }
+        .footer-logo { color: var(--brand-pink); font-size: 3.5rem; font-family: 'Montserrat', sans-serif; font-weight: 900; margin-bottom: 20px; }
+
+        /* ========================================= */
+        /* --- RESPONSIVE DESIGN (TIGHTER MOBILE)--- */
+        /* ========================================= */
+        
+        @media (max-width: 900px) {
+            .nav-links, .nav-icons { display: none; }
+            .hamburger { display: flex; }
+            
+            nav { padding: 12px 20px; }
+            .nav-brand img { width: 55px; height: 55px; }
+            .logo { font-size: 1.4rem; }
+            
+            .container { padding: 0 20px; }
+            
+            .hero { padding: 15px 0 40px 0; }
+            .hero .container, .inquiry-container { flex-direction: column; text-align: center; }
+            .hero-text { padding-right: 0; margin-bottom: 25px; }
+            .hero-text h1 { font-size: 2.8rem; margin-bottom: 12px; }
+            .hero-text p { font-size: 0.95rem; margin-bottom: 20px; max-width: 100%; }
+            .btn { padding: 12px 24px; font-size: 0.85rem; }
+            
+            .trust-ribbon { padding: 15px 0; }
+            .ribbon-item { padding: 0 20px; }
+            .ribbon-item h4 { font-size: 1rem; }
+            .ribbon-item p { font-size: 0.8rem; }
+            .ribbon-separator { font-size: 1.2rem; }
+
+            /* Tighter Statement (Stack text and video) */
+            .statement { padding: 60px 0; }
+            .statement-container { flex-direction: column; gap: 40px; text-align: center; }
+            .statement-text h2 { font-size: 2.2rem; margin-bottom: 15px; }
+            .statement-text p { font-size: 0.95rem; margin: 0 auto; }
+            .statement-video { width: 100%; }
+
+            .product-highlight { padding: 40px 0; }
+            .section-header { flex-direction: column; gap: 10px; text-align: center; margin-bottom: 25px; }
+            .section-header h3 { font-size: 1.4rem; }
+            .flavor-grid { grid-template-columns: repeat(2, 1fr); gap: 15px; }
+            
+            .flavor-card:nth-child(1) { order: 1; }
+            .flavor-card:nth-child(2) { order: 2; }
+            .flavor-card:nth-child(3) { order: 4; }
+            .flavor-card:nth-child(4) { order: 3; }
+
+            .flavor-card img { max-width: 100%; margin-bottom: 10px; border-radius: 12px; box-shadow: 0 8px 15px rgba(0,0,0,0.08); }
+            .flavor-card h4 { font-size: 0.95rem; }
+            
+            .inquiry-section { padding: 40px 0; }
+            .inquiry-container { gap: 25px; }
+            .inquiry-details h2 { font-size: 2.2rem; margin-bottom: 10px; }
+            .inquiry-details p { font-size: 0.95rem; margin-bottom: 15px; }
+            .inquiry-image img { box-shadow: -8px 8px 0px var(--text-dark); border-width: 3px; }
+            
+            .event-form { padding: 20px; border-width: 3px; box-shadow: 5px 5px 0px var(--text-dark); }
+            .form-row { flex-direction: column; gap: 0; }
+            .event-form input, .event-form textarea { padding: 12px; margin-bottom: 12px; font-size: 0.9rem; }
+            .form-row input { margin-bottom: 12px; }
+            .event-form .btn-dark { padding: 12px; font-size: 1rem; margin-top: 5px; }
+
+            .social-section { padding: 40px 0; }
+            .social-header { margin-bottom: 25px; }
+            .social-header h2 { font-size: 2rem; }
+            .social-header p { font-size: 0.85rem; }
+            .ig-bio { font-size: 0.95rem; }
+            .social-grid { grid-template-columns: 1fr; grid-auto-rows: 220px; gap: 12px; } 
+            .social-item-large { grid-column: span 1; grid-row: span 1; }
+            .social-grid img { border-radius: 12px; border-width: 1px; }
+
+            .floating-ig-btn { width: 55px; height: 55px; bottom: 20px; right: 20px; }
+            .floating-ig-btn svg { width: 25px; height: 25px; }
+
+            footer { padding: 40px 20px 20px 20px; }
+            .footer-logo { font-size: 2.2rem; margin-bottom: 10px; }
+            footer p { font-size: 0.85rem; }
+        }
+
+        @media (max-width: 480px) {
+            .hero-text h1 { font-size: 2.4rem; }
+            .flavor-grid { gap: 10px; } 
+            .statement-text h2 { font-size: 1.8rem; }
+            .inquiry-details h2 { font-size: 1.8rem; }
+        }
+
+        /* --- HAMBURGER ANIMATION CLASSES --- */
+        .hamburger.active .bar:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+        .hamburger.active .bar:nth-child(2) { opacity: 0; }
+        .hamburger.active .bar:nth-child(3) { transform: translateY(-9px) rotate(-45deg); }
+    </style>
+</head>
+<body>
+
+    <!-- NAVIGATION -->
+    <nav>
+        <div class="nav-brand">
+            <img src="logo.jpg" alt="Summer Kick Logo">
+            <div class="logo">SUMMER KICK</div>
+        </div>
+        
+        <div class="nav-links">
+            <a href="#the-drink">The Drink</a>
+            <a href="#ingredients">Ingredients</a>
+            <a href="#our-vibe">Our Vibe</a>
+        </div>
+        <div class="nav-icons">
+            <a href="#inquire" class="btn btn-pink">Inquire Now</a>
+        </div>
+        <div class="hamburger" id="hamburger">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </div>
+    </nav>
+
+    <!-- MOBILE MENU OVERLAY -->
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="#the-drink" class="mobile-link">The Drink</a>
+        <a href="#ingredients" class="mobile-link">Ingredients</a>
+        <a href="#our-vibe" class="mobile-link">Our Vibe</a>
+        <a href="#inquire" class="btn btn-pink mobile-link">Inquire Now</a>
+    </div>
+
+    <!-- HERO SECTION -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-text">
+                <h1>PURE <span>SUMMER</span> RAW FLAVOR</h1>
+                <p>Fuel your party with the ultimate clean, refreshing 5% ALC/VOL spirit cooler. No fake flavors, just pure watermelon kick.</p>
+                <a href="#inquire" class="btn btn-pink">Book For Events ></a>
+            </div>
+            <div class="hero-image">
+                <img src="image-4-splash.jpg" alt="Summer Kick Splashing Can">
+            </div>
+        </div>
+    </section>
+
+    <!-- ANIMATED RIBBON (MARQUEE) SECTION -->
+    <section class="trust-ribbon" id="ingredients">
+        <div class="ribbon-track">
+            <div class="ribbon-half">
+                <div class="ribbon-item"><h4>5% ALC / VOL</h4><p>The perfect kick.</p></div>
+                <div class="ribbon-separator">✦</div>
+                <div class="ribbon-item"><h4>WATERMELON ONLY</h4><p>We mastered one flavor.</p></div>
+                <div class="ribbon-separator">✦</div>
+                <div class="ribbon-item"><h4>SPIRIT COOLER</h4><p>Refreshing & Crisp.</p></div>
+                <div class="ribbon-separator">✦</div>
+                <div class="ribbon-item"><h4>5% ALC / VOL</h4><p>The perfect kick.</p></div>
+                <div class="ribbon-separator">✦</div>
+                <div class="ribbon-item"><h4>WATERMELON ONLY</h4><p>We mastered one flavor.</p></div>
+                <div class="ribbon-separator">✦</div>
+                <div class="ribbon-item"><h4>SPIRIT COOLER</h4><p>Refreshing & Crisp.</p></div>
+                <div class="ribbon-separator">✦</div>
+            </div>
+
+            <div class="ribbon-half">
+                <div class="ribbon-item"><h4>5% ALC / VOL</h4><p>The perfect kick.</p></div>
+                <div class="ribbon-separator">✦</div>
+                <div class="ribbon-item"><h4>WATERMELON ONLY</h4><p>We mastered one flavor.</p></div>
+                <div class="ribbon-separator">✦</div>
+                <div class="ribbon-item"><h4>SPIRIT COOLER</h4><p>Refreshing & Crisp.</p></div>
+                <div class="ribbon-separator">✦</div>
+                <div class="ribbon-item"><h4>5% ALC / VOL</h4><p>The perfect kick.</p></div>
+                <div class="ribbon-separator">✦</div>
+                <div class="ribbon-item"><h4>WATERMELON ONLY</h4><p>We mastered one flavor.</p></div>
+                <div class="ribbon-separator">✦</div>
+                <div class="ribbon-item"><h4>SPIRIT COOLER</h4><p>Refreshing & Crisp.</p></div>
+                <div class="ribbon-separator">✦</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- STATEMENT SECTION WITH SCROLL VIDEO -->
+    <section class="statement" id="scroll-video-section">
+        <div class="container statement-container">
+            <div class="statement-text">
+                <h2>KICKSTART YOUR PARTY <br> <span class="highlight">FUEL</span> <br> WITH EVERY GULP OF PERFECT WATERMELON.</h2>
+                <p>Rev up your rebel spirit and fuel life's adventure with Summer Kick — one chug to fearless fun and epic nostalgia.</p>
+            </div>
+            
+            <!-- VIDEO PLACEHOLDER -->
+            <div class="statement-video">
+                <!-- 'preload="auto"' forces mobile devices to load the video duration & frames -->
+                <video id="scroll-video" muted playsinline preload="auto">
+                    <source src="VIDEO.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        </div>
+    </section>
+
+    <!-- PRODUCT HIGHLIGHT -->
+    <section class="product-highlight" id="the-drink">
+        <div class="container">
+            <div class="section-header">
+                <h3>THE ONE AND ONLY</h3>
+                <a href="#inquire" class="btn btn-outline">Request For Event ></a>
+            </div>
+            
+            <div class="flavor-grid">
+                <div class="flavor-card">
+                    <img src="image-2-can.jpg" alt="Summer Kick Can">
+                    <h4>CRISP TASTE</h4>
+                </div>
+                <div class="flavor-card">
+                    <img src="image-7-can2.jpg" alt="Summer Kick Can View 2">
+                    <h4>5% ALCOHOL</h4>
+                </div>
+                <div class="flavor-card">
+                    <img src="image-2-can.jpg" alt="Summer Kick Can">
+                    <h4>REAL JUICE</h4>
+                </div>
+                <div class="flavor-card">
+                    <img src="image-7-can2.jpg" alt="Summer Kick Can View 2">
+                    <h4>BEST SERVED COLD</h4>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- EVENT INQUIRY SECTION -->
+    <section class="inquiry-section" id="inquire">
+        <div class="container inquiry-container">
+            <div class="inquiry-image">
+                <img src="image-3-fridge.jpg" alt="Summer Kick Fridge">
+            </div>
+            <div class="inquiry-details">
+                <h2>BRING SUMMER <br> <span>TO YOUR EVENT</span></h2>
+                <p>Want Summer Kick at your next party, festival, or corporate event? We supply bulk orders directly to you. Fill out the form below and our team will get back to you with pricing.</p>
+                
+                <form class="event-form" id="contactForm">
+                    <div class="form-row">
+                        <input type="text" placeholder="First Name *" required>
+                        <input type="text" placeholder="Last Name *" required>
+                    </div>
+                    <input type="email" placeholder="Email Address *" required>
+                    <div class="form-row">
+                        <input type="date" placeholder="Event Date" required>
+                        <input type="number" placeholder="Estimated Guests *" required>
+                    </div>
+                    <textarea placeholder="Tell us about your event..." rows="3" required></textarea>
+                    <button type="submit" class="btn btn-dark">SEND INQUIRY</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- SOCIAL / LIFESTYLE GRID -->
+    <section class="social-section" id="our-vibe">
+        <div class="container">
+            <div class="social-header">
+                <p style="font-weight: 600;">FOLLOW THE PARTY ON</p>
+                <h2>@SUMMERKICK</h2>
+                <p class="ig-bio">Premium Spirits in a can! For the ones who live loud<br>Stellenbosch | No under 18</p>
+            </div>
+            <div class="social-grid">
+                <div class="social-item-large">
+                    <img src="image-5-couple.jpg" alt="Summer Kick Party">
+                </div>
+                <div>
+                    <img src="image-1-pouring.jpg" alt="Pouring Summer Kick">
+                </div>
+                <div>
+                    <img src="image-6-party.jpg" alt="Summer Kick Lifestyle Vibes">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-logo">SUMMER KICK</div>
+        <p>We Carefully Crafted Each Can With All The Vibes For The Right Time!</p>
+        <br><br>
+        <p style="font-size: 0.85rem; opacity: 0.5;">© 2024 Summer Kick. Please Drink Responsibly.</p>
+    </footer>
+
+    <!-- FLOATING INSTAGRAM BUTTON -->
+    <a href="https://www.instagram.com/summer_kick_rsa?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" class="floating-ig-btn" aria-label="Visit our Instagram">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+            <path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"/>
+        </svg>
+    </a>
+
+    <!-- JAVASCRIPT -->
     <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
+        // --- 1. Hamburger Menu Logic ---
+        const hamburger = document.getElementById('hamburger');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const body = document.body;
+        const mobileLinks = document.querySelectorAll('.mobile-link');
 
-      gtag('config', 'G-WH8MRQKMG1');
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+            body.classList.toggle('no-scroll');
+        });
+
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                hamburger.classList.remove('active');
+                mobileMenu.classList.remove('active');
+                body.classList.remove('no-scroll');
+            });
+        });
+
+        // --- 2. Form Submission Logic ---
+        const form = document.getElementById('contactForm');
+        form.addEventListener('submit', (e) => {
+            e.preventDefault(); 
+            alert('Thank you for your inquiry! The Summer Kick team will get back to you shortly.');
+            form.reset(); 
+        });
+
+        // --- 3. UPGRADED Scroll-Linked Video Scrubbing (Smooth LERP) ---
+        const scrollVideo = document.getElementById('scroll-video');
+        const videoSection = document.getElementById('scroll-video-section');
+        
+        let targetProgress = 0;
+        let currentProgress = 0;
+
+        // Force browser to fetch the video duration
+        scrollVideo.load();
+        scrollVideo.pause();
+
+        window.addEventListener('scroll', () => {
+            if (!scrollVideo.duration) return; // Prevent breaking if video isn't loaded
+
+            const rect = videoSection.getBoundingClientRect();
+            const windowHeight = window.innerHeight;
+
+            // Total distance to scroll so the whole section passes entirely through the viewport
+            const totalScrollDistance = windowHeight + rect.height;
+            
+            // Current distance scrolled against the section
+            const currentScrolled = windowHeight - rect.top;
+
+            // Update our TARGET progress based on exactly where the section is on the screen
+            targetProgress = Math.max(0, Math.min(1, currentScrolled / totalScrollDistance));
+            
+        }, { passive: true });
+
+        function animateScrub() {
+            // LERP (Linear Interpolation) calculates a smooth transition to our target.
+            // This is the secret for making mobile scroll video look extremely fluid.
+            currentProgress += (targetProgress - currentProgress) * 0.1;
+            
+            if (scrollVideo.duration) {
+                // If the difference is big enough, update the video frame
+                if (Math.abs(targetProgress - currentProgress) > 0.001) {
+                    scrollVideo.currentTime = currentProgress * scrollVideo.duration;
+                }
+            }
+            
+            // Loop the animation efficiently
+            requestAnimationFrame(animateScrub);
+        }
+        
+        // Start the animation loop
+        requestAnimationFrame(animateScrub);
+
     </script>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Rix Compound | Pit Bike Track & Events Stellenbosch</title>
-    <meta name="description" content="The ultimate pit bike and junior MX experience in the Cape Winelands. Private track sessions, birthday parties, and weekend rides." />
-    <link rel="icon" type="image/x-icon" href="https://i.postimg.cc/GpXTdhQx/RC-LOGO.jpg" />
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+</body>
 </html>
-
