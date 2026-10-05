@@ -185,7 +185,7 @@ export default function Track() {
       title: "Flat Track",
       description: "Practice your sliding, drifting, and precise throttle controls in a secure, fast, wide-open winelands setup. Full-size Big Bikes are welcome here!",
       image: "https://i.postimg.cc/xdmTR1fj/Chat-GPT-Image-Mar-4-2026-10-12-06-AM.png",
-      status: "UNDER UPGRADES"
+      status: "OPEN"
     }
   ];
 
@@ -206,8 +206,6 @@ export default function Track() {
         {/* Tracks Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
           {tracks.map((track, idx) => {
-            const isPitbike = track.title === "PitBike Track";
-            
             return (
               <div 
                 key={idx}
@@ -218,99 +216,71 @@ export default function Track() {
                   <img 
                     src={track.image} 
                     alt={track.title}
-                    className={`w-full h-full object-cover transition-all duration-300 ${
-                      !isPitbike ? 'opacity-30 grayscale' : ''
-                    }`}
+                    className="w-full h-full object-cover transition-all duration-300"
                   />
-                  {!isPitbike && (
-                    <div className="absolute inset-0 bg-red-950/40 backdrop-blur-[1px] flex flex-col items-center justify-center p-2 text-center">
-                      <div className="bg-red-600 text-white p-1 rounded-none mb-1 shadow-md animate-pulse">
-                        <AlertOctagon className="w-4 h-4" />
-                      </div>
-                      <span className="bg-red-600 text-white font-mono font-bold text-[10px] sm:text-xs px-2 py-0.5 uppercase tracking-wider border border-red-400">
-                        UNDER CONSTRUCTION
-                      </span>
-                      <span className="font-mono text-[9px] text-red-200 uppercase tracking-wider font-bold mt-0.5 bg-black/80 px-1.5 py-0.5">
-                        NO RIDING ALLOWED
-                      </span>
-                    </div>
-                  )}
                 </div>
 
                 {/* Status Banner directly underneath the image */}
-                {isPitbike ? (
-                  <div className={`py-1.5 px-3 border flex items-center justify-between ${
-                    pitbikeStatus.isOpen
-                      ? 'bg-emerald-950/90 border-emerald-500/50 text-emerald-400'
-                      : 'bg-zinc-950 border-zinc-800 text-zinc-300'
-                  }`}>
-                    <div className="flex items-center gap-2">
-                      {pitbikeStatus.isOpen ? (
-                        <>
-                          <span className="relative flex h-2 w-2">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                          </span>
-                          <span className="font-mono text-xs font-black tracking-wider uppercase text-emerald-400">
-                            OPEN
-                          </span>
-                        </>
-                      ) : (
-                        <>
-                          <Clock className="w-3.5 h-3.5 text-zinc-400 flex-shrink-0" />
-                          <div className="font-mono text-xs font-bold tracking-wider uppercase flex items-center gap-1 flex-wrap">
-                            <span className="text-zinc-400">OPEN IN</span>
-                            {pitbikeStatus.days !== undefined && pitbikeStatus.days > 0 && (
-                              <>
-                                <span className="text-emerald-400 text-xs font-black">{pitbikeStatus.days}</span>
-                                <span className="text-zinc-400">{pitbikeStatus.days > 1 ? 'DAYS' : 'DAY'}</span>
-                              </>
-                            )}
-                            {pitbikeStatus.hours !== undefined && pitbikeStatus.hours > 0 && (
-                              <>
-                                <span className="text-emerald-400 text-xs font-black">{pitbikeStatus.hours}</span>
-                                <span className="text-zinc-400">{pitbikeStatus.hours > 1 ? 'HRS' : 'HR'}</span>
-                              </>
-                            )}
-                            {pitbikeStatus.mins !== undefined && pitbikeStatus.mins > 0 && (pitbikeStatus.days === 0 || pitbikeStatus.days === undefined) && (
-                              <>
-                                <span className="text-emerald-400 text-xs font-black">{pitbikeStatus.mins}</span>
-                                <span className="text-zinc-400">{pitbikeStatus.mins > 1 ? 'MINS' : 'MIN'}</span>
-                              </>
-                            )}
-                            {(!pitbikeStatus.days && !pitbikeStatus.hours && !pitbikeStatus.mins) && (
-                              <span className="text-zinc-400">{pitbikeStatus.text.replace('OPEN IN', '').trim() || pitbikeStatus.text}</span>
-                            )}
-                          </div>
-                        </>
-                      )}
-                    </div>
-                    {pitbikeStatus.isOpen && (
-                      <span className="font-mono text-[9px] font-bold uppercase tracking-wider hidden sm:inline text-emerald-400/80">
-                        LIVE STATUS
-                      </span>
+                <div className={`py-1.5 px-3 border flex items-center justify-between ${
+                  pitbikeStatus.isOpen
+                    ? 'bg-emerald-950/90 border-emerald-500/50 text-emerald-400'
+                    : 'bg-zinc-950 border-zinc-800 text-zinc-300'
+                }`}>
+                  <div className="flex items-center gap-2">
+                    {pitbikeStatus.isOpen ? (
+                      <>
+                        <span className="relative flex h-2 w-2">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                        </span>
+                        <span className="font-mono text-xs font-black tracking-wider uppercase text-emerald-400">
+                          OPEN
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <Clock className="w-3.5 h-3.5 text-zinc-400 flex-shrink-0" />
+                        <div className="font-mono text-xs font-bold tracking-wider uppercase flex items-center gap-1 flex-wrap">
+                          <span className="text-zinc-400">OPEN IN</span>
+                          {pitbikeStatus.days !== undefined && pitbikeStatus.days > 0 && (
+                            <>
+                              <span className="text-emerald-400 text-xs font-black">{pitbikeStatus.days}</span>
+                              <span className="text-zinc-400">{pitbikeStatus.days > 1 ? 'DAYS' : 'DAY'}</span>
+                            </>
+                          )}
+                          {pitbikeStatus.hours !== undefined && pitbikeStatus.hours > 0 && (
+                            <>
+                              <span className="text-emerald-400 text-xs font-black">{pitbikeStatus.hours}</span>
+                              <span className="text-zinc-400">{pitbikeStatus.hours > 1 ? 'HRS' : 'HR'}</span>
+                            </>
+                          )}
+                          {pitbikeStatus.mins !== undefined && pitbikeStatus.mins > 0 && (pitbikeStatus.days === 0 || pitbikeStatus.days === undefined) && (
+                            <>
+                              <span className="text-emerald-400 text-xs font-black">{pitbikeStatus.mins}</span>
+                              <span className="text-zinc-400">{pitbikeStatus.mins > 1 ? 'MINS' : 'MIN'}</span>
+                            </>
+                          )}
+                          {(!pitbikeStatus.days && !pitbikeStatus.hours && !pitbikeStatus.mins) && (
+                            <span className="text-zinc-400">{pitbikeStatus.text.replace('OPEN IN', '').trim() || pitbikeStatus.text}</span>
+                          )}
+                        </div>
+                      </>
                     )}
                   </div>
-                ) : (
-                  <div className="py-1 px-2.5 bg-red-950/80 border border-red-500/50 flex items-center justify-between text-red-400">
-                    <div className="flex items-center gap-2">
-                      <AlertTriangle className="w-3.5 h-3.5 text-red-500 flex-shrink-0" />
-                      <span className="font-mono text-[10px] sm:text-xs font-extrabold tracking-wider uppercase">
-                        UNDER CONSTRUCTION — NO RIDING ALLOWED
-                      </span>
-                    </div>
-                  </div>
-                )}
+                  {pitbikeStatus.isOpen && (
+                    <span className="font-mono text-[9px] font-bold uppercase tracking-wider hidden sm:inline text-emerald-400/80">
+                      LIVE STATUS
+                    </span>
+                  )}
+                </div>
 
                 {/* Text */}
                 <div>
                   <h3 className="font-mono text-base font-bold uppercase text-white mb-1.5 flex items-center gap-2">
                     {track.title}
-                    {!isPitbike && (
-                      <span className="text-[9px] font-mono px-1.5 py-0.5 bg-red-950 border border-red-800 text-red-400 uppercase font-bold">
-                        CLOSED
-                      </span>
-                    )}
+                    <span className="text-[9px] font-mono px-1.5 py-0.5 bg-emerald-950 border border-emerald-800 text-emerald-400 uppercase font-bold">
+                      ACTIVE TRACK
+                    </span>
                   </h3>
                   <p className="text-xs text-zinc-400 leading-relaxed font-sans">
                     {track.description}

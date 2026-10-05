@@ -360,10 +360,10 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
         console.error('Failed to write to localStorage:', e);
       }
 
-      // Form post payload to Payfast
+      // Form post payload to Payfast (migrated AWS endpoint)
       const payfastForm = document.createElement('form');
       payfastForm.method = 'POST';
-      payfastForm.action = 'https://www.payfast.co.za/eng/process';
+      payfastForm.action = 'https://payment.payfast.io/eng/process';
 
       const fields: Record<string, string> = {
         merchant_id: '37096219',
@@ -697,7 +697,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                       required
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      placeholder="e.g. Igor Rix"
+                      placeholder="e.g. Alex Johnson"
                       className="w-full bg-black border border-zinc-800 rounded-none px-3.5 py-2.5 text-sm focus:border-emerald-500 focus:outline-none transition-colors font-sans"
                     />
                   </div>
@@ -727,7 +727,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                         required
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
-                        placeholder="e.g. 076 829 9919"
+                        placeholder="e.g. 082 123 4567"
                         className="w-full bg-black border border-zinc-800 rounded-none px-3.5 py-2.5 text-sm focus:border-emerald-500 focus:outline-none transition-colors font-sans"
                       />
                     </div>
@@ -753,21 +753,23 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                 </div>
 
                 {/* Step 1 Actions */}
-                <div className="pt-6 border-t border-zinc-900 flex items-center justify-between">
+                <div className="pt-5 sm:pt-6 border-t border-zinc-900 flex items-center justify-between gap-3 sm:gap-4">
                   <button
                     type="button"
                     onClick={() => navigateTo('home')}
-                    className="px-4 py-2.5 bg-zinc-900 hover:bg-zinc-850 text-zinc-400 hover:text-white font-mono text-xs uppercase tracking-wider transition-colors border border-zinc-800"
+                    className="h-12 px-4 sm:px-5 bg-zinc-900 hover:bg-zinc-850 text-zinc-400 hover:text-white font-mono text-xs sm:text-sm font-bold uppercase tracking-wider transition-all border border-zinc-800 flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 flex-shrink-0"
                   >
-                    Cancel
+                    <ArrowLeft className="w-3.5 h-3.5" />
+                    <span>Cancel</span>
                   </button>
                   <button
                     type="button"
                     onClick={handleNextFromStep1}
-                    className="px-6 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-black font-mono font-bold text-xs uppercase tracking-wider transition-colors flex items-center gap-2 cursor-pointer shadow-md shadow-emerald-500/10"
+                    className="flex-1 sm:flex-initial h-12 px-5 sm:px-7 bg-emerald-500 hover:bg-emerald-400 text-black font-mono font-black text-xs sm:text-sm uppercase tracking-wider transition-all border border-emerald-400 flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-emerald-500/20 active:scale-95"
                   >
-                    <span>Next: Choose Date</span>
-                    <ArrowRight className="w-4 h-4" />
+                    <span className="sm:hidden">Next Step</span>
+                    <span className="hidden sm:inline">Next: Choose Date</span>
+                    <ArrowRight className="w-4 h-4 flex-shrink-0" />
                   </button>
                 </div>
               </motion.div>
@@ -925,25 +927,26 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                 </div>
 
                 {/* Step 2 Actions */}
-                <div className="pt-6 border-t border-zinc-900 flex items-center justify-between">
+                <div className="pt-5 sm:pt-6 border-t border-zinc-900 flex items-center justify-between gap-3 sm:gap-4">
                   <button
                     type="button"
                     onClick={() => {
                       setError(null);
                       setCurrentStep(1);
                     }}
-                    className="px-4 py-2.5 bg-zinc-900 hover:bg-zinc-850 text-zinc-300 font-mono text-xs uppercase tracking-wider transition-colors border border-zinc-800 flex items-center gap-1.5 cursor-pointer"
+                    className="h-12 px-4 sm:px-5 bg-zinc-900 hover:bg-zinc-850 text-zinc-300 hover:text-white font-mono text-xs sm:text-sm font-bold uppercase tracking-wider transition-all border border-zinc-800 flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 flex-shrink-0"
                   >
-                    <ArrowLeft className="w-4 h-4" />
+                    <ArrowLeft className="w-3.5 h-3.5" />
                     <span>Back</span>
                   </button>
                   <button
                     type="button"
                     onClick={handleNextFromStep2}
-                    className="px-6 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-black font-mono font-bold text-xs uppercase tracking-wider transition-colors flex items-center gap-2 cursor-pointer shadow-md shadow-emerald-500/10"
+                    className="flex-1 sm:flex-initial h-12 px-5 sm:px-7 bg-emerald-500 hover:bg-emerald-400 text-black font-mono font-black text-xs sm:text-sm uppercase tracking-wider transition-all border border-emerald-400 flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-emerald-500/20 active:scale-95"
                   >
-                    <span>Next: Rental Package</span>
-                    <ArrowRight className="w-4 h-4" />
+                    <span className="sm:hidden">Next Step</span>
+                    <span className="hidden sm:inline">Next: Rental Package</span>
+                    <ArrowRight className="w-4 h-4 flex-shrink-0" />
                   </button>
                 </div>
               </motion.div>
@@ -1150,25 +1153,26 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                 </div>
 
                 {/* Step 3 Actions */}
-                <div className="pt-6 border-t border-zinc-900 flex items-center justify-between">
+                <div className="pt-5 sm:pt-6 border-t border-zinc-900 flex items-center justify-between gap-3 sm:gap-4">
                   <button
                     type="button"
                     onClick={() => {
                       setError(null);
                       setCurrentStep(2);
                     }}
-                    className="px-4 py-2.5 bg-zinc-900 hover:bg-zinc-850 text-zinc-300 font-mono text-xs uppercase tracking-wider transition-colors border border-zinc-800 flex items-center gap-1.5 cursor-pointer"
+                    className="h-12 px-4 sm:px-5 bg-zinc-900 hover:bg-zinc-850 text-zinc-300 hover:text-white font-mono text-xs sm:text-sm font-bold uppercase tracking-wider transition-all border border-zinc-800 flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 flex-shrink-0"
                   >
-                    <ArrowLeft className="w-4 h-4" />
+                    <ArrowLeft className="w-3.5 h-3.5" />
                     <span>Back</span>
                   </button>
                   <button
                     type="button"
                     onClick={handleNextFromStep3}
-                    className="px-6 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-black font-mono font-bold text-xs uppercase tracking-wider transition-colors flex items-center gap-2 cursor-pointer shadow-md shadow-emerald-500/10"
+                    className="flex-1 sm:flex-initial h-12 px-5 sm:px-7 bg-emerald-500 hover:bg-emerald-400 text-black font-mono font-black text-xs sm:text-sm uppercase tracking-wider transition-all border border-emerald-400 flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-emerald-500/20 active:scale-95"
                   >
-                    <span>Next: Choose Time Slot</span>
-                    <ArrowRight className="w-4 h-4" />
+                    <span className="sm:hidden">Next Step</span>
+                    <span className="hidden sm:inline">Next: Choose Time Slot</span>
+                    <ArrowRight className="w-4 h-4 flex-shrink-0" />
                   </button>
                 </div>
               </motion.div>
@@ -1283,25 +1287,26 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                 </div>
 
                 {/* Step 4 Actions */}
-                <div className="pt-6 border-t border-zinc-900 flex items-center justify-between">
+                <div className="pt-5 sm:pt-6 border-t border-zinc-900 flex items-center justify-between gap-3 sm:gap-4">
                   <button
                     type="button"
                     onClick={() => {
                       setError(null);
                       setCurrentStep(3);
                     }}
-                    className="px-4 py-2.5 bg-zinc-900 hover:bg-zinc-850 text-zinc-300 font-mono text-xs uppercase tracking-wider transition-colors border border-zinc-800 flex items-center gap-1.5 cursor-pointer"
+                    className="h-12 px-4 sm:px-5 bg-zinc-900 hover:bg-zinc-850 text-zinc-300 hover:text-white font-mono text-xs sm:text-sm font-bold uppercase tracking-wider transition-all border border-zinc-800 flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 flex-shrink-0"
                   >
-                    <ArrowLeft className="w-4 h-4" />
+                    <ArrowLeft className="w-3.5 h-3.5" />
                     <span>Back</span>
                   </button>
                   <button
                     type="button"
                     onClick={handleNextFromStep4}
-                    className="px-6 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-black font-mono font-bold text-xs uppercase tracking-wider transition-colors flex items-center gap-2 cursor-pointer shadow-md shadow-emerald-500/10"
+                    className="flex-1 sm:flex-initial h-12 px-5 sm:px-7 bg-emerald-500 hover:bg-emerald-400 text-black font-mono font-black text-xs sm:text-sm uppercase tracking-wider transition-all border border-emerald-400 flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-emerald-500/20 active:scale-95"
                   >
-                    <span>Next: Review & Checkout</span>
-                    <ArrowRight className="w-4 h-4" />
+                    <span className="sm:hidden">Review & Pay</span>
+                    <span className="hidden sm:inline">Next: Review & Checkout</span>
+                    <ArrowRight className="w-4 h-4 flex-shrink-0" />
                   </button>
                 </div>
               </motion.div>
@@ -1402,35 +1407,35 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                 </div>
 
                 {/* Step 5 Checkout & Actions */}
-                <div className="pt-4 border-t border-zinc-900 space-y-3">
+                <div className="pt-5 border-t border-zinc-900 space-y-3">
                   <button
                     type="button"
                     onClick={handleBookingSubmit}
                     disabled={submitting}
-                    className={`w-full py-3.5 px-4 font-mono font-bold uppercase text-xs sm:text-sm tracking-wider transition-all flex items-center justify-center gap-2 border cursor-pointer ${
+                    className={`w-full min-h-[52px] sm:h-12 px-4 font-mono font-black uppercase text-xs sm:text-sm tracking-wider transition-all flex items-center justify-center gap-2.5 border cursor-pointer ${
                       submitting
                         ? 'bg-zinc-900 border-zinc-800 text-zinc-500 cursor-not-allowed'
-                        : 'bg-emerald-500 border-emerald-500 hover:bg-emerald-400 text-black shadow-lg shadow-emerald-500/20 active:scale-[0.99]'
+                        : 'bg-emerald-500 border-emerald-400 hover:bg-emerald-400 text-black shadow-lg shadow-emerald-500/20 active:scale-[0.98]'
                     }`}
                   >
-                    <CreditCard className="w-4 h-4" />
+                    <CreditCard className="w-4 h-4 flex-shrink-0" />
                     <span>{submitting ? 'Connecting to PayFast Gateway...' : 'Proceed to PayFast Checkout'}</span>
                   </button>
 
-                  <div className="flex items-center justify-between pt-1">
+                  <div className="flex items-center justify-between pt-1 gap-2">
                     <button
                       type="button"
                       onClick={() => {
                         setError(null);
                         setCurrentStep(4);
                       }}
-                      className="px-4 py-2 bg-zinc-900 hover:bg-zinc-850 text-zinc-300 font-mono text-xs uppercase tracking-wider transition-colors border border-zinc-800 flex items-center gap-1.5 cursor-pointer"
+                      className="h-11 px-4 sm:px-5 bg-zinc-900 hover:bg-zinc-850 text-zinc-300 font-mono text-xs uppercase tracking-wider transition-colors border border-zinc-800 flex items-center gap-1.5 cursor-pointer active:scale-95"
                     >
                       <ArrowLeft className="w-3.5 h-3.5" />
-                      <span>Back to Time Slots</span>
+                      <span>Back</span>
                     </button>
-                    <span className="text-[10px] font-mono text-zinc-500 uppercase">
-                      🔒 Secure 256-bit Encryption
+                    <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-tight flex items-center gap-1">
+                      <span>🔒</span> 256-Bit SSL Encrypted
                     </span>
                   </div>
                 </div>
