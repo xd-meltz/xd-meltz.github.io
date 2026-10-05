@@ -92,6 +92,47 @@ export default function TicketPage({ bookingId }: TicketPageProps) {
       });
   }, [bookingId]);
 
+  // Auto-poll if booking is pending payment (e.g. while Payfast ITN processes in background)
+  useEffect(() => {
+    if (!booking || booking.paid || !bookingId) return;
+
+    let attempts = 0;
+    const maxAttempts = 15;
+
+    const pollInterval = setInterval(async () => {
+      attempts += 1;
+      if (attempts > maxAttempts) {
+        clearInterval(pollInterval);
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/bookings/${bookingId}`);
+        if (res.ok) {
+          const freshData = await res.json();
+          if (freshData && freshData.paid) {
+            setBooking(freshData);
+            clearInterval(pollInterval);
+            return;
+          }
+        }
+      } catch (err) {
+        try {
+          const direct = await getBookingDirect(bookingId);
+          if (direct && direct.paid) {
+            setBooking(direct as any);
+            clearInterval(pollInterval);
+            return;
+          }
+        } catch (fsErr) {
+          // silent retry
+        }
+      }
+    }, 2000);
+
+    return () => clearInterval(pollInterval);
+  }, [booking?.paid, bookingId]);
+
   const handlePrint = () => {
     window.print();
   };

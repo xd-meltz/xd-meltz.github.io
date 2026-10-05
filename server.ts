@@ -1314,12 +1314,31 @@ async function startServer() {
     res.json({ success: true });
   });
 
+  // PayFast AWS IP addresses whitelist (as per Payfast Network infrastructure)
+  const PAYFAST_AWS_IPS = [
+    "3.163.236.237", "3.163.238.237", "3.163.251.237",
+    "3.163.232.237", "3.163.241.237", "3.163.245.237",
+    "3.163.248.237", "3.163.234.237", "3.163.237.237",
+    "3.163.243.237", "3.163.247.237", "3.163.242.237",
+    "3.163.244.237", "3.163.249.237", "3.163.252.237",
+    "3.163.235.237", "3.163.239.237", "3.163.250.237",
+    "3.163.233.237", "3.163.246.237", "3.163.240.237"
+  ];
+
   // Payfast ITN endpoint
   app.post("/api/payfast-itn", async (req, res) => {
-    // Payfast posts information about transaction
-    const { m_payment_id, payment_status } = req.body;
+    const rawForwarded = req.headers["x-forwarded-for"];
+    const clientIp = (typeof rawForwarded === "string" ? rawForwarded.split(",")[0] : req.socket.remoteAddress || "").trim();
+    const isWhitelisted = PAYFAST_AWS_IPS.includes(clientIp);
 
-    console.log("Received Payfast ITN payload:", req.body);
+    // Payfast posts information about transaction
+    const { m_payment_id, payment_status, merchant_id } = req.body;
+
+    console.log(`[Payfast ITN] Received payload from IP ${clientIp} (whitelisted AWS IP: ${isWhitelisted}):`, req.body);
+
+    if (merchant_id && merchant_id !== "37096219") {
+      console.warn(`[Payfast ITN] Warning: ITN payload merchant_id ${merchant_id} differs from configured 37096219`);
+    }
 
     if (!m_payment_id) {
       res.status(400).send("No payment ID provided");
@@ -1344,8 +1363,9 @@ async function startServer() {
       return;
     }
 
-    // In a real sandbox/live env, we check for payment_status === 'COMPLETE'
-    if (payment_status === "COMPLETE") {
+    // Check for payment_status === 'COMPLETE' (case-insensitive)
+    const normalizedStatus = (payment_status || "").toString().trim().toUpperCase();
+    if (normalizedStatus === "COMPLETE") {
       let wasAlreadyPaid = false;
       if (booking) {
         wasAlreadyPaid = booking.paid;
