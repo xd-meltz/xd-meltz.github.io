@@ -260,29 +260,29 @@ export default function WeatherWidget({ date, selectedSlot, className = '' }: We
   const renderWeatherIcon = (iconType?: string) => {
     switch (iconType) {
       case 'rain':
-        return <CloudRain className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-cyan-400 flex-shrink-0" />;
+        return <CloudRain className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-600 flex-shrink-0" />;
       case 'thunder':
-        return <CloudLightning className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400 flex-shrink-0" />;
+        return <CloudLightning className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-500 flex-shrink-0" />;
       case 'cloudy':
-        return <CloudSun className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-zinc-300 flex-shrink-0" />;
+        return <CloudSun className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-zinc-600 flex-shrink-0" />;
       case 'sunny':
       default:
-        return <Sun className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400 flex-shrink-0" />;
+        return <Sun className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-500 flex-shrink-0" />;
     }
   };
 
   return (
-    <div className={`bg-zinc-950 border border-zinc-800 px-2 sm:px-3 py-1 sm:py-1.5 font-mono text-xs flex items-center justify-between gap-1 sm:gap-2 overflow-hidden ${className}`}>
+    <div className={`bg-zinc-50 border border-zinc-200 px-2 sm:px-3 py-1.5 font-mono text-xs flex items-center justify-between gap-1 sm:gap-2 overflow-hidden ${className}`}>
       <div className="flex items-center gap-1 sm:gap-1.5 min-w-0 truncate">
         {renderWeatherIcon(activeWeather.iconType)}
-        <span className="font-extrabold text-white text-[9px] sm:text-[11px] uppercase tracking-tight sm:tracking-wider truncate">
-          {activeWeather.label}: <span className="text-zinc-300 font-normal">{activeWeather.condition}</span>
+        <span className="font-extrabold text-zinc-900 text-[9px] sm:text-[11px] uppercase tracking-tight sm:tracking-wider truncate">
+          {activeWeather.label}: <span className="text-zinc-600 font-medium">{activeWeather.condition}</span>
         </span>
       </div>
 
       <div className="flex items-center gap-1.5 sm:gap-3 text-[9px] sm:text-[11px] shrink-0 font-mono">
-        <span className="text-emerald-400 font-black">{activeWeather.tempStr}</span>
-        <div className="flex items-center gap-0.5 sm:gap-1 text-cyan-400 font-bold">
+        <span className="text-emerald-700 font-black">{activeWeather.tempStr}</span>
+        <div className="flex items-center gap-0.5 sm:gap-1 text-blue-600 font-bold">
           <Droplets className="w-2.5 h-2.5 sm:w-3 sm:h-3 flex-shrink-0" />
           <span>{activeWeather.rainProb}%<span className="hidden sm:inline"> ({activeWeather.precipMm}mm)</span></span>
         </div>

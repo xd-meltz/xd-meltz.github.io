@@ -100,13 +100,13 @@ export async function getAvailabilityDirect(date: string): Promise<Record<string
   const [year, month, day] = date.split('-').map(Number);
   const dayOfWeek = new Date(year, month - 1, day).getDay(); // 0 is Sunday, 6 is Saturday, 5 is Friday
 
-  // Set default availability
+  // Set default availability (10 pitbikes, 3 quadbikes)
   DEFAULT_SLOTS.forEach((slot) => {
     // Sundays: Close at 2:30 PM (14:30) maximum, so exclude the 14:15 slot which runs to 15:00
     if (dayOfWeek === 0 && slot === "14:15") {
       return;
     }
-    availabilityMap[slot] = { pitbikes: 8, quadbikes: 2, isClosed: false };
+    availabilityMap[slot] = { pitbikes: 10, quadbikes: 3, isClosed: false };
   });
 
   try {
@@ -143,8 +143,7 @@ export async function getAvailabilityDirect(date: string): Promise<Record<string
         bookedQuad += b.quantity;
       } else if (b.bikeType === "GroupPackage") {
         if (b.quantity >= 10) {
-          bookedPit += 8;
-          bookedQuad += 2;
+          bookedPit += 10;
         } else {
           bookedPit += b.quantity;
         }

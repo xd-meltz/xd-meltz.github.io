@@ -26,7 +26,11 @@ export default function EventsGallery() {
     { url: "https://lh3.googleusercontent.com/d/108-4wXp6z2yCSjZnLj-e2vuE-rr-WFeB", alt: "Team Lineup Session" },
     { url: "https://lh3.googleusercontent.com/d/1ndv4CQUciUdf0E9QIDsASSNXYzoOMUY-", alt: "Fields Near Winelands" },
     { url: "https://lh3.googleusercontent.com/d/1b5QTW9_Y3L3UyqpcldbhKDvg4A2CWcXf", alt: "Stellenbosch Sunset" },
-    { url: "https://lh3.googleusercontent.com/d/1qx7fYGB2UaBKrlTKYHcAHsLCJrUBG5fk", alt: "Bikes Stationary" }
+    { url: "https://lh3.googleusercontent.com/d/1qx7fYGB2UaBKrlTKYHcAHsLCJrUBG5fk", alt: "Bikes Stationary" },
+    // 3 Additional Photo Spaces under the gallery
+    { url: "https://lh3.googleusercontent.com/d/10_n-pJ86ublpNtRgZLvBqIemWYDWx-mj", alt: "Rental Pit Bike Fleet Lineup" },
+    { url: "https://i.postimg.cc/J44p3K6T/Chat-GPT-Image-Jan-7-2026-03-01-22-PM.png", alt: "PitBike Circuit Action" },
+    { url: "https://i.postimg.cc/xdmTR1fj/Chat-GPT-Image-Mar-4-2026-10-12-06-AM.png", alt: "Flat Track Drift Arena" }
   ];
 
   type EventItem = {
@@ -65,10 +69,10 @@ export default function EventsGallery() {
   };
 
   return (
-    <div className="bg-black text-white">
+    <div className="bg-white text-zinc-900">
       
       {/* 1. Upcoming Events */}
-      <section id="events" className="py-8 sm:py-12 bg-black border-b border-zinc-900 scroll-mt-14">
+      <section id="events" className="py-8 sm:py-12 bg-white border-b border-zinc-200 scroll-mt-14">
         <div className="max-w-6xl mx-auto px-4">
           
           {/* Header */}
@@ -76,7 +80,7 @@ export default function EventsGallery() {
             <span className="font-mono text-[10px] uppercase tracking-widest text-brand font-bold block mb-1">
               Action & Schedules
             </span>
-            <h2 className="font-mono text-2xl sm:text-3xl font-bold uppercase tracking-tight italic">
+            <h2 className="font-mono text-2xl sm:text-3xl font-bold uppercase tracking-tight italic text-zinc-950">
               Upcoming Events
             </h2>
           </div>
@@ -86,12 +90,12 @@ export default function EventsGallery() {
             {upcomingEvents.map((event, idx) => (
               <div 
                 key={idx} 
-                className="border border-zinc-800 bg-zinc-950 p-3 group hover:border-brand/50 transition-colors flex flex-col justify-between"
+                className="border border-zinc-200 bg-white p-3 group hover:border-brand/50 transition-colors flex flex-col justify-between shadow-sm"
               >
                 <div>
                   <div 
                     onClick={() => setActiveEventIndex(idx)}
-                    className="relative overflow-hidden bg-zinc-950 border border-zinc-900 cursor-pointer group/img"
+                    className="relative overflow-hidden bg-zinc-50 border border-zinc-200 cursor-pointer group/img"
                     title="Click to view full screen"
                   >
                     <img
@@ -100,21 +104,21 @@ export default function EventsGallery() {
                       loading="lazy"
                       className="w-full h-auto object-contain block transition-transform duration-300 group-hover/img:scale-[1.02]"
                     />
-                    <div className="absolute top-3 left-3 bg-black/90 border border-zinc-800 text-brand text-[9px] font-mono uppercase font-bold px-2 py-0.5 pointer-events-none">
+                    <div className="absolute top-3 left-3 bg-white/90 border border-zinc-200 text-brand text-[9px] font-mono uppercase font-bold px-2 py-0.5 pointer-events-none shadow-sm">
                       {event.badge}
                     </div>
 
                     {/* Hover full screen overlay */}
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center">
-                      <div className="bg-brand text-black font-mono text-[10px] uppercase font-black px-2.5 py-1.5 flex items-center gap-1.5 shadow-lg">
+                      <div className="bg-brand text-white font-mono text-[10px] uppercase font-black px-2.5 py-1.5 flex items-center gap-1.5 shadow-lg">
                         <Maximize2 className="w-3.5 h-3.5" />
                         <span>View Full Screen</span>
                       </div>
                     </div>
 
                     {/* Mobile always-visible expand icon badge */}
-                    <div className="absolute bottom-2 right-2 bg-black/80 text-zinc-300 border border-zinc-800 px-2 py-1 flex items-center gap-1 text-[9px] font-mono uppercase font-bold sm:hidden">
-                      <Maximize2 className="w-3 h-3 text-brand" />
+                    <div className="absolute bottom-2 right-2 bg-white/90 text-zinc-900 border border-zinc-200 px-2 py-1 flex items-center gap-1 text-[9px] font-mono uppercase font-bold sm:hidden shadow-sm">
+                      <Maximize2 className="w-3.5 h-3.5 text-brand" />
                       <span>Full Screen</span>
                     </div>
                   </div>
@@ -122,7 +126,7 @@ export default function EventsGallery() {
                   <div className="mt-3 flex justify-between items-center">
                     <h3 
                       onClick={() => setActiveEventIndex(idx)}
-                      className="font-mono text-xs font-bold uppercase text-white truncate max-w-[180px] cursor-pointer hover:text-brand transition-colors"
+                      className="font-mono text-xs font-bold uppercase text-zinc-950 truncate max-w-[180px] cursor-pointer hover:text-brand transition-colors"
                       title="Click to view full screen"
                     >
                       {event.title}
@@ -143,7 +147,7 @@ export default function EventsGallery() {
       </section>
 
       {/* 2. Photo Gallery */}
-      <section id="gallery" className="py-8 sm:py-12 bg-black border-b border-zinc-900 scroll-mt-14">
+      <section id="gallery" className="py-8 sm:py-12 bg-white border-b border-zinc-200 scroll-mt-14">
         <div className="max-w-6xl mx-auto px-4">
           
           {/* Header */}
@@ -151,29 +155,32 @@ export default function EventsGallery() {
             <span className="font-mono text-[10px] uppercase tracking-widest text-brand font-bold block mb-1">
               Compound Action
             </span>
-            <h2 className="font-mono text-2xl sm:text-3xl font-bold uppercase tracking-tight italic">
+            <h2 className="font-mono text-2xl sm:text-3xl font-bold uppercase tracking-tight italic text-zinc-950">
               Photo Gallery
             </h2>
           </div>
 
-          {/* Grid Layout (Strict 3x3 Block) */}
-          <div className="grid grid-cols-3 gap-2 sm:gap-4 max-w-4xl mx-auto">
+          {/* Grid Layout (3-Column Block with tight spacing) */}
+          <div className="grid grid-cols-3 gap-1 sm:gap-1.5 max-w-4xl mx-auto">
             {galleryImages.map((img, index) => (
               <div
                 key={index}
                 onClick={() => setActiveLightboxIndex(index)}
-                className="group relative aspect-square border border-zinc-850 bg-zinc-950 cursor-pointer overflow-hidden transition-colors hover:border-brand/60"
+                className="group relative aspect-square border border-zinc-200 bg-zinc-50 cursor-pointer overflow-hidden transition-colors hover:border-brand/60 shadow-sm"
               >
                 <img
                   src={img.url}
                   alt={img.alt}
                   loading="lazy"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  onError={(e) => {
+                    e.currentTarget.src = "https://lh3.googleusercontent.com/d/10_n-pJ86ublpNtRgZLvBqIemWYDWx-mj";
+                  }}
                 />
 
                 {/* Overlaid view icon */}
                 <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <div className="bg-brand text-black p-1.5 rounded-none">
+                  <div className="bg-brand text-white p-1.5 rounded-none">
                     <Eye className="w-3.5 h-3.5" />
                   </div>
                 </div>
@@ -291,7 +298,7 @@ export default function EventsGallery() {
             {/* Flyer Title & Caption bar */}
             <div className="mt-3 flex items-center justify-between w-full max-w-2xl px-2 text-xs font-mono">
               <div className="flex items-center gap-2">
-                <span className="bg-brand text-black px-2 py-0.5 text-[10px] font-black uppercase">
+                <span className="bg-brand text-white px-2 py-0.5 text-[10px] font-black uppercase">
                   {upcomingEvents[activeEventIndex].badge}
                 </span>
                 <span className="text-white font-bold uppercase truncate max-w-[200px] sm:max-w-none">

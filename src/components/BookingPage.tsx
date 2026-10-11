@@ -157,7 +157,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
             const fallbackMap: Record<string, Availability> = {};
             defaultSlots.forEach(slot => {
               if (dOfWeek === 0 && slot === "14:15") return;
-              fallbackMap[slot] = { pitbikes: 8, quadbikes: 2 };
+              fallbackMap[slot] = { pitbikes: 10, quadbikes: 3 };
             });
             setAvailability(fallbackMap);
           }
@@ -209,7 +209,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
     } else {
       // Weekdays: group packages
       if (groupSize === 10) {
-        return slotAvail.pitbikes < 8 || slotAvail.quadbikes < 2;
+        return slotAvail.pitbikes < 10;
       } else {
         return slotAvail.pitbikes < 5;
       }
@@ -303,8 +303,8 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
         }
       } else if (bikeType === 'GroupPackage') {
         if (groupSize === 10) {
-          if (slotAvail.pitbikes < 8 || slotAvail.quadbikes < 2) {
-            setError(`The track does not have full 10-bike capacity (8 pitbikes & 2 quads) available for this slot.`);
+          if (slotAvail.pitbikes < 10) {
+            setError(`The track does not have 10 pitbikes available for this slot.`);
             return;
           }
         } else {
@@ -460,17 +460,17 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
     const slotAvail = availability[slot];
     if (!slotAvail) return null;
 
-    const totalPitbikes = 8;
-    const totalQuadbikes = 2;
+    const totalPitbikes = 10;
+    const totalQuadbikes = 3;
 
     const availablePit = slotAvail.pitbikes;
     const availableQuad = slotAvail.quadbikes;
 
     return (
-      <div className="mt-1.5 pt-1 border-t border-neutral-900/60 w-full space-y-1 text-left">
+      <div className="mt-1.5 pt-1 border-t border-zinc-200 w-full space-y-1 text-left">
         <div>
-          <div className="flex items-center justify-between text-[9px] sm:text-[10px] text-neutral-300 font-mono font-bold tracking-wider leading-none mb-0.5">
-            <span>PIT ({availablePit}/8)</span>
+          <div className="flex items-center justify-between text-[9px] sm:text-[10px] text-zinc-600 font-mono font-bold tracking-wider leading-none mb-0.5">
+            <span>PIT ({availablePit}/10)</span>
           </div>
           <div className="flex items-center gap-0.5 sm:gap-1 flex-nowrap">
             {Array.from({ length: totalPitbikes }).map((_, i) => {
@@ -480,8 +480,8 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                   key={i}
                   className={`w-1.5 h-1.5 rounded-full flex-shrink-0 transition-all ${
                     isAvailable 
-                      ? 'bg-emerald-500 shadow-sm shadow-emerald-500/20' 
-                      : 'bg-zinc-600 border border-zinc-700'
+                      ? 'bg-emerald-500 shadow-xs' 
+                      : 'bg-zinc-300 border border-zinc-300'
                   }`}
                 />
               );
@@ -490,8 +490,8 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
         </div>
 
         <div>
-          <div className="flex items-center justify-between text-[9px] sm:text-[10px] text-neutral-300 font-mono font-bold tracking-wider leading-none mb-0.5">
-            <span>QUAD ({availableQuad}/2)</span>
+          <div className="flex items-center justify-between text-[9px] sm:text-[10px] text-zinc-600 font-mono font-bold tracking-wider leading-none mb-0.5">
+            <span>QUAD ({availableQuad}/3)</span>
           </div>
           <div className="flex items-center gap-0.5 sm:gap-1 flex-nowrap">
             {Array.from({ length: totalQuadbikes }).map((_, i) => {
@@ -501,8 +501,8 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                   key={i}
                   className={`w-1.5 h-1.5 rounded-full flex-shrink-0 transition-all ${
                     isAvailable 
-                      ? 'bg-emerald-500 shadow-sm shadow-emerald-500/20' 
-                      : 'bg-zinc-600 border border-zinc-700'
+                      ? 'bg-emerald-500 shadow-xs' 
+                      : 'bg-zinc-300 border border-zinc-300'
                   }`}
                 />
               );
@@ -522,7 +522,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
   ];
 
   return (
-    <div className={isInline ? "w-full text-white bg-black" : "pt-20 sm:pt-28 pb-12 sm:pb-24 bg-black min-h-screen text-white relative"}>
+    <div className={isInline ? "w-full text-zinc-900 bg-white" : "pt-20 sm:pt-28 pb-12 sm:pb-24 bg-white min-h-screen text-zinc-900 relative"}>
       <div className={isInline ? "w-full" : "max-w-3xl mx-auto px-3 sm:px-4"}>
         
         {/* Navigation back */}
@@ -531,15 +531,15 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
             <button 
               type="button"
               onClick={() => navigateTo('home')}
-              className="inline-flex items-center gap-2 px-3.5 py-2 bg-zinc-900 border border-zinc-700 hover:border-emerald-400 text-white font-mono font-bold text-xs sm:text-sm shadow-md active:scale-95 transition-all cursor-pointer"
+              className="inline-flex items-center gap-2 px-3.5 py-2 bg-zinc-100 border border-zinc-300 hover:border-emerald-500 text-zinc-800 font-mono font-bold text-xs sm:text-sm shadow-sm active:scale-95 transition-all cursor-pointer"
             >
-              <ArrowLeft className="w-4 h-4 text-emerald-400" />
+              <ArrowLeft className="w-4 h-4 text-emerald-600" />
               <span>Back to Home</span>
             </button>
             
             {/* Step Counter Badge */}
-            <span className="font-mono text-xs text-zinc-400 uppercase tracking-widest bg-zinc-950 border border-zinc-800 px-3 py-1.5">
-              Step <span className="text-emerald-400 font-bold">{currentStep}</span> of 5
+            <span className="font-mono text-xs text-zinc-600 uppercase tracking-widest bg-zinc-50 border border-zinc-200 px-3 py-1.5 shadow-sm">
+              Step <span className="text-emerald-700 font-bold">{currentStep}</span> of 5
             </span>
           </div>
         )}
@@ -547,35 +547,14 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
         {/* Header */}
         {!isInline && (
           <div className="mb-4 sm:mb-6 text-center sm:text-left">
-            <h1 className="font-display text-2xl sm:text-5xl font-black uppercase tracking-tight italic">
-              Online <span className="text-emerald-400">Booking</span>
+            <h1 className="font-display text-2xl sm:text-5xl font-black uppercase tracking-tight italic text-zinc-950">
+              Online <span className="text-emerald-600">Booking</span>
             </h1>
           </div>
         )}
 
-        {/* Bring Your Own Bike/Pit Bike Info Card */}
-        <div className="bg-zinc-950 border border-zinc-800 p-3 sm:p-4 mb-4 sm:mb-6">
-          <div className="flex items-start gap-2.5 sm:gap-3">
-            <span className="text-lg sm:text-xl mt-0.5">🚲</span>
-            <div>
-              <h4 className="font-mono text-xs sm:text-sm uppercase text-emerald-400 tracking-wider flex items-center gap-1.5 flex-wrap">
-                <span>Bringing Your Own Bike/Pit Bike?</span>
-                <span className="px-1.5 py-0.5 bg-zinc-900 border border-zinc-800 text-zinc-300 text-[9px] font-mono font-black">
-                  NO ONLINE BOOKING REQUIRED
-                </span>
-                <span className="px-1.5 py-0.5 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[9px] font-mono font-black">
-                  PAY ON SITE
-                </span>
-              </h4>
-              <p className="text-[11px] sm:text-xs text-zinc-400 leading-relaxed mt-1">
-                If you are bringing your own bike/pit bike, <span className="text-white font-bold">you do not need to book online</span>. Simply show up at the compound, pay <span className="text-emerald-400 font-black">R150 on site</span>, and you're ready to ride!
-              </p>
-            </div>
-          </div>
-        </div>
-
         {/* STEP PROGRESS BAR */}
-        <div className="mb-6 bg-zinc-950 border border-zinc-800 p-2 sm:p-3">
+        <div className="mb-6 bg-zinc-50 border border-zinc-200 p-2 sm:p-3 shadow-sm">
           <div className="grid grid-cols-5 gap-1 sm:gap-2">
             {steps.map((s) => {
               const isCompleted = currentStep > s.num;
@@ -595,23 +574,23 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                   }}
                   className={`py-2 px-1 text-center font-mono transition-all rounded-none flex flex-col items-center justify-center relative ${
                     isCurrent
-                      ? 'bg-zinc-900 border-2 border-emerald-400 text-emerald-400 shadow-sm'
+                      ? 'bg-white border-2 border-emerald-600 text-emerald-700 shadow-sm'
                       : isCompleted
-                        ? 'bg-zinc-950 border border-emerald-500/40 text-white hover:border-emerald-400 cursor-pointer'
-                        : 'bg-zinc-950 border border-zinc-800 text-zinc-600 opacity-60 cursor-not-allowed'
+                        ? 'bg-white border border-emerald-300 text-zinc-800 hover:border-emerald-500 cursor-pointer'
+                        : 'bg-zinc-100 border border-zinc-200 text-zinc-400 opacity-60 cursor-not-allowed'
                   }`}
                 >
                   <div className="flex items-center gap-1">
                     {isCompleted ? (
-                      <Check className="w-3 h-3 text-emerald-400" />
+                      <Check className="w-3 h-3 text-emerald-600" />
                     ) : (
-                      <span className={`text-[10px] font-bold ${isCurrent ? 'text-emerald-400' : 'text-zinc-500'}`}>
+                      <span className={`text-[10px] font-bold ${isCurrent ? 'text-emerald-700' : 'text-zinc-500'}`}>
                         0{s.num}
                       </span>
                     )}
                   </div>
                   <span className={`text-[9px] sm:text-[11px] uppercase font-bold tracking-wider mt-0.5 truncate max-w-full ${
-                    isCurrent ? 'text-emerald-400 font-black' : isCompleted ? 'text-zinc-300' : 'text-zinc-500'
+                    isCurrent ? 'text-emerald-700 font-black' : isCompleted ? 'text-zinc-800' : 'text-zinc-400'
                   }`}>
                     {s.title}
                   </span>
@@ -623,47 +602,47 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
 
         {/* Live Mini Summary Bar (Visible on Steps 2, 3, 4) */}
         {currentStep > 1 && currentStep < 5 && (
-          <div className="mb-4 bg-zinc-950 border border-zinc-800 p-2.5 sm:p-3 flex items-center justify-between flex-wrap gap-2 text-xs font-mono">
+          <div className="mb-4 bg-zinc-50 border border-zinc-200 p-2.5 sm:p-3 flex items-center justify-between flex-wrap gap-2 text-xs font-mono shadow-sm">
             <div className="flex items-center gap-3 flex-wrap">
               {name && (
-                <span className="text-zinc-300 flex items-center gap-1">
-                  <User className="w-3 h-3 text-emerald-400" />
-                  <strong className="text-white">{name.split(' ')[0]}</strong>
+                <span className="text-zinc-700 flex items-center gap-1">
+                  <User className="w-3 h-3 text-emerald-600" />
+                  <strong className="text-zinc-950">{name.split(' ')[0]}</strong>
                 </span>
               )}
               {date && (
-                <span className="text-zinc-300 flex items-center gap-1">
-                  <Calendar className="w-3 h-3 text-emerald-400" />
+                <span className="text-zinc-700 flex items-center gap-1">
+                  <Calendar className="w-3 h-3 text-emerald-600" />
                   <span>{date}</span>
                 </span>
               )}
               {selectedSlot && (
-                <span className="text-zinc-300 flex items-center gap-1">
-                  <Clock className="w-3 h-3 text-emerald-400" />
+                <span className="text-zinc-700 flex items-center gap-1">
+                  <Clock className="w-3 h-3 text-emerald-600" />
                   <span>{selectedSlot}</span>
                 </span>
               )}
             </div>
             <div className="flex items-center gap-1.5 ml-auto">
               <span className="text-zinc-500 text-[10px] uppercase font-bold">Total:</span>
-              <span className="text-emerald-400 font-black text-sm">R{getPrice().toLocaleString()}</span>
+              <span className="text-emerald-700 font-black text-sm">R{getPrice().toLocaleString()}</span>
             </div>
           </div>
         )}
 
         {/* Error notification */}
         {error && (
-          <div className="mb-4 bg-red-950/60 border border-red-500/60 p-3 sm:p-4 rounded-none flex items-start gap-3">
-            <ShieldAlert className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" />
+          <div className="mb-4 bg-red-50 border border-red-300 p-3 sm:p-4 rounded-none flex items-start gap-3">
+            <ShieldAlert className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
             <div>
-              <h4 className="font-mono font-bold text-red-400 text-xs uppercase tracking-wider">Please Note</h4>
-              <p className="text-zinc-300 text-xs mt-0.5">{error}</p>
+              <h4 className="font-mono font-bold text-red-800 text-xs uppercase tracking-wider">Please Note</h4>
+              <p className="text-red-700 text-xs mt-0.5">{error}</p>
             </div>
           </div>
         )}
 
         {/* STEP CONTENT CONTAINER */}
-        <div className="border border-zinc-800 bg-zinc-950 p-4 sm:p-7">
+        <div className="border border-zinc-200 bg-white p-4 sm:p-7 shadow-sm">
           <AnimatePresence mode="wait">
             
             {/* STEP 1: CONTACT DETAILS */}
@@ -674,22 +653,30 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.15 }}
-                className="space-y-5"
+                className="space-y-4"
               >
                 <div>
-                  <h3 className="font-mono text-sm uppercase tracking-wider text-emerald-400 flex items-center gap-2 font-bold">
-                    <span className="bg-zinc-900 border border-zinc-800 text-emerald-400 px-2 py-0.5 text-xs font-mono">01</span>
-                    Rider Contact Information
+                  <h3 className="font-mono text-sm uppercase tracking-wider text-emerald-700 flex items-center gap-2 font-bold">
+                    <span className="bg-zinc-100 border border-zinc-200 text-emerald-700 px-2 py-0.5 text-xs font-mono">01</span>
+                    Rider Details
                   </h3>
-                  <p className="text-xs text-zinc-400 mt-1">
-                    Enter your details to reserve your bike slot and retrieve your entry pass.
+                </div>
+
+                {/* Bring your own bike reminder in Step 1 */}
+                <div className="p-3 bg-zinc-50 border border-zinc-200 flex items-start gap-2.5 text-xs">
+                  <span className="text-base flex-shrink-0 mt-0.5">🚲</span>
+                  <p className="text-zinc-700 leading-relaxed font-sans">
+                    <strong className="text-zinc-950 font-mono uppercase text-[11px] block sm:inline sm:mr-1">
+                      Bringing your own bike/pit bike?
+                    </strong>
+                    You do not need to book online! Simply show up at the track and pay <strong className="text-emerald-700 font-bold">R150 on site</strong>.
                   </p>
                 </div>
 
-                <div className="space-y-4 pt-2">
+                <div className="space-y-4 pt-1">
                   <div>
-                    <label htmlFor="name" className="block text-[11px] font-mono uppercase text-zinc-300 mb-1 font-bold">
-                      First & Last Name <span className="text-orange-500 font-bold ml-0.5">*</span>
+                    <label htmlFor="name" className="block text-[11px] font-mono uppercase text-zinc-700 mb-1 font-bold">
+                      First & Last Name <span className="text-blue-500 font-bold ml-0.5">*</span>
                     </label>
                     <input 
                       type="text" 
@@ -698,14 +685,14 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="e.g. Alex Johnson"
-                      className="w-full bg-black border border-zinc-800 rounded-none px-3.5 py-2.5 text-sm focus:border-emerald-500 focus:outline-none transition-colors font-sans"
+                      className="w-full bg-white border border-zinc-300 text-zinc-900 rounded-none px-3.5 py-2.5 text-sm focus:border-emerald-600 focus:outline-none transition-colors font-sans"
                     />
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label htmlFor="email" className="block text-[11px] font-mono uppercase text-zinc-300 mb-1 font-bold">
-                        Email Address <span className="text-orange-500 font-bold ml-0.5">*</span>
+                      <label htmlFor="email" className="block text-[11px] font-mono uppercase text-zinc-700 mb-1 font-bold">
+                        Email Address <span className="text-blue-500 font-bold ml-0.5">*</span>
                       </label>
                       <input 
                         type="email" 
@@ -714,12 +701,12 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="rider@example.com"
-                        className="w-full bg-black border border-zinc-800 rounded-none px-3.5 py-2.5 text-sm focus:border-emerald-500 focus:outline-none transition-colors font-sans"
+                        className="w-full bg-white border border-zinc-300 text-zinc-900 rounded-none px-3.5 py-2.5 text-sm focus:border-emerald-600 focus:outline-none transition-colors font-sans"
                       />
                     </div>
                     <div>
-                      <label htmlFor="phone" className="block text-[11px] font-mono uppercase text-zinc-300 mb-1 font-bold">
-                        Phone Number <span className="text-orange-500 font-bold ml-0.5">*</span>
+                      <label htmlFor="phone" className="block text-[11px] font-mono uppercase text-zinc-700 mb-1 font-bold">
+                        Phone Number <span className="text-blue-500 font-bold ml-0.5">*</span>
                       </label>
                       <input 
                         type="tel" 
@@ -728,14 +715,14 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
                         placeholder="e.g. 082 123 4567"
-                        className="w-full bg-black border border-zinc-800 rounded-none px-3.5 py-2.5 text-sm focus:border-emerald-500 focus:outline-none transition-colors font-sans"
+                        className="w-full bg-white border border-zinc-300 text-zinc-900 rounded-none px-3.5 py-2.5 text-sm focus:border-emerald-600 focus:outline-none transition-colors font-sans"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label htmlFor="idNumber" className="block text-[11px] font-mono uppercase text-zinc-300 mb-1 font-bold">
-                      ID / Passport Number <span className="text-orange-500 font-bold ml-0.5">*</span>
+                    <label htmlFor="idNumber" className="block text-[11px] font-mono uppercase text-zinc-700 mb-1 font-bold">
+                      ID / Passport Number <span className="text-blue-500 font-bold ml-0.5">*</span>
                     </label>
                     <input 
                       type="text" 
@@ -744,20 +731,17 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                       value={idNumber}
                       onChange={(e) => setIdNumber(e.target.value)}
                       placeholder="e.g. 9501015028088"
-                      className="w-full bg-black border border-zinc-800 rounded-none px-3.5 py-2.5 text-sm focus:border-emerald-500 focus:outline-none transition-colors font-sans"
+                      className="w-full bg-white border border-zinc-300 text-zinc-900 rounded-none px-3.5 py-2.5 text-sm focus:border-emerald-600 focus:outline-none transition-colors font-sans"
                     />
-                    <p className="text-[10px] font-mono text-zinc-500 mt-1.5">
-                      Required for indemnity tracking and retrieving tickets on the My Bookings portal.
-                    </p>
                   </div>
                 </div>
 
                 {/* Step 1 Actions */}
-                <div className="pt-5 sm:pt-6 border-t border-zinc-900 flex items-center justify-between gap-3 sm:gap-4">
+                <div className="pt-5 sm:pt-6 border-t border-zinc-200 flex items-center justify-between gap-3 sm:gap-4">
                   <button
                     type="button"
                     onClick={() => navigateTo('home')}
-                    className="h-12 px-4 sm:px-5 bg-zinc-900 hover:bg-zinc-850 text-zinc-400 hover:text-white font-mono text-xs sm:text-sm font-bold uppercase tracking-wider transition-all border border-zinc-800 flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 flex-shrink-0"
+                    className="h-12 px-4 sm:px-5 bg-zinc-100 hover:bg-zinc-200 text-zinc-700 hover:text-zinc-950 font-mono text-xs sm:text-sm font-bold uppercase tracking-wider transition-all border border-zinc-300 flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 flex-shrink-0"
                   >
                     <ArrowLeft className="w-3.5 h-3.5" />
                     <span>Cancel</span>
@@ -783,23 +767,20 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.15 }}
-                className="space-y-5"
+                className="space-y-4"
               >
                 <div>
-                  <h3 className="font-mono text-sm uppercase tracking-wider text-emerald-400 flex items-center gap-2 font-bold">
-                    <span className="bg-zinc-900 border border-zinc-800 text-emerald-400 px-2 py-0.5 text-xs font-mono">02</span>
-                    Select Booking Date
+                  <h3 className="font-mono text-sm uppercase tracking-wider text-emerald-700 flex items-center gap-2 font-bold">
+                    <span className="bg-zinc-100 border border-zinc-200 text-emerald-700 px-2 py-0.5 text-xs font-mono">02</span>
+                    Select Date
                   </h3>
-                  <p className="text-xs text-zinc-400 mt-1">
-                    Choose a Friday, Saturday, or Sunday to ride. Weekdays are reserved for pre-booked group track packages.
-                  </p>
                 </div>
 
                 <div className="space-y-4 pt-1">
                   {/* Calendar Widget */}
-                  <div className="bg-black border border-zinc-800 p-3 sm:p-5">
+                  <div className="bg-zinc-50 border border-zinc-200 p-3 sm:p-5">
                     {/* Header */}
-                    <div className="flex items-center justify-between mb-4 pb-3 border-b border-zinc-900">
+                    <div className="flex items-center justify-between mb-4 pb-3 border-b border-zinc-200">
                       <button
                         type="button"
                         onClick={() => {
@@ -811,12 +792,12 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                           }
                         }}
                         disabled={currentYear === new Date().getFullYear() && currentMonth === new Date().getMonth()}
-                        className="p-1.5 bg-zinc-950 border border-zinc-800 hover:border-emerald-400 hover:text-emerald-400 disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer"
+                        className="p-1.5 bg-white border border-zinc-300 text-zinc-700 hover:border-emerald-500 hover:text-emerald-700 disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer shadow-xs"
                       >
                         <ChevronLeft className="w-4 h-4" />
                       </button>
                       
-                      <span className="font-mono font-bold uppercase italic text-sm tracking-wide text-white">
+                      <span className="font-mono font-bold uppercase italic text-sm tracking-wide text-zinc-950">
                         {['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][currentMonth]} {currentYear}
                       </span>
                       
@@ -835,7 +816,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                           nextMonthLimit.setMonth(new Date().getMonth() + 1);
                           return currentYear === nextMonthLimit.getFullYear() && currentMonth === nextMonthLimit.getMonth();
                         })()}
-                        className="p-1.5 bg-zinc-950 border border-zinc-800 hover:border-emerald-400 hover:text-emerald-400 disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer"
+                        className="p-1.5 bg-white border border-zinc-300 text-zinc-700 hover:border-emerald-500 hover:text-emerald-700 disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer shadow-xs"
                       >
                         <ChevronRight className="w-4 h-4" />
                       </button>
@@ -880,17 +861,17 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                               }}
                               className={`aspect-square w-full rounded-none text-xs font-mono transition-all flex flex-col items-center justify-center relative ${
                                 isSelected
-                                  ? 'bg-emerald-500 text-black font-black z-10 shadow-lg shadow-emerald-500/20'
+                                  ? 'bg-emerald-500 text-black font-black z-10 shadow-md shadow-emerald-500/20'
                                   : isClosed
-                                    ? 'bg-zinc-950 border border-red-900/40 text-red-500 cursor-not-allowed font-bold'
+                                    ? 'bg-red-50 border border-red-200 text-red-500 cursor-not-allowed font-bold'
                                     : !isSelectable
-                                      ? 'text-zinc-800 bg-zinc-950/20 cursor-not-allowed opacity-25'
-                                      : 'text-emerald-400 hover:bg-emerald-500 hover:text-black font-bold bg-zinc-950 border border-emerald-500/30 cursor-pointer shadow-sm shadow-emerald-500/5'
+                                      ? 'text-zinc-300 bg-zinc-100/50 cursor-not-allowed opacity-30'
+                                      : 'text-zinc-800 hover:bg-emerald-50 hover:text-emerald-800 font-bold bg-white border border-zinc-200 hover:border-emerald-400 cursor-pointer shadow-xs'
                               }`}
                             >
                               <span className="text-xs">{d}</span>
                               {isClosed ? (
-                                <span className="text-[7.5px] font-black tracking-tight text-red-400 uppercase leading-none mt-1">Closed</span>
+                                <span className="text-[7.5px] font-black tracking-tight text-red-500 uppercase leading-none mt-1">Closed</span>
                               ) : isSelectable && !isSelected ? (
                                 <span className="w-1.5 h-1.5 rounded-none absolute bottom-1 bg-emerald-500" />
                               ) : null}
@@ -905,36 +886,24 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                   {/* Weather and Date info */}
                   {date && (
                     <div className="space-y-3">
-                      <div className="p-3 bg-zinc-900 border border-emerald-500/30 flex items-center justify-between">
-                        <span className="text-xs text-zinc-400 font-mono">Selected Day:</span>
-                        <span className="text-sm font-mono font-bold text-emerald-400">{date} ({dayOfWeekName})</span>
+                      <div className="p-3 bg-zinc-50 border border-zinc-200 flex items-center justify-between">
+                        <span className="text-xs text-zinc-600 font-mono font-medium">Selected Day:</span>
+                        <span className="text-sm font-mono font-bold text-emerald-700">{date} ({dayOfWeekName})</span>
                       </div>
                       <WeatherWidget date={date} />
                     </div>
                   )}
-
-                  {/* Booking rules */}
-                  <div className="p-3 bg-zinc-900/50 border border-zinc-800 text-[11px] leading-relaxed flex items-start gap-2 text-zinc-400">
-                    <span className="text-emerald-400 text-sm">📅</span>
-                    <div>
-                      <span className="text-white font-mono font-bold uppercase tracking-wider text-[10px]">Booking Rules:</span>
-                      <ul className="list-disc list-inside mt-0.5 space-y-0.5">
-                        <li>You cannot book on the same day (advance reservations required).</li>
-                        <li>Slots can be reserved up to 1 month in advance.</li>
-                      </ul>
-                    </div>
-                  </div>
                 </div>
 
                 {/* Step 2 Actions */}
-                <div className="pt-5 sm:pt-6 border-t border-zinc-900 flex items-center justify-between gap-3 sm:gap-4">
+                <div className="pt-5 sm:pt-6 border-t border-zinc-200 flex items-center justify-between gap-3 sm:gap-4">
                   <button
                     type="button"
                     onClick={() => {
                       setError(null);
                       setCurrentStep(1);
                     }}
-                    className="h-12 px-4 sm:px-5 bg-zinc-900 hover:bg-zinc-850 text-zinc-300 hover:text-white font-mono text-xs sm:text-sm font-bold uppercase tracking-wider transition-all border border-zinc-800 flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 flex-shrink-0"
+                    className="h-12 px-4 sm:px-5 bg-zinc-100 hover:bg-zinc-200 text-zinc-700 hover:text-zinc-950 font-mono text-xs sm:text-sm font-bold uppercase tracking-wider transition-all border border-zinc-300 flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 flex-shrink-0"
                   >
                     <ArrowLeft className="w-3.5 h-3.5" />
                     <span>Back</span>
@@ -960,31 +929,28 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.15 }}
-                className="space-y-5"
+                className="space-y-4"
               >
                 <div>
-                  <h3 className="font-mono text-sm uppercase tracking-wider text-emerald-400 flex items-center gap-2 font-bold">
-                    <span className="bg-zinc-900 border border-zinc-800 text-emerald-400 px-2 py-0.5 text-xs font-mono">03</span>
-                    Choose Rental Package & Bikes
+                  <h3 className="font-mono text-sm uppercase tracking-wider text-emerald-700 flex items-center gap-2 font-bold">
+                    <span className="bg-zinc-100 border border-zinc-200 text-emerald-700 px-2 py-0.5 text-xs font-mono">03</span>
+                    Select Bikes
                   </h3>
-                  <p className="text-xs text-zinc-400 mt-1">
-                    Select the number of Pit Bikes and Quad Bikes for your 45-minute booking slot (30 min riding time).
-                  </p>
                 </div>
 
                 <div className="space-y-4 pt-1">
                   {!isWeekendSelected() ? (
                     /* Weekday group packages */
-                    <div className="space-y-4 bg-black border border-zinc-800 p-4">
-                      <span className="px-2 py-0.5 bg-zinc-900 text-zinc-300 text-[10px] font-mono font-bold uppercase tracking-wider border border-zinc-800">
+                    <div className="space-y-4 bg-zinc-50 border border-zinc-200 p-4">
+                      <span className="px-2 py-0.5 bg-white text-zinc-800 text-[10px] font-mono font-bold uppercase tracking-wider border border-zinc-200 shadow-xs">
                         Weekday Group Package
                       </span>
-                      <p className="text-zinc-400 text-xs mt-1">
+                      <p className="text-zinc-600 text-xs mt-1">
                         Select your group duration and size:
                       </p>
 
                       <div>
-                        <label className="block text-xs font-mono uppercase text-zinc-400 mb-1.5">
+                        <label className="block text-xs font-mono uppercase text-zinc-600 mb-1.5 font-bold">
                           Session Duration
                         </label>
                         <div className="grid grid-cols-3 gap-2">
@@ -999,8 +965,8 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                               onClick={() => setGroupDuration(dur.value as 30 | 60 | 240)}
                               className={`py-2 px-2 border font-mono font-bold text-center text-xs transition-all cursor-pointer ${
                                 groupDuration === dur.value
-                                  ? 'border-emerald-500 bg-zinc-900 text-emerald-400'
-                                  : 'border-zinc-800 hover:border-zinc-700 bg-zinc-950 text-zinc-400'
+                                  ? 'border-emerald-600 bg-white text-emerald-700 shadow-sm'
+                                  : 'border-zinc-300 hover:border-zinc-400 bg-white text-zinc-700'
                               }`}
                             >
                               {dur.label}
@@ -1010,7 +976,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                       </div>
 
                       <div>
-                        <label className="block text-xs font-mono uppercase text-zinc-400 mb-1.5">
+                        <label className="block text-xs font-mono uppercase text-zinc-600 mb-1.5 font-bold">
                           Group Size
                         </label>
                         <div className="grid grid-cols-2 gap-3">
@@ -1020,15 +986,15 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                               setBikeType('GroupPackage');
                               setGroupSize(5);
                             }}
-                            className={`p-3 border text-center transition-all cursor-pointer ${
+                            className={`p-3 border text-center transition-all cursor-pointer bg-white ${
                               bikeType === 'GroupPackage' && groupSize === 5
-                                ? 'border-emerald-500 bg-zinc-900 text-emerald-400'
-                                : 'border-zinc-800 hover:border-zinc-700 bg-zinc-950 text-zinc-400'
+                                ? 'border-emerald-600 text-emerald-700 shadow-sm'
+                                : 'border-zinc-300 hover:border-zinc-400 text-zinc-700'
                             }`}
                           >
-                            <Users className="w-4 h-4 mx-auto mb-1 text-emerald-400" />
+                            <Users className="w-4 h-4 mx-auto mb-1 text-emerald-600" />
                             <span className="font-mono font-bold text-xs block uppercase">5 Bikes</span>
-                            <span className="text-[11px] font-mono text-emerald-400 font-bold">
+                            <span className="text-[11px] font-mono text-emerald-700 font-bold">
                               R{groupDuration === 30 ? '1,500' : groupDuration === 60 ? '3,000' : '8,000'}
                             </span>
                           </button>
@@ -1039,15 +1005,15 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                               setBikeType('GroupPackage');
                               setGroupSize(10);
                             }}
-                            className={`p-3 border text-center transition-all cursor-pointer ${
+                            className={`p-3 border text-center transition-all cursor-pointer bg-white ${
                               bikeType === 'GroupPackage' && groupSize === 10
-                                ? 'border-emerald-500 bg-zinc-900 text-emerald-400'
-                                : 'border-zinc-800 hover:border-zinc-700 bg-zinc-950 text-zinc-400'
+                                ? 'border-emerald-600 text-emerald-700 shadow-sm'
+                                : 'border-zinc-300 hover:border-zinc-400 text-zinc-700'
                             }`}
                           >
-                            <Users className="w-4 h-4 mx-auto mb-1 text-emerald-400" />
+                            <Users className="w-4 h-4 mx-auto mb-1 text-emerald-600" />
                             <span className="font-mono font-bold text-xs block uppercase">10 Bikes</span>
-                            <span className="text-[11px] font-mono text-emerald-400 font-bold">
+                            <span className="text-[11px] font-mono text-emerald-700 font-bold">
                               R{groupDuration === 30 ? '3,000' : groupDuration === 60 ? '5,000' : '15,200'}
                             </span>
                           </button>
@@ -1056,111 +1022,167 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                     </div>
                   ) : (
                     /* Weekend rentals */
-                    <div className="space-y-3">
-                      <div className="space-y-3 bg-black p-4 sm:p-5 border border-zinc-800">
+                    <div className="space-y-4">
+                      <div className="space-y-4 bg-zinc-50 p-5 sm:p-6 border-2 border-zinc-900">
                         {/* Pit Bike Selection */}
-                        <div className="flex items-center justify-between gap-3 py-2 border-b border-zinc-900">
-                          <div>
-                            <div className="flex items-center gap-1.5">
-                              <Bike className="w-4 h-4 text-emerald-400" />
-                              <h4 className="font-mono font-bold text-sm uppercase text-white">Pit Bike Rental</h4>
+                        <div className="py-3 border-b-2 border-zinc-200">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2">
+                                <Bike className="w-5 h-5 text-emerald-600 flex-shrink-0" />
+                                <h4 className="font-sans font-black text-base sm:text-lg uppercase text-zinc-950">Pit Bike Rental</h4>
+                              </div>
+                              <p className="text-xs sm:text-sm text-zinc-900 font-extrabold mt-1">
+                                110cc semi-automatic pit bike or CRF80 with clutch
+                              </p>
+                              <p className="text-xs text-zinc-700 font-sans mt-1.5 font-bold">
+                                Max weight: 100 kg • Age 14+ years
+                              </p>
+                              <span className="font-sans text-sm sm:text-base text-emerald-700 font-black mt-1.5 block">
+                                R250 <span className="text-xs text-zinc-600 font-bold">per 30 min ride</span>
+                              </span>
                             </div>
-                            <p className="text-[11px] text-zinc-300 font-medium mt-0.5">110cc semi-automatic pit bike</p>
-                            <p className="text-[10px] text-amber-400 font-mono mt-0.5">Max rider weight: 100 kg • Prior experience required</p>
-                            <span className="font-mono text-xs text-emerald-400 font-bold mt-1 block">
-                              R250 <span className="text-[10px] text-zinc-400">per 30 min ride</span>
-                            </span>
-                          </div>
-                          
-                          <div className="flex items-center gap-2">
-                            <button
-                              type="button"
-                              onClick={() => setPitBikeQty(Math.max(0, pitBikeQty - 1))}
-                              className="w-8 h-8 bg-zinc-950 border border-zinc-800 flex items-center justify-center text-zinc-400 hover:text-white hover:border-emerald-400 transition-colors text-lg font-bold cursor-pointer"
-                            >
-                              -
-                            </button>
-                            <span className="w-6 text-center font-mono font-bold text-sm text-white">
-                              {pitBikeQty}
-                            </span>
-                            <button
-                              type="button"
-                              onClick={() => setPitBikeQty(Math.min(8, pitBikeQty + 1))}
-                              className="w-8 h-8 bg-zinc-950 border border-zinc-800 flex items-center justify-center text-zinc-400 hover:text-white hover:border-emerald-400 transition-colors text-lg font-bold cursor-pointer"
-                            >
-                              +
-                            </button>
+                            
+                            <div className="flex items-center gap-2.5 self-start sm:self-center">
+                              <button
+                                type="button"
+                                onClick={() => setPitBikeQty(Math.max(0, pitBikeQty - 1))}
+                                className="w-10 h-10 bg-white border-2 border-zinc-900 flex items-center justify-center text-zinc-950 hover:bg-zinc-100 transition-colors text-xl font-black cursor-pointer shadow-sm active:scale-95"
+                                aria-label="Decrease pit bikes"
+                              >
+                                -
+                              </button>
+                              <span className="w-8 text-center font-sans font-black text-lg text-zinc-950">
+                                {pitBikeQty}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => setPitBikeQty(Math.min(10, pitBikeQty + 1))}
+                                className="w-10 h-10 bg-white border-2 border-zinc-900 flex items-center justify-center text-zinc-950 hover:bg-zinc-100 transition-colors text-xl font-black cursor-pointer shadow-sm active:scale-95"
+                                aria-label="Increase pit bikes"
+                              >
+                                +
+                              </button>
+                            </div>
                           </div>
                         </div>
 
                         {/* Quad Bike Selection */}
-                        <div className="flex items-center justify-between gap-3 py-2">
-                          <div>
-                            <div className="flex items-center gap-1.5">
-                              <Bike className="w-4 h-4 text-emerald-400" />
-                              <h4 className="font-mono font-bold text-sm uppercase text-white">Quad Bike Rental</h4>
+                        <div className="py-2">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2">
+                                <Bike className="w-5 h-5 text-emerald-600 flex-shrink-0" />
+                                <h4 className="font-sans font-black text-base sm:text-lg uppercase text-zinc-950">Quad Bike Rental</h4>
+                              </div>
+                              <p className="text-xs sm:text-sm text-zinc-900 font-extrabold mt-1">
+                                80cc quad bike (<span className="text-emerald-700 font-black">Beginners welcome!</span>)
+                              </p>
+                              <span className="font-sans text-sm sm:text-base text-emerald-700 font-black mt-1.5 block">
+                                R300 <span className="text-xs text-zinc-600 font-bold">per 30 min ride</span>
+                              </span>
                             </div>
-                            <p className="text-[11px] text-zinc-300 font-medium mt-0.5">80cc quad bike (Beginners welcome)</p>
-                            <span className="font-mono text-xs text-emerald-400 font-bold mt-1 block">
-                              R300 <span className="text-[10px] text-zinc-400">per 30 min ride</span>
-                            </span>
-                          </div>
-                          
-                          <div className="flex items-center gap-2">
-                            <button
-                              type="button"
-                              onClick={() => setQuadBikeQty(Math.max(0, quadBikeQty - 1))}
-                              className="w-8 h-8 bg-zinc-950 border border-zinc-800 flex items-center justify-center text-zinc-400 hover:text-white hover:border-emerald-400 transition-colors text-lg font-bold cursor-pointer"
-                            >
-                              -
-                            </button>
-                            <span className="w-6 text-center font-mono font-bold text-sm text-white">
-                              {quadBikeQty}
-                            </span>
-                            <button
-                              type="button"
-                              onClick={() => setQuadBikeQty(Math.min(2, quadBikeQty + 1))}
-                              className="w-8 h-8 bg-zinc-950 border border-zinc-800 flex items-center justify-center text-zinc-400 hover:text-white hover:border-emerald-400 transition-colors text-lg font-bold cursor-pointer"
-                            >
-                              +
-                            </button>
+                            
+                            <div className="flex items-center gap-2.5 self-start sm:self-center">
+                              <button
+                                type="button"
+                                onClick={() => setQuadBikeQty(Math.max(0, quadBikeQty - 1))}
+                                className="w-10 h-10 bg-white border-2 border-zinc-900 flex items-center justify-center text-zinc-950 hover:bg-zinc-100 transition-colors text-xl font-black cursor-pointer shadow-sm active:scale-95"
+                                aria-label="Decrease quad bikes"
+                              >
+                                -
+                              </button>
+                              <span className="w-8 text-center font-sans font-black text-lg text-zinc-950">
+                                {quadBikeQty}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => setQuadBikeQty(Math.min(3, quadBikeQty + 1))}
+                                className="w-10 h-10 bg-white border-2 border-zinc-900 flex items-center justify-center text-zinc-950 hover:bg-zinc-100 transition-colors text-xl font-black cursor-pointer shadow-sm active:scale-95"
+                                aria-label="Increase quad bikes"
+                              >
+                                +
+                              </button>
+                            </div>
                           </div>
                         </div>
                       </div>
 
                       {pitBikeQty === 0 && quadBikeQty === 0 && (
-                        <p className="text-xs text-amber-400 font-mono">
+                        <p className="text-xs sm:text-sm text-amber-800 font-sans font-black p-2.5 bg-amber-50 border border-amber-300">
                           * Please select at least 1 bike to proceed.
                         </p>
                       )}
                     </div>
                   )}
 
+                  {/* Photo of Rental Fleet under Package / Bike Selection */}
+                  <div className="border-2 border-zinc-900 bg-white shadow-md overflow-hidden">
+                    <div className="relative h-48 sm:h-60 w-full bg-zinc-100 overflow-hidden">
+                      <img 
+                        src="https://lh3.googleusercontent.com/d/10_n-pJ86ublpNtRgZLvBqIemWYDWx-mj"
+                        alt="Rix Compound Rental Bikes"
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                        onError={(e) => {
+                          e.currentTarget.src = "https://lh3.googleusercontent.com/d/108-4wXp6z2yCSjZnLj-e2vuE-rr-WFeB";
+                        }}
+                      />
+                      <div className="absolute top-3 left-3 bg-black/90 backdrop-blur-xs text-white px-3 py-1.5 text-xs font-sans uppercase tracking-wider font-black">
+                        Rental Fleet Photo
+                      </div>
+                    </div>
+                    <div className="p-4 bg-zinc-50 border-t-2 border-zinc-900 grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
+                      <div className="flex items-start gap-2.5">
+                        <span className="w-3 h-3 rounded-full bg-emerald-500 mt-1 flex-shrink-0" />
+                        <div>
+                          <p className="font-sans text-xs sm:text-sm font-black uppercase text-zinc-950">
+                            Pit Bikes (10 Available)
+                          </p>
+                          <p className="text-xs text-zinc-800 font-sans mt-0.5 font-bold leading-normal">
+                            110cc semi-automatic or Honda CRF80 with clutch (max 100 kg, age 14+).
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-2.5">
+                        <span className="w-3 h-3 rounded-full bg-emerald-500 mt-1 flex-shrink-0" />
+                        <div>
+                          <p className="font-sans text-xs sm:text-sm font-black uppercase text-zinc-950">
+                            Quad Bikes (3 Available)
+                          </p>
+                          <p className="text-xs text-zinc-800 font-sans mt-0.5 font-bold leading-normal">
+                            80cc quad bike (Beginners welcome).
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Pricing Preview Box */}
-                  <div className="p-4 bg-zinc-900 border border-zinc-800 flex items-center justify-between">
+                  <div className="p-5 bg-zinc-100 border-2 border-zinc-900 flex items-center justify-between">
                     <div>
-                      <span className="text-xs text-zinc-400 font-mono uppercase block">Subtotal</span>
-                      <span className="text-xs text-zinc-300 font-mono">
+                      <span className="text-xs text-zinc-700 font-sans uppercase block font-black">Subtotal</span>
+                      <span className="text-sm text-zinc-900 font-sans font-bold">
                         {pitBikeQty > 0 ? `${pitBikeQty} Pit Bike${pitBikeQty > 1 ? 's' : ''}` : ''}
                         {pitBikeQty > 0 && quadBikeQty > 0 ? ' + ' : ''}
                         {quadBikeQty > 0 ? `${quadBikeQty} Quad Bike${quadBikeQty > 1 ? 's' : ''}` : ''}
                       </span>
                     </div>
-                    <span className="text-xl font-mono font-black text-emerald-400">
+                    <span className="text-2xl font-sans font-black text-emerald-700">
                       R{getPrice().toLocaleString()}
                     </span>
                   </div>
                 </div>
 
                 {/* Step 3 Actions */}
-                <div className="pt-5 sm:pt-6 border-t border-zinc-900 flex items-center justify-between gap-3 sm:gap-4">
+                <div className="pt-5 sm:pt-6 border-t border-zinc-200 flex items-center justify-between gap-3 sm:gap-4">
                   <button
                     type="button"
                     onClick={() => {
                       setError(null);
                       setCurrentStep(2);
                     }}
-                    className="h-12 px-4 sm:px-5 bg-zinc-900 hover:bg-zinc-850 text-zinc-300 hover:text-white font-mono text-xs sm:text-sm font-bold uppercase tracking-wider transition-all border border-zinc-800 flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 flex-shrink-0"
+                    className="h-12 px-4 sm:px-5 bg-zinc-100 hover:bg-zinc-200 text-zinc-700 hover:text-zinc-950 font-mono text-xs sm:text-sm font-bold uppercase tracking-wider transition-all border border-zinc-300 flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 flex-shrink-0"
                   >
                     <ArrowLeft className="w-3.5 h-3.5" />
                     <span>Back</span>
@@ -1186,32 +1208,29 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.15 }}
-                className="space-y-5"
+                className="space-y-4"
               >
                 <div>
-                  <h3 className="font-mono text-sm uppercase tracking-wider text-emerald-400 flex items-center gap-2 font-bold">
-                    <span className="bg-zinc-900 border border-zinc-800 text-emerald-400 px-2 py-0.5 text-xs font-mono">04</span>
-                    Choose Available Time Slot
+                  <h3 className="font-mono text-sm uppercase tracking-wider text-emerald-700 flex items-center gap-2 font-bold">
+                    <span className="bg-zinc-100 border border-zinc-200 text-emerald-700 px-2 py-0.5 text-xs font-mono">04</span>
+                    Choose Time Slot
                   </h3>
-                  <p className="text-xs text-zinc-400 mt-1">
-                    Track availability refreshes in real-time every second. Select an open slot that fits your schedule.
-                  </p>
                 </div>
 
                 <div className="space-y-4 pt-1">
                   {/* Legend */}
-                  <div className="flex items-center gap-4 bg-black py-2 px-3 border border-zinc-800 text-xs font-mono">
+                  <div className="flex items-center gap-4 bg-zinc-50 py-2 px-3 border border-zinc-200 text-xs font-mono">
                     <div className="flex items-center gap-1.5">
-                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/30" />
-                      <span className="text-emerald-400 font-bold uppercase text-[10px]">Open</span>
+                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-xs" />
+                      <span className="text-emerald-700 font-bold uppercase text-[10px]">Open</span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <span className="w-2.5 h-2.5 rounded-full bg-zinc-600" />
-                      <span className="text-zinc-500 font-bold uppercase text-[10px]">Booked</span>
+                      <span className="w-2.5 h-2.5 rounded-full bg-zinc-400" />
+                      <span className="text-zinc-600 font-bold uppercase text-[10px]">Booked</span>
                     </div>
                     <div className="flex items-center gap-1.5">
                       <span className="w-2.5 h-2.5 rounded-full bg-red-500" />
-                      <span className="text-red-400 font-bold uppercase text-[10px]">Closed</span>
+                      <span className="text-red-600 font-bold uppercase text-[10px]">Closed</span>
                     </div>
                   </div>
 
@@ -1224,7 +1243,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                   {loadingAvailability ? (
                     <div className="text-center py-8">
                       <div className="w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
-                      <span className="text-xs font-mono text-zinc-400">Loading real-time track slots...</span>
+                      <span className="text-xs font-mono text-zinc-500">Loading real-time track slots...</span>
                     </div>
                   ) : (
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -1243,35 +1262,35 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                             className={`p-2.5 rounded-none border text-left flex flex-col justify-between transition-all relative ${
                               disabled 
                                 ? availability[slot]?.isClosed
-                                  ? 'border-red-950/45 bg-red-950/10 opacity-60 cursor-not-allowed'
-                                  : 'border-zinc-900 bg-zinc-950 text-zinc-600 opacity-50 cursor-not-allowed'
+                                  ? 'border-red-200 bg-red-50/70 opacity-70 cursor-not-allowed'
+                                  : 'border-zinc-200 bg-zinc-100 text-zinc-400 opacity-60 cursor-not-allowed'
                                 : selected
-                                  ? 'border-2 border-emerald-400 bg-zinc-900 text-emerald-400 shadow-md shadow-emerald-500/10'
-                                  : 'border-zinc-800 hover:border-emerald-500/50 bg-black hover:bg-zinc-900 cursor-pointer'
+                                  ? 'border-2 border-emerald-600 bg-emerald-50 text-emerald-900 shadow-sm'
+                                  : 'border-zinc-200 hover:border-emerald-500 bg-white hover:bg-emerald-50/40 text-zinc-900 cursor-pointer shadow-xs'
                             }`}
                           >
                             <div className="flex items-center justify-between w-full mb-1">
                               <span className={`font-mono text-xs font-black tracking-wider ${
                                 selected 
-                                  ? 'text-emerald-400' 
+                                  ? 'text-emerald-800' 
                                   : availability[slot]?.isClosed
                                     ? 'text-red-500 line-through' 
                                     : disabled
-                                      ? 'text-zinc-600 line-through'
-                                      : 'text-zinc-200'
+                                      ? 'text-zinc-400 line-through'
+                                      : 'text-zinc-900'
                               }`}>
                                 {slot}
                               </span>
                               {availability[slot]?.isClosed ? (
-                                <span className="text-[7.5px] font-mono font-bold text-amber-500 uppercase bg-amber-950 border border-amber-900/40 px-1 py-0.5">
+                                <span className="text-[7.5px] font-mono font-bold text-red-600 uppercase bg-red-100 border border-red-200 px-1 py-0.5">
                                   Closed
                                 </span>
                               ) : disabled ? (
-                                <span className="text-[7.5px] font-mono font-bold text-zinc-500 uppercase bg-zinc-900 border border-zinc-800 px-1 py-0.5">
+                                <span className="text-[7.5px] font-mono font-bold text-zinc-500 uppercase bg-zinc-200 border border-zinc-300 px-1 py-0.5">
                                   Booked
                                 </span>
                               ) : (
-                                <span className="text-[7.5px] font-mono font-bold text-emerald-400 uppercase bg-zinc-900 border border-zinc-800 px-1 py-0.5">
+                                <span className="text-[7.5px] font-mono font-bold text-emerald-700 uppercase bg-emerald-100 border border-emerald-300 px-1 py-0.5">
                                   Open
                                 </span>
                               )}
@@ -1287,14 +1306,14 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                 </div>
 
                 {/* Step 4 Actions */}
-                <div className="pt-5 sm:pt-6 border-t border-zinc-900 flex items-center justify-between gap-3 sm:gap-4">
+                <div className="pt-5 sm:pt-6 border-t border-zinc-200 flex items-center justify-between gap-3 sm:gap-4">
                   <button
                     type="button"
                     onClick={() => {
                       setError(null);
                       setCurrentStep(3);
                     }}
-                    className="h-12 px-4 sm:px-5 bg-zinc-900 hover:bg-zinc-850 text-zinc-300 hover:text-white font-mono text-xs sm:text-sm font-bold uppercase tracking-wider transition-all border border-zinc-800 flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 flex-shrink-0"
+                    className="h-12 px-4 sm:px-5 bg-zinc-100 hover:bg-zinc-200 text-zinc-700 hover:text-zinc-950 font-mono text-xs sm:text-sm font-bold uppercase tracking-wider transition-all border border-zinc-300 flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 flex-shrink-0"
                   >
                     <ArrowLeft className="w-3.5 h-3.5" />
                     <span>Back</span>
@@ -1320,32 +1339,29 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.15 }}
-                className="space-y-6"
+                className="space-y-4"
               >
                 <div>
-                  <h3 className="font-mono text-sm uppercase tracking-wider text-emerald-400 flex items-center gap-2 font-bold">
-                    <span className="bg-zinc-900 border border-zinc-800 text-emerald-400 px-2 py-0.5 text-xs font-mono">05</span>
-                    Review & PayFast Checkout
+                  <h3 className="font-mono text-sm uppercase tracking-wider text-emerald-700 flex items-center gap-2 font-bold">
+                    <span className="bg-zinc-100 border border-zinc-200 text-emerald-700 px-2 py-0.5 text-xs font-mono">05</span>
+                    Review & Checkout
                   </h3>
-                  <p className="text-xs text-zinc-400 mt-1">
-                    Please review your booking details below before proceeding to PayFast secure checkout.
-                  </p>
                 </div>
 
                 {/* Summary Details Card */}
-                <div className="bg-black border border-zinc-800 divide-y divide-zinc-900">
+                <div className="bg-white border border-zinc-200 divide-y divide-zinc-200 shadow-sm">
                   {/* Rider Info Row */}
                   <div className="p-4 flex items-start justify-between">
                     <div>
-                      <span className="text-[10px] font-mono uppercase text-zinc-500 block mb-0.5">Rider Details</span>
-                      <h4 className="font-bold text-white text-sm">{name}</h4>
-                      <p className="text-xs text-zinc-400 font-mono mt-0.5">{email} • {phone}</p>
+                      <span className="text-[10px] font-mono uppercase text-zinc-500 block mb-0.5 font-bold">Rider Details</span>
+                      <h4 className="font-bold text-zinc-950 text-sm">{name}</h4>
+                      <p className="text-xs text-zinc-600 font-mono mt-0.5">{email} • {phone}</p>
                       <p className="text-[11px] text-zinc-500 font-mono mt-0.5">ID: {idNumber}</p>
                     </div>
                     <button
                       type="button"
                       onClick={() => setCurrentStep(1)}
-                      className="text-xs font-mono text-emerald-400 hover:underline uppercase"
+                      className="text-xs font-mono text-emerald-700 hover:underline uppercase font-bold"
                     >
                       Edit
                     </button>
@@ -1354,14 +1370,14 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                   {/* Date & Slot Row */}
                   <div className="p-4 flex items-start justify-between">
                     <div>
-                      <span className="text-[10px] font-mono uppercase text-zinc-500 block mb-0.5">Reserved Date & Time</span>
-                      <h4 className="font-bold text-white text-sm">{date} ({dayOfWeekName})</h4>
-                      <p className="text-xs text-emerald-400 font-mono font-bold mt-0.5">Time Slot: {selectedSlot}</p>
+                      <span className="text-[10px] font-mono uppercase text-zinc-500 block mb-0.5 font-bold">Reserved Date & Time</span>
+                      <h4 className="font-bold text-zinc-950 text-sm">{date} ({dayOfWeekName})</h4>
+                      <p className="text-xs text-emerald-700 font-mono font-bold mt-0.5">Time Slot: {selectedSlot}</p>
                     </div>
                     <button
                       type="button"
                       onClick={() => setCurrentStep(2)}
-                      className="text-xs font-mono text-emerald-400 hover:underline uppercase"
+                      className="text-xs font-mono text-emerald-700 hover:underline uppercase font-bold"
                     >
                       Edit
                     </button>
@@ -1370,55 +1386,55 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                   {/* Rental Package Row */}
                   <div className="p-4 flex items-start justify-between">
                     <div>
-                      <span className="text-[10px] font-mono uppercase text-zinc-500 block mb-0.5">Selected Bikes</span>
-                      <h4 className="font-bold text-white text-sm">
+                      <span className="text-[10px] font-mono uppercase text-zinc-500 block mb-0.5 font-bold">Selected Bikes</span>
+                      <h4 className="font-bold text-zinc-950 text-sm">
                         {bikeType === 'GroupPackage' 
                           ? `Weekday Group (${groupDuration === 240 ? '4 Hours' : `${groupDuration} Mins`}, ${groupSize} Bikes)` 
                           : `${pitBikeQty} Pit Bike${pitBikeQty !== 1 ? 's' : ''}${pitBikeQty > 0 && quadBikeQty > 0 ? ' & ' : ''}${quadBikeQty > 0 ? `${quadBikeQty} Quad Bike${quadBikeQty !== 1 ? 's' : ''}` : ''}`}
                       </h4>
-                      <p className="text-xs text-zinc-400 mt-0.5 font-mono">
+                      <p className="text-xs text-zinc-600 mt-0.5 font-mono">
                         45-minute slot duration (30 mins active track riding time)
                       </p>
                     </div>
                     <button
                       type="button"
                       onClick={() => setCurrentStep(3)}
-                      className="text-xs font-mono text-emerald-400 hover:underline uppercase"
+                      className="text-xs font-mono text-emerald-700 hover:underline uppercase font-bold"
                     >
                       Edit
                     </button>
                   </div>
 
                   {/* Total Price Row */}
-                  <div className="p-4 bg-zinc-950 flex items-center justify-between">
-                    <span className="font-mono text-xs uppercase font-bold text-zinc-300">Total Amount Payable</span>
-                    <span className="text-2xl font-mono font-black text-emerald-400">
+                  <div className="p-4 bg-zinc-50 flex items-center justify-between">
+                    <span className="font-mono text-xs uppercase font-bold text-zinc-700">Total Amount Payable</span>
+                    <span className="text-2xl font-mono font-black text-emerald-700">
                       R{getPrice().toLocaleString()}
                     </span>
                   </div>
                 </div>
 
                 {/* 5-minute hold notice */}
-                <div className="bg-emerald-950/20 border border-emerald-500/30 p-3 text-[11px] font-mono leading-tight text-emerald-300 flex items-center gap-2.5">
-                  <Clock className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                <div className="bg-emerald-50 border-2 border-emerald-600 p-3.5 text-xs sm:text-sm font-sans leading-snug text-emerald-950 flex items-center gap-3 font-bold">
+                  <Clock className="w-5 h-5 text-emerald-700 flex-shrink-0" />
                   <div>
-                    <span className="font-bold text-emerald-400">⚡ 5-MINUTE RESERVATION LOCK:</span> Your bikes will be locked for 5 minutes during checkout. Uncompleted checkouts are released back to the track automatically.
+                    <span className="font-black text-emerald-800">⚡ 5-MINUTE RESERVATION LOCK:</span> Your bikes will be locked for 5 minutes during checkout. Uncompleted checkouts are released back to the track automatically.
                   </div>
                 </div>
 
                 {/* Step 5 Checkout & Actions */}
-                <div className="pt-5 border-t border-zinc-900 space-y-3">
+                <div className="pt-5 border-t-2 border-zinc-200 space-y-3">
                   <button
                     type="button"
                     onClick={handleBookingSubmit}
                     disabled={submitting}
-                    className={`w-full min-h-[52px] sm:h-12 px-4 font-mono font-black uppercase text-xs sm:text-sm tracking-wider transition-all flex items-center justify-center gap-2.5 border cursor-pointer ${
+                    className={`w-full min-h-[56px] px-6 font-sans font-black uppercase text-sm sm:text-base tracking-wider transition-all flex items-center justify-center gap-3 border-2 cursor-pointer ${
                       submitting
-                        ? 'bg-zinc-900 border-zinc-800 text-zinc-500 cursor-not-allowed'
-                        : 'bg-emerald-500 border-emerald-400 hover:bg-emerald-400 text-black shadow-lg shadow-emerald-500/20 active:scale-[0.98]'
+                        ? 'bg-zinc-200 border-zinc-300 text-zinc-500 cursor-not-allowed'
+                        : 'bg-emerald-500 border-emerald-500 hover:bg-emerald-400 text-black shadow-lg shadow-emerald-500/20 active:scale-[0.98]'
                     }`}
                   >
-                    <CreditCard className="w-4 h-4 flex-shrink-0" />
+                    <CreditCard className="w-5 h-5 flex-shrink-0" />
                     <span>{submitting ? 'Connecting to PayFast Gateway...' : 'Proceed to PayFast Checkout'}</span>
                   </button>
 
@@ -1429,12 +1445,12 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                         setError(null);
                         setCurrentStep(4);
                       }}
-                      className="h-11 px-4 sm:px-5 bg-zinc-900 hover:bg-zinc-850 text-zinc-300 font-mono text-xs uppercase tracking-wider transition-colors border border-zinc-800 flex items-center gap-1.5 cursor-pointer active:scale-95"
+                      className="h-11 px-5 bg-zinc-100 hover:bg-zinc-200 text-zinc-900 font-sans text-xs sm:text-sm font-black uppercase tracking-wider transition-colors border-2 border-zinc-300 flex items-center gap-2 cursor-pointer active:scale-95"
                     >
-                      <ArrowLeft className="w-3.5 h-3.5" />
+                      <ArrowLeft className="w-4 h-4" />
                       <span>Back</span>
                     </button>
-                    <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-tight flex items-center gap-1">
+                    <span className="text-xs font-sans text-zinc-700 uppercase tracking-wider font-extrabold flex items-center gap-1.5">
                       <span>🔒</span> 256-Bit SSL Encrypted
                     </span>
                   </div>

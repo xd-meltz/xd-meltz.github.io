@@ -112,7 +112,7 @@ export default function App() {
   }, [hasAcceptedTerms]);
 
   return (
-    <div id="appRoot" className="min-h-screen bg-black text-zinc-100 flex flex-col relative font-sans antialiased selection:bg-brand selection:text-black">
+    <div id="appRoot" className="min-h-screen bg-white text-zinc-900 flex flex-col relative font-sans antialiased selection:bg-brand selection:text-white">
       
       {/* Terms & Conditions Acceptance Modal */}
       <TermsModal
@@ -137,7 +137,7 @@ export default function App() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
             onClick={handleOpenBookingWithTerms}
-            className="fixed bottom-6 right-6 z-[45] flex items-center gap-2 px-4 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold uppercase tracking-wider text-[11px] rounded-none border border-neutral-900 shadow-lg shadow-emerald-500/20 cursor-pointer transition-colors"
+            className="fixed bottom-6 right-6 z-[45] flex items-center gap-2 px-4 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold uppercase tracking-wider text-[11px] rounded-none border border-emerald-600 shadow-md shadow-emerald-500/20 cursor-pointer transition-colors"
           >
             <Bike className="w-3.5 h-3.5" />
             <span>Book Online</span>

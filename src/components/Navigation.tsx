@@ -72,15 +72,9 @@ export default function Navigation() {
 
   return (
     <>
-      {/* Hidden SVG Filter for logo transparency & Instagram Gradient */}
+      {/* Hidden SVG Filter for Instagram Gradient */}
       <svg width="0" height="0" className="absolute pointer-events-none" style={{ width: 0, height: 0, overflow: 'hidden' }}>
         <defs>
-          <filter id="transparent-logo" colorInterpolationFilters="sRGB">
-            <feColorMatrix 
-              type="matrix" 
-              values="-1 0 0 0 1  0 -1 0 0 1  0 0 -1 0 1  -0.333 -0.333 -0.333 0 1" 
-            />
-          </filter>
           <linearGradient id="ig-nav-gradient" x1="0%" y1="100%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="#fdf497" />
             <stop offset="20%" stopColor="#f09433" />
@@ -94,10 +88,10 @@ export default function Navigation() {
 
       <nav
         id="mainNav"
-        className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 border-b bg-[#121212] ${
+        className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 border-b bg-white/95 backdrop-blur-sm ${
           isScrolled
-            ? 'border-neutral-800/70 shadow-lg shadow-neutral-950/20 py-2.5'
-            : 'border-neutral-800/40 py-3.5'
+            ? 'border-neutral-200 shadow-md py-2.5'
+            : 'border-neutral-200/80 py-3.5'
         }`}
       >
         <div className="max-w-6xl mx-auto px-4 flex items-center justify-between">
@@ -112,49 +106,41 @@ export default function Navigation() {
             }}
             className="flex items-center gap-2.5 group z-10 scale-90 sm:scale-100 origin-left"
           >
-            {/* Real isolated Monogram from the official Logo */}
-            <div className="relative w-[52px] h-7 overflow-hidden bg-transparent flex-shrink-0">
+            {/* Real isolated Black RC Monogram */}
+            <div className="relative h-8 sm:h-9 flex items-center justify-center flex-shrink-0">
               <img 
-                src="https://i.postimg.cc/RV690snh/Rix-Compound-Logo-1.webp" 
-                alt="Rix Compound RC Logo"
-                className="absolute max-w-none"
-                style={{ 
-                  width: '69px',
-                  height: '53px',
-                  left: '-6.5px',
-                  top: '-4.8px',
-                  filter: 'url(#transparent-logo)',
-                }}
-                referrerPolicy="no-referrer"
+                src="/rc-monogram.png" 
+                alt="Rix Compound RC Monogram"
+                className="h-8 sm:h-9 w-auto object-contain block"
               />
             </div>
             
             {/* Wordmark next to the Monogram */}
             <div className="flex flex-col justify-center leading-none">
-              <span className="font-sans font-black text-xs sm:text-sm uppercase italic tracking-wider text-[#F8F9FA] leading-tight">
+              <span className="font-sans font-black text-sm sm:text-base uppercase italic tracking-wider text-black leading-tight">
                 RIX <span className={currentPage === 'booking' ? 'text-emerald-500' : 'text-brand'}>COMPOUND</span>
               </span>
-              <span className="font-mono text-[6px] sm:text-[7px] uppercase tracking-[0.16em] text-neutral-400 font-medium leading-none">
+              <span className="font-sans text-[9px] sm:text-[10px] uppercase tracking-[0.16em] text-zinc-800 font-extrabold leading-none mt-0.5">
                 JUNIOR MX & PIT BIKE TRACK
               </span>
             </div>
           </a>
 
         {/* Desktop Links */}
-        <div className="hidden lg:flex items-center gap-3 xl:gap-5">
+        <div className="hidden lg:flex items-center gap-4 xl:gap-6">
           {navLinks.map((link) => (
             <a
               key={link.name}
               href={link.href}
               onClick={(e) => handleNavLinkClick(e, link)}
-              className="text-[11px] xl:text-xs font-mono tracking-wider uppercase text-zinc-400 hover:text-white transition-colors whitespace-nowrap"
+              className="text-xs xl:text-sm font-sans tracking-wide uppercase text-zinc-800 hover:text-zinc-950 transition-colors whitespace-nowrap font-bold"
             >
               {link.name}
             </a>
           ))}
           <button
             onClick={() => navigateTo('booking')}
-            className="px-2.5 py-1 bg-emerald-500 text-black font-mono text-[10px] font-bold tracking-widest uppercase hover:bg-emerald-400 transition-colors shadow-sm shadow-emerald-500/10 whitespace-nowrap flex-shrink-0"
+            className="px-3.5 py-1.5 bg-emerald-500 text-black font-sans text-xs sm:text-sm font-black tracking-wider uppercase hover:bg-emerald-400 transition-colors shadow-sm shadow-emerald-500/20 whitespace-nowrap flex-shrink-0 cursor-pointer"
           >
             Book Now
           </button>
@@ -165,7 +151,7 @@ export default function Navigation() {
             className="p-1 hover:scale-110 transition-transform flex items-center justify-center flex-shrink-0"
             title="Instagram"
           >
-            <Instagram className="w-4 h-4" stroke="url(#ig-nav-gradient)" />
+            <Instagram className="w-4.5 h-4.5" stroke="url(#ig-nav-gradient)" />
           </a>
         </div>
 
@@ -178,21 +164,21 @@ export default function Navigation() {
             className="p-1.5 hover:scale-110 transition-transform flex items-center justify-center"
             title="Instagram"
           >
-            <Instagram className="w-4.5 h-4.5" stroke="url(#ig-nav-gradient)" />
+            <Instagram className="w-5 h-5" stroke="url(#ig-nav-gradient)" />
           </a>
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="text-zinc-400 hover:text-white focus:outline-none p-1"
+            className="text-zinc-800 hover:text-zinc-950 focus:outline-none p-1 cursor-pointer"
             aria-label="Toggle menu"
           >
-            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
       </div>
 
       {/* Mobile / Tablet Drawer */}
       {mobileMenuOpen && (
-        <div className="lg:hidden absolute top-full left-0 w-full bg-[#121212] border-b border-neutral-800 shadow-2xl flex flex-col p-5 gap-4 z-40">
+        <div className="lg:hidden absolute top-full left-0 w-full bg-white border-b border-neutral-200 shadow-xl flex flex-col p-5 gap-3.5 z-40">
           {navLinks.map((link) => (
             <a
               key={link.name}
@@ -201,18 +187,18 @@ export default function Navigation() {
                 setMobileMenuOpen(false);
                 handleNavLinkClick(e, link);
               }}
-              className="text-xs font-mono tracking-wider uppercase text-zinc-300 hover:text-white py-1"
+              className="text-sm font-sans font-bold tracking-wider uppercase text-zinc-800 hover:text-zinc-950 py-1"
             >
               {link.name}
             </a>
           ))}
-          <div className="h-px bg-zinc-900 my-1" />
+          <div className="h-px bg-zinc-200 my-1" />
           <button
             onClick={() => {
               setMobileMenuOpen(false);
               navigateTo('booking');
             }}
-            className="w-full text-center py-2 bg-emerald-500 text-black font-mono text-[11px] font-bold tracking-widest uppercase hover:bg-emerald-400 transition-colors shadow-sm shadow-emerald-500/10"
+            className="w-full text-center py-2.5 bg-emerald-500 text-black font-sans text-xs sm:text-sm font-black tracking-widest uppercase hover:bg-emerald-400 transition-colors shadow-sm shadow-emerald-500/20 cursor-pointer"
           >
             Book Track Slot
           </button>

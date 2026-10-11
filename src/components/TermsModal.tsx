@@ -22,7 +22,7 @@ export default function TermsModal({ isOpen, onAccept, onClose }: TermsModalProp
     "No refunds will be issued under any circumstances.",
     "If Rix Compound closes due to unsafe weather conditions, bookings will be rescheduled to the next available suitable date.",
     "All riders must arrive 15 minutes before their booking time. Riding time starts at the scheduled time, and late arrivals will not receive extra time.",
-    "All riders must have prior dirt bike riding experience. Beginners are not permitted on rental pit bikes.",
+    "All pit bike riders must have prior experience riding on dirt and changing gears (semi-automatic / clutch manual). Beginners who cannot ride on dirt or change gears are strictly NOT permitted on rental pit bikes.",
     "Riders must be 14 years or older and weigh 100 kg or less.",
     "Children under 14 with no riding experience may only ride as a passenger on a Rix Compound ATV with a parent or legal guardian, and only with prior management approval.",
     "One rider per rental vehicle. Sharing is strictly prohibited.",
@@ -39,73 +39,73 @@ export default function TermsModal({ isOpen, onAccept, onClose }: TermsModalProp
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-5 bg-black/85 backdrop-blur-sm animate-fade-in">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-5 bg-black/70 backdrop-blur-sm animate-fade-in">
       <div 
-        className="bg-zinc-950 border border-emerald-500/40 w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl relative overflow-hidden"
+        className="bg-white border-2 border-zinc-900 w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl relative overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Top Accent Line */}
-        <div className="h-1 bg-gradient-to-r from-emerald-500 via-emerald-400 to-emerald-600" />
+        <div className="h-1.5 bg-gradient-to-r from-emerald-500 via-emerald-400 to-emerald-600" />
 
         {/* Modal Header */}
-        <div className="p-4 sm:p-6 border-b border-zinc-800 flex items-center justify-between bg-zinc-900/50">
-          <div className="flex items-center gap-2.5">
-            <div className="p-2 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
-              <FileText className="w-5 h-5" />
+        <div className="p-5 sm:p-6 border-b-2 border-zinc-200 flex items-center justify-between bg-zinc-50">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 bg-emerald-100 border-2 border-emerald-600 text-emerald-800">
+              <FileText className="w-6 h-6" />
             </div>
             <div>
-              <h2 className="font-mono text-base sm:text-lg font-black uppercase text-white tracking-wider italic">
+              <h2 className="font-sans text-lg sm:text-xl font-black uppercase text-zinc-950 tracking-tight italic">
                 Terms & Conditions
               </h2>
-              <p className="text-[11px] font-mono text-zinc-400 uppercase tracking-widest">
+              <p className="text-xs font-sans text-zinc-700 uppercase tracking-wider font-extrabold">
                 Please read and accept before proceeding
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-zinc-400 hover:text-white bg-zinc-900 border border-zinc-800 hover:border-zinc-700 transition-colors cursor-pointer"
+            className="p-2 text-zinc-700 hover:text-black bg-white border-2 border-zinc-300 hover:border-black transition-colors cursor-pointer"
             aria-label="Close modal"
           >
-            <X className="w-4 h-4" />
+            <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Scrollable Terms Content */}
-        <div className="p-4 sm:p-6 overflow-y-auto space-y-3 font-sans text-xs sm:text-sm text-zinc-300 leading-relaxed border-b border-zinc-800 bg-zinc-950/80">
-          <ul className="space-y-3">
+        <div className="p-5 sm:p-7 overflow-y-auto space-y-4 font-sans text-sm sm:text-base text-zinc-900 leading-relaxed border-b-2 border-zinc-200 bg-white">
+          <ul className="space-y-3.5">
             {termsList.map((term, index) => (
-              <li key={index} className="flex items-start gap-2.5">
-                <span className="text-emerald-400 font-bold flex-shrink-0 mt-0.5">•</span>
-                <span className="text-zinc-300 font-medium">{term}</span>
+              <li key={index} className="flex items-start gap-3">
+                <span className="text-emerald-600 font-black flex-shrink-0 mt-0.5 text-lg">•</span>
+                <span className="text-zinc-900 font-bold">{term}</span>
               </li>
             ))}
           </ul>
         </div>
 
         {/* Acceptance Footer */}
-        <div className="p-4 sm:p-6 bg-zinc-900/80 flex flex-col gap-4">
+        <div className="p-5 sm:p-6 bg-zinc-50 flex flex-col gap-4">
           <label 
             onClick={() => setAccepted(!accepted)}
-            className="flex items-start gap-3 cursor-pointer select-none group"
+            className="flex items-start gap-3.5 cursor-pointer select-none group"
           >
-            <div className="mt-0.5 flex-shrink-0 text-emerald-400">
+            <div className="mt-0.5 flex-shrink-0 text-emerald-600">
               {accepted ? (
-                <CheckSquare className="w-5 h-5 fill-emerald-500 text-black" />
+                <CheckSquare className="w-6 h-6 fill-emerald-500 text-white" />
               ) : (
-                <Square className="w-5 h-5 text-zinc-500 group-hover:text-emerald-400 transition-colors" />
+                <Square className="w-6 h-6 text-zinc-500 group-hover:text-emerald-600 transition-colors" />
               )}
             </div>
-            <span className="text-xs font-mono font-bold text-zinc-200 group-hover:text-white transition-colors leading-normal">
+            <span className="text-xs sm:text-sm font-sans font-black text-zinc-900 group-hover:text-black transition-colors leading-normal">
               I confirm that the information provided is true and correct and that I voluntarily accept these Terms & Conditions.
             </span>
           </label>
 
-          <div className="flex items-center justify-end gap-3 pt-2 border-t border-zinc-800/80">
+          <div className="flex items-center justify-end gap-3 pt-3 border-t-2 border-zinc-200">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2.5 bg-zinc-900 border border-zinc-800 text-zinc-400 font-mono text-xs uppercase tracking-wider font-bold hover:text-white hover:bg-zinc-850 transition-colors cursor-pointer"
+              className="px-5 py-3 bg-white border-2 border-zinc-400 text-zinc-900 font-sans text-xs sm:text-sm uppercase tracking-wider font-black hover:text-black hover:bg-zinc-100 transition-colors cursor-pointer"
             >
               Cancel
             </button>
@@ -113,10 +113,10 @@ export default function TermsModal({ isOpen, onAccept, onClose }: TermsModalProp
               type="button"
               disabled={!accepted}
               onClick={handleConfirm}
-              className={`px-5 py-2.5 font-mono text-xs uppercase tracking-wider font-extrabold transition-all flex items-center gap-2 cursor-pointer ${
+              className={`px-6 py-3 font-sans text-xs sm:text-sm uppercase tracking-wider font-black transition-all flex items-center gap-2 cursor-pointer ${
                 accepted 
-                  ? 'bg-emerald-500 text-black hover:bg-emerald-400 shadow-lg shadow-emerald-500/20' 
-                  : 'bg-zinc-800 text-zinc-500 border border-zinc-700 cursor-not-allowed opacity-60'
+                  ? 'bg-emerald-500 text-black hover:bg-emerald-400 shadow-md shadow-emerald-500/20' 
+                  : 'bg-zinc-200 text-zinc-500 border-2 border-zinc-300 cursor-not-allowed opacity-60'
               }`}
             >
               <span>I Agree & Proceed to Booking</span>

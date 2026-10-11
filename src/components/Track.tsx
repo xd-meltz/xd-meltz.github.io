@@ -190,29 +190,29 @@ export default function Track() {
   ];
 
   return (
-    <section id="track" className="py-8 sm:py-12 bg-black border-b border-zinc-900 text-white">
+    <section id="track" className="py-8 sm:py-12 bg-white border-b border-zinc-200 text-zinc-900">
       <div className="max-w-6xl mx-auto px-4">
         
         {/* Section Header */}
         <div className="mb-8 md:mb-12">
-          <span className="font-mono text-[10px] uppercase tracking-widest text-brand font-bold block mb-1">
-            Compound Circuits
+          <span className="font-sans text-xs sm:text-sm uppercase tracking-widest text-brand font-black block mb-1.5">
+            COMPOUND CIRCUITS
           </span>
-          <h2 className="font-mono text-2xl sm:text-3xl font-bold uppercase tracking-tight italic">
+          <h2 className="font-sans text-3xl sm:text-4xl lg:text-5xl font-black uppercase tracking-tight italic text-zinc-950">
             The Tracks
           </h2>
         </div>
 
         {/* Tracks Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 mb-12">
           {tracks.map((track, idx) => {
             return (
               <div 
-                key={idx}
-                className="border border-zinc-800 bg-zinc-950 p-4 flex flex-col gap-4 relative"
+                key={idx} 
+                className="border-2 border-zinc-900 bg-white shadow-md p-5 flex flex-col gap-4 relative"
               >
                 {/* Image */}
-                <div className="relative aspect-[1.7] overflow-hidden border border-zinc-900 bg-zinc-900">
+                <div className="relative aspect-[1.7] overflow-hidden bg-zinc-100">
                   <img 
                     src={track.image} 
                     alt={track.title}
@@ -221,54 +221,54 @@ export default function Track() {
                 </div>
 
                 {/* Status Banner directly underneath the image */}
-                <div className={`py-1.5 px-3 border flex items-center justify-between ${
+                <div className={`py-2 px-3.5 border-2 flex items-center justify-between ${
                   pitbikeStatus.isOpen
-                    ? 'bg-emerald-950/90 border-emerald-500/50 text-emerald-400'
-                    : 'bg-zinc-950 border-zinc-800 text-zinc-300'
+                    ? 'bg-emerald-50 border-emerald-600 text-emerald-950'
+                    : 'bg-zinc-50 border-zinc-300 text-zinc-900'
                 }`}>
                   <div className="flex items-center gap-2">
                     {pitbikeStatus.isOpen ? (
                       <>
-                        <span className="relative flex h-2 w-2">
+                        <span className="relative flex h-2.5 w-2.5">
                           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                          <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                          <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-600"></span>
                         </span>
-                        <span className="font-mono text-xs font-black tracking-wider uppercase text-emerald-400">
-                          OPEN
+                        <span className="font-sans text-xs sm:text-sm font-black tracking-wider uppercase text-emerald-700">
+                          OPEN FOR RIDING
                         </span>
                       </>
                     ) : (
                       <>
-                        <Clock className="w-3.5 h-3.5 text-zinc-400 flex-shrink-0" />
-                        <div className="font-mono text-xs font-bold tracking-wider uppercase flex items-center gap-1 flex-wrap">
-                          <span className="text-zinc-400">OPEN IN</span>
+                        <Clock className="w-4 h-4 text-zinc-600 flex-shrink-0" />
+                        <div className="font-sans text-xs sm:text-sm font-black tracking-wider uppercase flex items-center gap-1.5 flex-wrap">
+                          <span className="text-zinc-700">OPEN IN</span>
                           {pitbikeStatus.days !== undefined && pitbikeStatus.days > 0 && (
                             <>
-                              <span className="text-emerald-400 text-xs font-black">{pitbikeStatus.days}</span>
-                              <span className="text-zinc-400">{pitbikeStatus.days > 1 ? 'DAYS' : 'DAY'}</span>
+                              <span className="text-emerald-700 text-sm font-black">{pitbikeStatus.days}</span>
+                              <span className="text-zinc-700">{pitbikeStatus.days > 1 ? 'DAYS' : 'DAY'}</span>
                             </>
                           )}
                           {pitbikeStatus.hours !== undefined && pitbikeStatus.hours > 0 && (
                             <>
-                              <span className="text-emerald-400 text-xs font-black">{pitbikeStatus.hours}</span>
-                              <span className="text-zinc-400">{pitbikeStatus.hours > 1 ? 'HRS' : 'HR'}</span>
+                              <span className="text-emerald-700 text-sm font-black">{pitbikeStatus.hours}</span>
+                              <span className="text-zinc-700">{pitbikeStatus.hours > 1 ? 'HRS' : 'HR'}</span>
                             </>
                           )}
                           {pitbikeStatus.mins !== undefined && pitbikeStatus.mins > 0 && (pitbikeStatus.days === 0 || pitbikeStatus.days === undefined) && (
                             <>
-                              <span className="text-emerald-400 text-xs font-black">{pitbikeStatus.mins}</span>
-                              <span className="text-zinc-400">{pitbikeStatus.mins > 1 ? 'MINS' : 'MIN'}</span>
+                              <span className="text-emerald-700 text-sm font-black">{pitbikeStatus.mins}</span>
+                              <span className="text-zinc-700">{pitbikeStatus.mins > 1 ? 'MINS' : 'MIN'}</span>
                             </>
                           )}
                           {(!pitbikeStatus.days && !pitbikeStatus.hours && !pitbikeStatus.mins) && (
-                            <span className="text-zinc-400">{pitbikeStatus.text.replace('OPEN IN', '').trim() || pitbikeStatus.text}</span>
+                            <span className="text-zinc-700">{pitbikeStatus.text.replace('OPEN IN', '').trim() || pitbikeStatus.text}</span>
                           )}
                         </div>
                       </>
                     )}
                   </div>
                   {pitbikeStatus.isOpen && (
-                    <span className="font-mono text-[9px] font-bold uppercase tracking-wider hidden sm:inline text-emerald-400/80">
+                    <span className="font-sans text-xs font-black uppercase tracking-wider hidden sm:inline text-emerald-800">
                       LIVE STATUS
                     </span>
                   )}
@@ -276,13 +276,13 @@ export default function Track() {
 
                 {/* Text */}
                 <div>
-                  <h3 className="font-mono text-base font-bold uppercase text-white mb-1.5 flex items-center gap-2">
+                  <h3 className="font-sans text-lg sm:text-xl font-black uppercase text-zinc-950 mb-2 flex items-center gap-2">
                     {track.title}
-                    <span className="text-[9px] font-mono px-1.5 py-0.5 bg-emerald-950 border border-emerald-800 text-emerald-400 uppercase font-bold">
+                    <span className="text-xs font-sans px-2 py-0.5 bg-emerald-100 border border-emerald-500 text-emerald-900 uppercase font-black">
                       ACTIVE TRACK
                     </span>
                   </h3>
-                  <p className="text-xs text-zinc-400 leading-relaxed font-sans">
+                  <p className="text-sm text-zinc-800 leading-relaxed font-sans font-bold">
                     {track.description}
                   </p>
                 </div>
@@ -293,10 +293,10 @@ export default function Track() {
 
         {/* Video Tour Feature */}
         <div className="max-w-3xl mx-auto">
-          <div className="border border-zinc-800 bg-zinc-950 p-2">
+          <div className="border border-zinc-200 bg-white p-2 shadow-sm">
             <div 
               onClick={() => setIsPlayingVideo(true)}
-              className="relative aspect-video border border-zinc-900 bg-zinc-900 cursor-pointer overflow-hidden group"
+              className="relative aspect-video border border-zinc-200 bg-zinc-100 cursor-pointer overflow-hidden group"
             >
               <img 
                 src="https://img.youtube.com/vi/vgHBEpjlTRU/maxresdefault.jpg" 
@@ -305,10 +305,10 @@ export default function Track() {
               />
               
               <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/40">
-                <div className="w-10 h-10 bg-brand text-black rounded-none flex items-center justify-center">
-                  <Play className="w-4 h-4 fill-black translate-x-0.5" />
+                <div className="w-10 h-10 bg-brand text-white rounded-none flex items-center justify-center">
+                  <Play className="w-4 h-4 fill-white translate-x-0.5" />
                 </div>
-                <span className="mt-3 font-mono text-[10px] tracking-widest uppercase bg-black px-2 py-0.5 text-brand font-bold border border-zinc-800">
+                <span className="mt-3 font-mono text-[10px] tracking-widest uppercase bg-white px-2.5 py-1 text-brand font-bold border border-zinc-200 shadow-sm">
                   Play Video Tour
                 </span>
               </div>
@@ -320,15 +320,15 @@ export default function Track() {
 
       {/* Video Modal */}
       {isPlayingVideo && (
-        <div className="fixed inset-0 bg-black/98 z-[100] flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
           <button 
             onClick={() => setIsPlayingVideo(false)}
-            className="absolute top-4 right-4 text-zinc-400 hover:text-white bg-zinc-950 border border-zinc-800 p-2 rounded-none transition-colors"
+            className="absolute top-4 right-4 text-zinc-700 hover:text-black bg-white border border-zinc-300 p-2 rounded-none transition-colors shadow-md"
           >
             <X className="w-4 h-4" />
           </button>
           
-          <div className="w-full max-w-2xl aspect-video border border-zinc-800 bg-black">
+          <div className="w-full max-w-2xl aspect-video border border-zinc-200 bg-black shadow-2xl">
             <iframe 
               src="https://www.youtube.com/embed/vgHBEpjlTRU?autoplay=1"
               title="Rix Compound Track Video"

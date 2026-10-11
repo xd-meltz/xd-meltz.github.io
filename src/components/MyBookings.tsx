@@ -128,30 +128,30 @@ export default function MyBookings() {
   };
 
   return (
-    <div className="pt-28 pb-16 sm:pt-32 sm:pb-24 bg-neutral-950 min-h-screen text-neutral-100 flex flex-col px-3 sm:px-6 lg:px-8">
+    <div className="pt-28 pb-16 sm:pt-32 sm:pb-24 bg-white min-h-screen text-zinc-900 flex flex-col px-3 sm:px-6 lg:px-8">
       {/* Visual Header */}
       <div className="max-w-3xl mx-auto w-full text-center mb-8 sm:mb-12">
-        <div className="inline-flex bg-emerald-500/10 border border-emerald-500/20 p-1.5 sm:p-2 rounded-none mb-3 sm:mb-4">
-          <Ticket className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-400" />
+        <div className="inline-flex bg-emerald-50 border border-emerald-300 p-1.5 sm:p-2 rounded-none mb-3 sm:mb-4">
+          <Ticket className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600" />
         </div>
-        <h1 className="font-display font-black text-2xl sm:text-4xl text-white uppercase italic tracking-tight">
-          MY <span className="text-emerald-400">BOOKINGS</span>
+        <h1 className="font-display font-black text-2xl sm:text-4xl text-zinc-950 uppercase italic tracking-tight">
+          MY <span className="text-emerald-600">BOOKINGS</span>
         </h1>
-        <p className="text-neutral-400 text-[11px] sm:text-sm mt-1.5 max-w-lg mx-auto font-sans px-2">
+        <p className="text-zinc-600 text-[11px] sm:text-sm mt-1.5 max-w-lg mx-auto font-sans px-2">
           Retrieve your reservation passes, view session statuses, or complete secure Payfast checkout for pending sessions.
         </p>
       </div>
 
       {/* Search Console Card */}
       <div className="max-w-2xl mx-auto w-full mb-6 sm:mb-8">
-        <div className="bg-neutral-900 border border-neutral-800 rounded-none p-4 sm:p-6 shadow-xl relative overflow-hidden">
+        <div className="bg-white border border-zinc-200 rounded-none p-4 sm:p-6 shadow-sm relative overflow-hidden">
           {/* Subtle Accent Line */}
           <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-emerald-400" />
           
           <form onSubmit={handleSearch} className="space-y-4">
             <div>
-              <label className="block text-[10px] font-mono font-black uppercase tracking-widest text-neutral-400 mb-2">
-                ENTER YOUR ID NUMBER OR BOOKING REFERENCE <span className="text-orange-500 font-bold ml-0.5">*</span>
+              <label className="block text-[10px] font-mono font-black uppercase tracking-widest text-zinc-600 mb-2">
+                ENTER YOUR ID NUMBER OR BOOKING REFERENCE <span className="text-blue-500 font-bold ml-0.5">*</span>
               </label>
               <div className="relative">
                 <input
@@ -160,9 +160,9 @@ export default function MyBookings() {
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="e.g. 9501015028088 or BK-123456"
-                  className="w-full bg-neutral-950 border border-neutral-800 rounded-none px-3 py-2.5 sm:py-3.5 pl-9 sm:pl-11 pr-24 sm:pr-28 text-xs sm:text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 font-sans transition-all"
+                  className="w-full bg-white border border-zinc-300 rounded-none px-3 py-2.5 sm:py-3.5 pl-9 sm:pl-11 pr-24 sm:pr-28 text-xs sm:text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 font-sans transition-all"
                 />
-                <div className="absolute inset-y-0 left-3 sm:left-4 flex items-center pointer-events-none text-emerald-400">
+                <div className="absolute inset-y-0 left-3 sm:left-4 flex items-center pointer-events-none text-emerald-600">
                   <Hash className="w-3.5 h-3.5" />
                 </div>
                 
@@ -194,12 +194,12 @@ export default function MyBookings() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="bg-red-950/20 border border-red-900/40 rounded-none p-3 sm:p-4 flex items-start gap-2.5 sm:gap-3"
+              className="bg-red-50 border border-red-200 rounded-none p-3 sm:p-4 flex items-start gap-2.5 sm:gap-3"
             >
-              <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5 text-red-500 flex-shrink-0 mt-0.5" />
+              <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5 text-red-600 flex-shrink-0 mt-0.5" />
               <div>
-                <h4 className="text-red-500 font-bold text-[10px] sm:text-xs uppercase tracking-wider font-mono">No Records Found</h4>
-                <p className="text-neutral-400 text-[11px] sm:text-xs mt-0.5 leading-relaxed">{error}</p>
+                <h4 className="text-red-700 font-bold text-[10px] sm:text-xs uppercase tracking-wider font-mono">No Records Found</h4>
+                <p className="text-red-600 text-[11px] sm:text-xs mt-0.5 leading-relaxed">{error}</p>
               </div>
             </motion.div>
           )}
@@ -212,10 +212,10 @@ export default function MyBookings() {
               className="space-y-3 sm:space-y-4"
             >
               <div className="flex items-center justify-between px-1">
-                <span className="text-[9px] font-mono font-bold tracking-widest text-neutral-400 uppercase">
+                <span className="text-[9px] font-mono font-bold tracking-widest text-zinc-600 uppercase">
                   FOUND {bookings.length} {bookings.length === 1 ? 'BOOKING' : 'BOOKINGS'}
                 </span>
-                <span className="text-[9px] font-mono text-neutral-500">
+                <span className="text-[9px] font-mono text-zinc-500">
                   Sorted by date
                 </span>
               </div>
@@ -227,43 +227,43 @@ export default function MyBookings() {
                     initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.05 }}
-                    className="bg-neutral-900 border border-neutral-800 rounded-none overflow-hidden hover:border-neutral-700 transition-all group shadow-lg"
+                    className="bg-white border border-zinc-200 rounded-none overflow-hidden hover:border-zinc-300 transition-all group shadow-sm"
                   >
                     <div className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
                       {/* Booking Summary */}
                       <div className="space-y-2 sm:space-y-3">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-[10px] font-mono font-black text-emerald-400 tracking-wider bg-emerald-500/10 px-2 py-0.5 rounded-none border border-emerald-500/20">
+                          <span className="text-[10px] font-mono font-black text-emerald-700 tracking-wider bg-emerald-50 px-2 py-0.5 rounded-none border border-emerald-200">
                             {booking.id}
                           </span>
                           
-                          <span className="text-[8px] sm:text-[9px] font-mono font-black uppercase tracking-widest bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-none flex items-center gap-1">
+                          <span className="text-[8px] sm:text-[9px] font-mono font-black uppercase tracking-widest bg-emerald-50 border border-emerald-200 text-emerald-700 px-2 py-0.5 rounded-none flex items-center gap-1">
                             <CheckCircle2 className="w-2.5 h-2.5" />
                             PAID & SECURED
                           </span>
                         </div>
 
                         <div>
-                          <h3 className="font-display font-extrabold text-sm sm:text-base text-white">
+                          <h3 className="font-display font-extrabold text-sm sm:text-base text-zinc-950">
                             {booking.packageName}
                           </h3>
-                          <p className="text-neutral-400 text-[11px] sm:text-xs mt-0.5 font-sans">
-                            Booked for: <strong className="text-neutral-200">{booking.name}</strong>
+                          <p className="text-zinc-600 text-[11px] sm:text-xs mt-0.5 font-sans">
+                            Booked for: <strong className="text-zinc-900">{booking.name}</strong>
                           </p>
                         </div>
 
                         {/* Timing / Detail Blocks */}
-                        <div className="flex items-center gap-3 sm:gap-4 text-[10px] sm:text-xs font-mono text-neutral-400 flex-wrap">
+                        <div className="flex items-center gap-3 sm:gap-4 text-[10px] sm:text-xs font-mono text-zinc-600 flex-wrap">
                           <div className="flex items-center gap-1">
-                            <Calendar className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-400" />
+                            <Calendar className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-600" />
                             <span>{booking.date}</span>
                           </div>
                           <div className="flex items-center gap-1">
-                            <Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-400" />
+                            <Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-600" />
                             <span>{booking.slot}</span>
                           </div>
                           <div className="flex items-center gap-1">
-                            <Receipt className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-400" />
+                            <Receipt className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-600" />
                             <span>R {booking.amount}</span>
                           </div>
                         </div>
@@ -273,7 +273,7 @@ export default function MyBookings() {
                       <div className="flex items-center sm:self-center mt-1 sm:mt-0">
                         <button
                           onClick={() => navigateTo('ticket', booking.id)}
-                          className="w-full sm:w-auto px-3.5 py-2 sm:px-4 sm:py-2.5 font-extrabold uppercase rounded-none text-[10px] sm:text-xs tracking-wider transition-all flex items-center justify-center gap-1 sm:gap-1.5 cursor-pointer bg-emerald-500 hover:bg-emerald-400 text-black shadow-md shadow-emerald-500/10"
+                          className="w-full sm:w-auto px-3.5 py-2 sm:px-4 sm:py-2.5 font-extrabold uppercase rounded-none text-[10px] sm:text-xs tracking-wider transition-all flex items-center justify-center gap-1 sm:gap-1.5 cursor-pointer bg-emerald-500 hover:bg-emerald-400 text-black shadow-sm"
                         >
                           <span>View Pass</span>
                           <ArrowRight className="w-3 h-3" />

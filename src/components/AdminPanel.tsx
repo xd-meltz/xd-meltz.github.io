@@ -752,7 +752,7 @@ export default function AdminPanel() {
 
             <button
               type="submit"
-              className="w-full py-3 bg-brand hover:bg-brand-light text-black font-mono font-bold uppercase rounded-none text-xs tracking-wider transition-colors cursor-pointer border border-brand"
+              className="w-full py-3 bg-brand hover:bg-brand-light text-white font-mono font-bold uppercase rounded-none text-xs tracking-wider transition-colors cursor-pointer border border-brand"
             >
               Sign In to Dashboard
             </button>
@@ -820,19 +820,19 @@ export default function AdminPanel() {
         <div className="flex border border-zinc-800 bg-zinc-950 p-0.5 rounded-none gap-0.5">
           <button
             onClick={() => setAdminTab('bookings')}
-            className={`flex-1 py-1 text-center rounded-none text-[9px] font-mono font-bold uppercase tracking-wider transition-all cursor-pointer ${adminTab === 'bookings' ? 'bg-brand text-black border border-brand' : 'text-neutral-400 hover:text-white hover:bg-zinc-900'}`}
+            className={`flex-1 py-1 text-center rounded-none text-[9px] font-mono font-bold uppercase tracking-wider transition-all cursor-pointer ${adminTab === 'bookings' ? 'bg-brand text-white border border-brand' : 'text-neutral-400 hover:text-white hover:bg-zinc-900'}`}
           >
             Bookings
           </button>
           <button
             onClick={() => setAdminTab('closures')}
-            className={`flex-1 py-1 text-center rounded-none text-[9px] font-mono font-bold uppercase tracking-wider transition-all cursor-pointer ${adminTab === 'closures' ? 'bg-brand text-black border border-brand' : 'text-neutral-400 hover:text-white hover:bg-zinc-900'}`}
+            className={`flex-1 py-1 text-center rounded-none text-[9px] font-mono font-bold uppercase tracking-wider transition-all cursor-pointer ${adminTab === 'closures' ? 'bg-brand text-white border border-brand' : 'text-neutral-400 hover:text-white hover:bg-zinc-900'}`}
           >
             Locks
           </button>
           <button
             onClick={() => setAdminTab('config')}
-            className={`flex-1 py-1 text-center rounded-none text-[9px] font-mono font-bold uppercase tracking-wider transition-all cursor-pointer ${adminTab === 'config' ? 'bg-brand text-black border border-brand' : 'text-neutral-400 hover:text-white hover:bg-zinc-900'}`}
+            className={`flex-1 py-1 text-center rounded-none text-[9px] font-mono font-bold uppercase tracking-wider transition-all cursor-pointer ${adminTab === 'config' ? 'bg-brand text-white border border-brand' : 'text-neutral-400 hover:text-white hover:bg-zinc-900'}`}
           >
             Config
           </button>
@@ -866,7 +866,7 @@ export default function AdminPanel() {
             <div className="flex items-center justify-between gap-2">
               <button
                 onClick={() => setShowManualBookingModal(!showManualBookingModal)}
-                className="w-full sm:w-auto px-3 py-1.5 bg-brand hover:bg-brand-light text-black font-mono font-bold text-[10px] uppercase tracking-wider rounded-none flex items-center justify-center gap-1.5 cursor-pointer border border-brand transition-all shadow-sm"
+                className="w-full sm:w-auto px-3 py-1.5 bg-brand hover:bg-brand-light text-white font-mono font-bold text-[10px] uppercase tracking-wider rounded-none flex items-center justify-center gap-1.5 cursor-pointer border border-brand transition-all shadow-sm"
               >
                 <Plus className="w-3.5 h-3.5" />
                 {showManualBookingModal ? 'Close Manual Booking Form' : 'Book Bikes (Admin Manual Entry)'}
@@ -988,7 +988,7 @@ export default function AdminPanel() {
                     <div className="grid grid-cols-2 gap-2 bg-zinc-900/60 p-2 border border-zinc-900">
                       {(adminBookingBikeType === 'PitBike' || adminBookingBikeType === 'Mixed') && (
                         <div>
-                          <label className="block text-[8px] font-mono uppercase text-neutral-400 mb-0.5 font-bold">Pit Bikes (1 - 8)</label>
+                          <label className="block text-[8px] font-mono uppercase text-neutral-400 mb-0.5 font-bold">Pit Bikes (1 - 10)</label>
                           <select
                             value={adminPitBikeQty}
                             onChange={(e) => {
@@ -999,13 +999,13 @@ export default function AdminPanel() {
                             }}
                             className="w-full bg-zinc-950 border border-zinc-800 rounded-none px-2 py-1 text-[10px] text-white font-mono"
                           >
-                            {[1, 2, 3, 4, 5, 6, 7, 8].map(n => <option key={n} value={n}>{n} Pit Bike{n > 1 ? 's' : ''}</option>)}
+                            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => <option key={n} value={n}>{n} Pit Bike{n > 1 ? 's' : ''}</option>)}
                           </select>
                         </div>
                       )}
                       {(adminBookingBikeType === 'QuadBike' || adminBookingBikeType === 'Mixed') && (
                         <div>
-                          <label className="block text-[8px] font-mono uppercase text-neutral-400 mb-0.5 font-bold">Quad Bikes (1 - 2)</label>
+                          <label className="block text-[8px] font-mono uppercase text-neutral-400 mb-0.5 font-bold">Quad Bikes (1 - 3)</label>
                           <select
                             value={adminQuadBikeQty}
                             onChange={(e) => {
@@ -1016,7 +1016,7 @@ export default function AdminPanel() {
                             }}
                             className="w-full bg-zinc-950 border border-zinc-800 rounded-none px-2 py-1 text-[10px] text-white font-mono"
                           >
-                            {[1, 2].map(n => <option key={n} value={n}>{n} Quad Bike{n > 1 ? 's' : ''}</option>)}
+                            {[1, 2, 3].map(n => <option key={n} value={n}>{n} Quad Bike{n > 1 ? 's' : ''}</option>)}
                           </select>
                         </div>
                       )}
@@ -1050,7 +1050,7 @@ export default function AdminPanel() {
                       <button
                         type="submit"
                         disabled={creatingAdminBooking}
-                        className="px-3 py-1 bg-brand hover:bg-brand-light text-black font-mono font-bold text-[9px] uppercase tracking-wider rounded-none cursor-pointer border border-brand"
+                        className="px-3 py-1 bg-brand hover:bg-brand-light text-white font-mono font-bold text-[9px] uppercase tracking-wider rounded-none cursor-pointer border border-brand"
                       >
                         {creatingAdminBooking ? 'Creating...' : 'Save Admin Booking'}
                       </button>
@@ -1264,7 +1264,7 @@ export default function AdminPanel() {
                   <button
                     type="submit"
                     disabled={submittingClose}
-                    className="w-full py-1 bg-brand hover:bg-brand-light text-black font-mono font-bold uppercase rounded-none text-[9px] tracking-wider border border-brand transition-colors cursor-pointer"
+                    className="w-full py-1 bg-brand hover:bg-brand-light text-white font-mono font-bold uppercase rounded-none text-[9px] tracking-wider border border-brand transition-colors cursor-pointer"
                   >
                     {submittingClose ? 'Locking...' : 'Apply Date Lock'}
                   </button>
@@ -1342,7 +1342,7 @@ export default function AdminPanel() {
                   <button
                     type="submit"
                     disabled={submittingSlotClose}
-                    className="w-full py-1 bg-brand hover:bg-brand-light text-black font-mono font-bold uppercase rounded-none text-[9px] tracking-wider border border-brand transition-colors cursor-pointer"
+                    className="w-full py-1 bg-brand hover:bg-brand-light text-white font-mono font-bold uppercase rounded-none text-[9px] tracking-wider border border-brand transition-colors cursor-pointer"
                   >
                     {submittingSlotClose ? 'Locking...' : 'Apply Slot Lock'}
                   </button>
