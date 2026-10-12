@@ -26,7 +26,8 @@ export const ALL_DRIVE_PHOTOS: DrivePhoto[] = [
   { id: "1nmxx3gEIrqZsjXMzUd55kKo0ZqrZCfps", title: "Compound Grounds", url: "https://lh3.googleusercontent.com/d/1nmxx3gEIrqZsjXMzUd55kKo0ZqrZCfps" },
   { id: "1GnjszyPZWAt6X6M1-2WABaF3omPt2JaM", title: "Riding Straight", url: "https://lh3.googleusercontent.com/d/1GnjszyPZWAt6X6M1-2WABaF3omPt2JaM" },
   { id: "1VY8iCidl6Ij9QgxUas2F15IsvlJaV6T_", title: "Action Corner", url: "https://lh3.googleusercontent.com/d/1VY8iCidl6Ij9QgxUas2F15IsvlJaV6T_" },
-  { id: "1Lth22FNwL9_TppOXyIXtVHKMQwQgJE3Z", title: "Winelands Track Arena", url: "https://lh3.googleusercontent.com/d/1Lth22FNwL9_TppOXyIXtVHKMQwQgJE3Z" }
+  { id: "1Lth22FNwL9_TppOXyIXtVHKMQwQgJE3Z", title: "Winelands Track Arena", url: "https://lh3.googleusercontent.com/d/1Lth22FNwL9_TppOXyIXtVHKMQwQgJE3Z" },
+  { id: "1xz05yNDCqSVtxLag1_6iZnvobV4m-_xn", title: "Track Action Straight", url: "https://lh3.googleusercontent.com/d/1xz05yNDCqSVtxLag1_6iZnvobV4m-_xn" }
 ];
 
 // Fisher-Yates shuffle

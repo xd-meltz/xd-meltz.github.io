@@ -193,33 +193,33 @@ export default function Track() {
   const trackBgPhoto = getShuffledPhoto(3);
 
   return (
-    <section id="track" className="relative py-8 sm:py-12 border-b border-zinc-800 text-white overflow-hidden">
-      {/* Background photo from Google Drive - dynamic shuffled */}
-      <div className="absolute inset-0 z-0">
+    <section id="track" className="relative py-6 sm:py-12 border-b border-zinc-800 text-white overflow-hidden">
+      {/* Background photo from Google Drive - optimized without backdrop blur */}
+      <div className="absolute inset-0 z-0 pointer-events-none transform-gpu">
         <img 
           src={trackBgPhoto.url} 
           alt="" 
           className="w-full h-full object-cover object-center"
         />
-        <div className="absolute inset-0 bg-zinc-950/70 sm:bg-zinc-950/65 backdrop-blur-[1px]" />
+        <div className="absolute inset-0 bg-zinc-950/70 sm:bg-zinc-950/65" />
       </div>
 
-      <div className="relative z-10 max-w-6xl mx-auto px-4">
+      <div className="relative z-10 max-w-6xl mx-auto px-3 sm:px-4">
         
         {/* Section Header */}
-        <div className="mb-8 md:mb-12">
+        <div className="mb-4 sm:mb-8">
           <h2 className="font-sans text-3xl sm:text-4xl lg:text-5xl font-black uppercase tracking-tight italic text-white">
             The Tracks
           </h2>
         </div>
 
         {/* Tracks Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-6 mb-6 sm:mb-10">
           {tracks.map((track, idx) => {
             return (
               <div 
                 key={idx} 
-                className="border-2 border-zinc-700 bg-zinc-900/90 shadow-2xl p-5 flex flex-col gap-4 relative backdrop-blur-md"
+                className="border sm:border-2 border-zinc-700 bg-zinc-900/90 shadow-2xl p-3 sm:p-5 flex flex-col gap-3 sm:gap-4 relative"
               >
                 {/* Image */}
                 <div className="relative aspect-[1.7] overflow-hidden bg-zinc-950">
@@ -231,7 +231,7 @@ export default function Track() {
                 </div>
 
                 {/* Status Banner directly underneath the image */}
-                <div className={`py-2 px-3.5 border-2 flex items-center justify-between ${
+                <div className={`py-1.5 sm:py-2 px-2.5 sm:px-3.5 border sm:border-2 flex items-center justify-between ${
                   pitbikeStatus.isOpen
                     ? 'bg-emerald-950/70 border-emerald-500 text-emerald-100'
                     : 'bg-zinc-950/80 border-zinc-700 text-zinc-200'
@@ -286,9 +286,9 @@ export default function Track() {
 
                 {/* Text */}
                 <div>
-                  <h3 className="font-sans text-lg sm:text-xl font-black uppercase text-white flex items-center gap-2">
+                  <h3 className="font-sans text-base sm:text-xl font-black uppercase text-white flex items-center gap-2">
                     {track.title}
-                    <span className="text-xs font-sans px-2 py-0.5 bg-emerald-950/80 border border-emerald-500 text-emerald-300 uppercase font-black">
+                    <span className="text-[10px] sm:text-xs font-sans px-2 py-0.5 bg-emerald-950/80 border border-emerald-500 text-emerald-300 uppercase font-black">
                       ACTIVE TRACK
                     </span>
                   </h3>
@@ -300,7 +300,7 @@ export default function Track() {
 
         {/* Video Tour Feature */}
         <div className="max-w-3xl mx-auto">
-          <div className="border-2 border-zinc-700 bg-zinc-900/90 p-2 sm:p-3 shadow-2xl backdrop-blur-md">
+          <div className="border sm:border-2 border-zinc-700 bg-zinc-900/90 p-1.5 sm:p-3 shadow-2xl">
             <div 
               onClick={() => setIsPlayingVideo(true)}
               className="relative aspect-video border border-zinc-700 bg-zinc-950 cursor-pointer overflow-hidden group"
@@ -312,10 +312,10 @@ export default function Track() {
               />
               
               <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/40">
-                <div className="w-10 h-10 bg-brand text-white rounded-none flex items-center justify-center shadow-lg">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 bg-brand text-white rounded-none flex items-center justify-center shadow-lg">
                   <Play className="w-4 h-4 fill-white translate-x-0.5" />
                 </div>
-                <span className="mt-3 font-mono text-[10px] tracking-widest uppercase bg-zinc-900 px-2.5 py-1 text-brand-light font-black border border-zinc-700 shadow-md">
+                <span className="mt-2.5 sm:mt-3 font-mono text-[10px] tracking-widest uppercase bg-zinc-900 px-2 sm:px-2.5 py-1 text-brand-light font-black border border-zinc-700 shadow-md">
                   Play Video Tour
                 </span>
               </div>
