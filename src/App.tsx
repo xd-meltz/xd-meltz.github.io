@@ -6,6 +6,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import Navigation from './components/Navigation';
+import WebsiteBackground from './components/WebsiteBackground';
 import Hero from './components/Hero';
 import RiderRequirements from './components/RiderRequirements';
 import Track from './components/Track';
@@ -112,8 +113,10 @@ export default function App() {
   }, [hasAcceptedTerms]);
 
   return (
-    <div id="appRoot" className="min-h-screen bg-white text-zinc-900 flex flex-col relative font-sans antialiased selection:bg-brand selection:text-white">
-      
+    <div id="appRoot" className="min-h-screen bg-zinc-950 text-white flex flex-col relative font-sans antialiased selection:bg-brand selection:text-white">
+      {/* Dynamic Website Background featuring all 19 photos from Google Drive */}
+      <WebsiteBackground />
+
       {/* Terms & Conditions Acceptance Modal */}
       <TermsModal
         isOpen={showTermsModal}
@@ -146,7 +149,7 @@ export default function App() {
       </AnimatePresence>
 
       {/* Main content flow */}
-      <main className="flex-1 w-full flex flex-col">
+      <main className="flex-1 w-full flex flex-col relative z-10">
         {currentPage === 'home' && (
           <>
             <Hero />

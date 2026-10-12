@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowUpRight, X, ChevronLeft, ChevronRight, Eye, Maximize2 } from 'lucide-react';
+import { getShuffledPhoto } from '../lib/backgroundPhotos';
 
 export default function EventsGallery() {
   const [activeLightboxIndex, setActiveLightboxIndex] = useState<number | null>(null);
   const [activeEventIndex, setActiveEventIndex] = useState<number | null>(null);
+
+  const upcomingEventsBgPhoto = getShuffledPhoto(5);
+  const galleryBgPhoto = getShuffledPhoto(6);
 
   // Close modals on Escape key
   useEffect(() => {
@@ -69,18 +73,25 @@ export default function EventsGallery() {
   };
 
   return (
-    <div className="bg-white text-zinc-900">
+    <div className="relative text-white">
       
       {/* 1. Upcoming Events */}
-      <section id="events" className="py-8 sm:py-12 bg-white border-b border-zinc-200 scroll-mt-14">
-        <div className="max-w-6xl mx-auto px-4">
+      <section id="events" className="relative py-8 sm:py-12 border-b border-zinc-800 text-white scroll-mt-14 overflow-hidden">
+        {/* Background photo from Google Drive - dynamic shuffled */}
+        <div className="absolute inset-0 z-0">
+          <img 
+            src={upcomingEventsBgPhoto.url} 
+            alt="" 
+            className="w-full h-full object-cover object-center"
+          />
+          <div className="absolute inset-0 bg-zinc-950/70 sm:bg-zinc-950/65 backdrop-blur-[1px]" />
+        </div>
+
+        <div className="relative z-10 max-w-6xl mx-auto px-4">
           
           {/* Header */}
           <div className="mb-8 md:mb-12">
-            <span className="font-mono text-[10px] uppercase tracking-widest text-brand font-bold block mb-1">
-              Action & Schedules
-            </span>
-            <h2 className="font-mono text-2xl sm:text-3xl font-bold uppercase tracking-tight italic text-zinc-950">
+            <h2 className="font-mono text-2xl sm:text-3xl font-bold uppercase tracking-tight italic text-white">
               Upcoming Events
             </h2>
           </div>
@@ -90,12 +101,12 @@ export default function EventsGallery() {
             {upcomingEvents.map((event, idx) => (
               <div 
                 key={idx} 
-                className="border border-zinc-200 bg-white p-3 group hover:border-brand/50 transition-colors flex flex-col justify-between shadow-sm"
+                className="border-2 border-zinc-700 bg-zinc-900/90 p-3 group hover:border-brand transition-colors flex flex-col justify-between shadow-2xl backdrop-blur-md"
               >
                 <div>
                   <div 
                     onClick={() => setActiveEventIndex(idx)}
-                    className="relative overflow-hidden bg-zinc-50 border border-zinc-200 cursor-pointer group/img"
+                    className="relative overflow-hidden bg-zinc-950 border border-zinc-800 cursor-pointer group/img"
                     title="Click to view full screen"
                   >
                     <img
@@ -104,12 +115,12 @@ export default function EventsGallery() {
                       loading="lazy"
                       className="w-full h-auto object-contain block transition-transform duration-300 group-hover/img:scale-[1.02]"
                     />
-                    <div className="absolute top-3 left-3 bg-white/90 border border-zinc-200 text-brand text-[9px] font-mono uppercase font-bold px-2 py-0.5 pointer-events-none shadow-sm">
+                    <div className="absolute top-3 left-3 bg-zinc-900/90 border border-zinc-700 text-brand-light text-[9px] font-mono uppercase font-black px-2 py-0.5 pointer-events-none shadow-sm">
                       {event.badge}
                     </div>
 
                     {/* Hover full screen overlay */}
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center">
+                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center">
                       <div className="bg-brand text-white font-mono text-[10px] uppercase font-black px-2.5 py-1.5 flex items-center gap-1.5 shadow-lg">
                         <Maximize2 className="w-3.5 h-3.5" />
                         <span>View Full Screen</span>
@@ -117,8 +128,8 @@ export default function EventsGallery() {
                     </div>
 
                     {/* Mobile always-visible expand icon badge */}
-                    <div className="absolute bottom-2 right-2 bg-white/90 text-zinc-900 border border-zinc-200 px-2 py-1 flex items-center gap-1 text-[9px] font-mono uppercase font-bold sm:hidden shadow-sm">
-                      <Maximize2 className="w-3.5 h-3.5 text-brand" />
+                    <div className="absolute bottom-2 right-2 bg-zinc-900/90 text-white border border-zinc-700 px-2 py-1 flex items-center gap-1 text-[9px] font-mono uppercase font-bold sm:hidden shadow-sm">
+                      <Maximize2 className="w-3.5 h-3.5 text-brand-light" />
                       <span>Full Screen</span>
                     </div>
                   </div>
@@ -126,14 +137,14 @@ export default function EventsGallery() {
                   <div className="mt-3 flex justify-between items-center">
                     <h3 
                       onClick={() => setActiveEventIndex(idx)}
-                      className="font-mono text-xs font-bold uppercase text-zinc-950 truncate max-w-[180px] cursor-pointer hover:text-brand transition-colors"
+                      className="font-mono text-xs font-bold uppercase text-white truncate max-w-[180px] cursor-pointer hover:text-brand-light transition-colors"
                       title="Click to view full screen"
                     >
                       {event.title}
                     </h3>
                     <a 
                       href="#about"
-                      className="text-brand hover:text-brand-light flex items-center gap-0.5 text-[10px] font-mono uppercase font-bold"
+                      className="text-brand-light hover:text-white flex items-center gap-0.5 text-[10px] font-mono uppercase font-black"
                     >
                       Ask <ArrowUpRight className="w-3 h-3" />
                     </a>
@@ -147,15 +158,22 @@ export default function EventsGallery() {
       </section>
 
       {/* 2. Photo Gallery */}
-      <section id="gallery" className="py-8 sm:py-12 bg-white border-b border-zinc-200 scroll-mt-14">
-        <div className="max-w-6xl mx-auto px-4">
+      <section id="gallery" className="relative py-8 sm:py-12 border-b border-zinc-800 text-white scroll-mt-14 overflow-hidden">
+        {/* Background photo from Google Drive - dynamic shuffled */}
+        <div className="absolute inset-0 z-0">
+          <img 
+            src={galleryBgPhoto.url} 
+            alt="" 
+            className="w-full h-full object-cover object-center"
+          />
+          <div className="absolute inset-0 bg-zinc-950/70 sm:bg-zinc-950/65 backdrop-blur-[1px]" />
+        </div>
+
+        <div className="relative z-10 max-w-6xl mx-auto px-4">
           
           {/* Header */}
           <div className="mb-8 md:mb-12">
-            <span className="font-mono text-[10px] uppercase tracking-widest text-brand font-bold block mb-1">
-              Compound Action
-            </span>
-            <h2 className="font-mono text-2xl sm:text-3xl font-bold uppercase tracking-tight italic text-zinc-950">
+            <h2 className="font-mono text-2xl sm:text-3xl font-bold uppercase tracking-tight italic text-white">
               Photo Gallery
             </h2>
           </div>
@@ -166,7 +184,7 @@ export default function EventsGallery() {
               <div
                 key={index}
                 onClick={() => setActiveLightboxIndex(index)}
-                className="group relative aspect-square border border-zinc-200 bg-zinc-50 cursor-pointer overflow-hidden transition-colors hover:border-brand/60 shadow-sm"
+                className="group relative aspect-square border-2 border-zinc-700 bg-zinc-900 cursor-pointer overflow-hidden transition-colors hover:border-brand shadow-lg"
               >
                 <img
                   src={img.url}

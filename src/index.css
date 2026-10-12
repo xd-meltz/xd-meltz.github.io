@@ -12,20 +12,22 @@
   --color-brand-dark: #1D4ED8;
 }
 
-/* Minimalist professional layout defaults - Clean White Light Mode with Bold Simple Typography */
+/* Minimalist professional layout defaults - Dark Theme with Bold Simple Typography */
 html {
   font-size: 17px;
   scroll-behavior: smooth;
   scroll-padding-top: 70px;
-  background-color: #FFFFFF;
+  background-color: #09090B;
+  color: #F4F4F5;
+  color-scheme: dark;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
 }
 
 body {
-  background-color: #FFFFFF;
-  color: #09090B;
+  background-color: #09090B;
+  color: #F4F4F5;
   font-family: var(--font-sans);
   font-weight: 600;
   line-height: 1.5;
@@ -50,11 +52,11 @@ button, input, select, textarea {
 }
 
 ::-webkit-scrollbar-track {
-  background: #F4F4F5;
+  background: #18181B;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #A1A1AA;
+  background: #3F3F46;
 }
 
 ::-webkit-scrollbar-thumb:hover {
