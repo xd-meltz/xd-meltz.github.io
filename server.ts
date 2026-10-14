@@ -21,11 +21,14 @@ interface Booking {
   phone: string;
   date: string;
   slot: string;
+  slots?: string[];
   bikeType: "PitBike" | "QuadBike" | "GroupPackage" | "Mixed";
   packageName?: string;
   quantity: number;
   pitBikeQty?: number;
   quadBikeQty?: number;
+  goKartQty?: number;
+  miniBikeQty?: number;
   amount: number;
   paid: boolean;
   createdAt: string;
@@ -703,8 +706,7 @@ async function startServer() {
         return true;
       });
 
-      // Initial default capacity for 45-minute slots from 9 AM to 3 PM
-      const slots = [
+      const standardSlots = [
         "09:00",
         "09:45",
         "10:30",
@@ -715,44 +717,77 @@ async function startServer() {
         "14:15",
       ];
 
+      const kidsSlots = [
+        "09:00", "09:15", "09:30", "09:45",
+        "10:00", "10:15", "10:30", "10:45",
+        "11:00", "11:15", "11:30", "11:45",
+        "12:00", "12:15", "12:30", "12:45",
+        "13:00", "13:15", "13:30", "13:45",
+        "14:00", "14:15", "14:30", "14:45"
+      ];
+
       const [year, month, day] = date.split("-").map(Number);
       const dayOfWeek = new Date(year, month - 1, day).getDay();
 
-      const availabilityMap: Record<string, { pitbikes: number; quadbikes: number }> = {};
+      const availabilityMap: Record<string, { pitbikes: number; quadbikes: number; gokarts: number; minibikes: number }> = {};
 
-      slots.forEach((slot) => {
-        // Sundays: Close at 2:30 PM (14:30) maximum, so exclude the 14:15 slot which runs to 15:00
-        if (dayOfWeek === 0 && slot === "14:15") {
-          return;
+      // 1. Initialize Standard 45-min slots
+      standardSlots.forEach((slot) => {
+        if (dayOfWeek === 0 && slot === "14:15") return;
+        availabilityMap[slot] = { pitbikes: 10, quadbikes: 3, gokarts: 0, minibikes: 0 };
+      });
+
+      // 2. Initialize Kids 15-min slots
+      kidsSlots.forEach((slot) => {
+        if (dayOfWeek === 0 && (slot === "14:30" || slot === "14:45")) return;
+        if (!availabilityMap[slot]) {
+          availabilityMap[slot] = { pitbikes: 0, quadbikes: 0, gokarts: 4, minibikes: 2 };
+        } else {
+          availabilityMap[slot].gokarts = 4;
+          availabilityMap[slot].minibikes = 2;
+        }
+      });
+
+      // Deduct bookings (supports multi-slot b.slots or b.slot)
+      dateBookings.forEach((b: any) => {
+        const bookedSlots: string[] = Array.isArray(b.slots) && b.slots.length > 0
+          ? b.slots
+          : (b.slot ? b.slot.split(',').map((s: string) => s.trim()).filter(Boolean) : []);
+
+        let bPit = 0;
+        let bQuad = 0;
+        let bKart = 0;
+        let bMini = 0;
+
+        if (b.bikeType === "PitBike") {
+          bPit += b.quantity;
+        } else if (b.bikeType === "QuadBike") {
+          bQuad += b.quantity;
+        } else if (b.bikeType === "GoKart") {
+          bKart += b.quantity;
+        } else if (b.bikeType === "MiniBike") {
+          bMini += b.quantity;
+        } else if (b.bikeType === "GroupPackage") {
+          if (b.quantity >= 10) {
+            bPit += 10;
+          } else {
+            bPit += b.quantity;
+          }
+        } else if (b.bikeType === "Mixed") {
+          bPit += b.pitBikeQty || 0;
+          bQuad += b.quadBikeQty || 0;
+          bKart += b.goKartQty || 0;
+          bMini += b.miniBikeQty || 0;
         }
 
-        // Base capacities
-        let bookedPitbikes = 0;
-        let bookedQuadbikes = 0;
-
-        const slotBookings = dateBookings.filter((b) => b.slot === slot);
-        slotBookings.forEach((b) => {
-          if (b.bikeType === "PitBike") {
-            bookedPitbikes += b.quantity;
-          } else if (b.bikeType === "QuadBike") {
-            bookedQuadbikes += b.quantity;
-          } else if (b.bikeType === "GroupPackage") {
-            if (b.quantity >= 10) {
-              bookedPitbikes += 8;
-              bookedQuadbikes += 2;
-            } else {
-              bookedPitbikes += b.quantity; // usually 5
-            }
-          } else if (b.bikeType === "Mixed") {
-            bookedPitbikes += b.pitBikeQty || 0;
-            bookedQuadbikes += b.quadBikeQty || 0;
+        bookedSlots.forEach((slot) => {
+          if (availabilityMap[slot]) {
+            availabilityMap[slot].pitbikes = Math.max(0, availabilityMap[slot].pitbikes - bPit);
+            availabilityMap[slot].quadbikes = Math.max(0, availabilityMap[slot].quadbikes - bQuad);
+            availabilityMap[slot].gokarts = Math.max(0, availabilityMap[slot].gokarts - bKart);
+            availabilityMap[slot].minibikes = Math.max(0, availabilityMap[slot].minibikes - bMini);
           }
         });
-
-        availabilityMap[slot] = {
-          pitbikes: Math.max(0, 8 - bookedPitbikes),
-          quadbikes: Math.max(0, 2 - bookedQuadbikes),
-        };
       });
 
       res.json(availabilityMap);
@@ -768,12 +803,23 @@ async function startServer() {
       return;
     }
 
+    const requestedSlots: string[] = Array.isArray(req.body.slots) && req.body.slots.length > 0 
+      ? req.body.slots 
+      : (slot ? slot.split(',').map((s: string) => s.trim()).filter(Boolean) : []);
+
+    if (requestedSlots.length === 0) {
+      res.status(400).json({ error: "Please select at least one time slot." });
+      return;
+    }
+
     // Validate Sunday maximum time constraint (closes 2:30 PM)
     const [year, month, day] = date.split("-").map(Number);
     const dayOfWeek = new Date(year, month - 1, day).getDay();
-    if (dayOfWeek === 0 && slot === "14:15") {
-      res.status(400).json({ error: "The 14:15 slot is not available on Sundays as the track closes at 2:30 PM maximum." });
-      return;
+    for (const s of requestedSlots) {
+      if (dayOfWeek === 0 && (s === "14:15" || s === "14:30" || s === "14:45")) {
+        res.status(400).json({ error: `Slot ${s} is not available on Sundays as the track closes at 2:30 PM maximum.` });
+        return;
+      }
     }
 
     // Check if date is closed first
@@ -789,77 +835,100 @@ async function startServer() {
       return;
     }
 
-    // Double check availability (paid bookings or unpaid bookings created in last 5 minutes)
+    // Double check availability for each requested slot
     const bookings = getBookings();
-    const dateBookings = bookings.filter((b) => {
-      if (b.date !== date || b.slot !== slot) return false;
-      if (b.paid) return true;
-      const createdTime = parseSafeTime(b.createdAt);
-      const now = Date.now();
-      const fiveMinutesInMs = 5 * 60 * 1000;
-      return now - createdTime < fiveMinutesInMs;
-    });
-    
-    let bookedPitbikes = 0;
-    let bookedQuadbikes = 0;
+    for (const checkSlot of requestedSlots) {
+      const dateBookings = bookings.filter((b) => {
+        if (b.date !== date) return false;
+        const bSlots: string[] = Array.isArray(b.slots) && b.slots.length > 0 
+          ? b.slots 
+          : (b.slot ? b.slot.split(',').map((s: string) => s.trim()) : []);
+        if (!bSlots.includes(checkSlot)) return false;
+        if (b.paid) return true;
+        const createdTime = parseSafeTime(b.createdAt);
+        const now = Date.now();
+        const fiveMinutesInMs = 5 * 60 * 1000;
+        return now - createdTime < fiveMinutesInMs;
+      });
+      
+      let bookedPitbikes = 0;
+      let bookedQuadbikes = 0;
+      let bookedGokarts = 0;
+      let bookedMinibikes = 0;
 
-    dateBookings.forEach((b) => {
-      if (b.bikeType === "PitBike") {
-        bookedPitbikes += b.quantity;
-      } else if (b.bikeType === "QuadBike") {
-        bookedQuadbikes += b.quantity;
-      } else if (b.bikeType === "GroupPackage") {
-        if (b.quantity >= 10) {
-          bookedPitbikes += 8;
-          bookedQuadbikes += 2;
-        } else {
+      dateBookings.forEach((b: any) => {
+        if (b.bikeType === "PitBike") {
           bookedPitbikes += b.quantity;
-        }
-      } else if (b.bikeType === "Mixed") {
-        bookedPitbikes += b.pitBikeQty || 0;
-        bookedQuadbikes += b.quadBikeQty || 0;
-      }
-    });
-
-    const availPitbikes = Math.max(0, 8 - bookedPitbikes);
-    const availQuadbikes = Math.max(0, 2 - bookedQuadbikes);
-
-    if (bikeType === "Mixed") {
-      const pbQty = Number(req.body.pitBikeQty || 0);
-      const qbQty = Number(req.body.quadBikeQty || 0);
-      if (pbQty === 0 && qbQty === 0) {
-        res.status(400).json({ error: "Please select at least one bike to book." });
-        return;
-      }
-      if (pbQty > availPitbikes) {
-        res.status(400).json({ error: `Not enough pit bikes available. Only ${availPitbikes} remaining.` });
-        return;
-      }
-      if (qbQty > availQuadbikes) {
-        res.status(400).json({ error: `Not enough quad bikes available. Only ${availQuadbikes} remaining.` });
-        return;
-      }
-    } else {
-      const q = Number(quantity);
-      if (bikeType === "PitBike") {
-        if (q > availPitbikes) {
-          res.status(400).json({ error: `Not enough pit bikes available. Only ${availPitbikes} remaining.` });
-          return;
-        }
-      } else if (bikeType === "QuadBike") {
-        if (q > availQuadbikes) {
-          res.status(400).json({ error: `Not enough quad bikes available. Only ${availQuadbikes} remaining.` });
-          return;
-        }
-      } else if (bikeType === "GroupPackage") {
-        if (q >= 10) {
-          if (availPitbikes < 8 || availQuadbikes < 2) {
-            res.status(400).json({ error: "The track does not have full 10-bike capacity available for this slot." });
-            return;
+        } else if (b.bikeType === "QuadBike") {
+          bookedQuadbikes += b.quantity;
+        } else if (b.bikeType === "GoKart") {
+          bookedGokarts += b.quantity;
+        } else if (b.bikeType === "MiniBike") {
+          bookedMinibikes += b.quantity;
+        } else if (b.bikeType === "GroupPackage") {
+          if (b.quantity >= 10) {
+            bookedPitbikes += 10;
+          } else {
+            bookedPitbikes += b.quantity;
           }
-        } else {
-          if (availPitbikes < q) {
-            res.status(400).json({ error: `The track does not have enough capacity for ${q} group bikes at this slot.` });
+        } else if (b.bikeType === "Mixed") {
+          bookedPitbikes += b.pitBikeQty || 0;
+          bookedQuadbikes += b.quadBikeQty || 0;
+          bookedGokarts += b.goKartQty || 0;
+          bookedMinibikes += b.miniBikeQty || 0;
+        }
+      });
+
+      const availPitbikes = Math.max(0, 10 - bookedPitbikes);
+      const availQuadbikes = Math.max(0, 3 - bookedQuadbikes);
+      const availGokarts = Math.max(0, 4 - bookedGokarts);
+      const availMinibikes = Math.max(0, 2 - bookedMinibikes);
+
+      if (bikeType === "Mixed") {
+        const pbQty = Number(req.body.pitBikeQty || 0);
+        const qbQty = Number(req.body.quadBikeQty || 0);
+        const gkQty = Number(req.body.goKartQty || 0);
+        const mbQty = Number(req.body.miniBikeQty || 0);
+        if (pbQty === 0 && qbQty === 0 && gkQty === 0 && mbQty === 0) {
+          res.status(400).json({ error: "Please select at least one vehicle to book." });
+          return;
+        }
+        if (pbQty > availPitbikes) {
+          res.status(400).json({ error: `Not enough pit bikes available for slot ${checkSlot}. Only ${availPitbikes} remaining.` });
+          return;
+        }
+        if (qbQty > availQuadbikes) {
+          res.status(400).json({ error: `Not enough quad bikes available for slot ${checkSlot}. Only ${availQuadbikes} remaining.` });
+          return;
+        }
+        if (gkQty > availGokarts) {
+          res.status(400).json({ error: `Not enough go karts available for slot ${checkSlot}. Only ${availGokarts} remaining.` });
+          return;
+        }
+        if (mbQty > availMinibikes) {
+          res.status(400).json({ error: `Not enough mini bikes available for slot ${checkSlot}. Only ${availMinibikes} remaining.` });
+          return;
+        }
+      } else {
+        const q = Number(quantity);
+        if (bikeType === "PitBike" && q > availPitbikes) {
+          res.status(400).json({ error: `Not enough pit bikes available for slot ${checkSlot}. Only ${availPitbikes} remaining.` });
+          return;
+        } else if (bikeType === "QuadBike" && q > availQuadbikes) {
+          res.status(400).json({ error: `Not enough quad bikes available for slot ${checkSlot}. Only ${availQuadbikes} remaining.` });
+          return;
+        } else if (bikeType === "GoKart" && q > availGokarts) {
+          res.status(400).json({ error: `Not enough go karts available for slot ${checkSlot}. Only ${availGokarts} remaining.` });
+          return;
+        } else if (bikeType === "MiniBike" && q > availMinibikes) {
+          res.status(400).json({ error: `Not enough mini bikes available for slot ${checkSlot}. Only ${availMinibikes} remaining.` });
+          return;
+        } else if (bikeType === "GroupPackage") {
+          if (q >= 10 && availPitbikes < 10) {
+            res.status(400).json({ error: `The track does not have full 10-bike capacity available for slot ${checkSlot}.` });
+            return;
+          } else if (availPitbikes < q) {
+            res.status(400).json({ error: `The track does not have enough capacity for ${q} group bikes for slot ${checkSlot}.` });
             return;
           }
         }
@@ -875,12 +944,15 @@ async function startServer() {
       email,
       phone,
       date,
-      slot,
+      slot: requestedSlots.join(', '),
+      slots: requestedSlots,
       bikeType,
       packageName,
       quantity: Number(quantity),
       pitBikeQty: req.body.pitBikeQty ? Number(req.body.pitBikeQty) : undefined,
       quadBikeQty: req.body.quadBikeQty ? Number(req.body.quadBikeQty) : undefined,
+      goKartQty: req.body.goKartQty ? Number(req.body.goKartQty) : undefined,
+      miniBikeQty: req.body.miniBikeQty ? Number(req.body.miniBikeQty) : undefined,
       amount: Number(amount),
       paid: false,
       createdAt: new Date().toISOString(),

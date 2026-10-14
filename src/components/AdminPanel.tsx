@@ -25,6 +25,9 @@ import {
 } from 'lucide-react';
 import { navigateTo } from '../App';
 import { motion } from 'motion/react';
+import { STANDARD_SLOTS, KIDS_SLOTS } from '../lib/firebase';
+
+const ALL_TRACK_SLOTS = Array.from(new Set([...STANDARD_SLOTS, ...KIDS_SLOTS])).sort();
 
 interface Booking {
   id: string;
@@ -317,7 +320,7 @@ export default function AdminPanel() {
       const { addClosedSlotDirect } = await import('../lib/firebase');
 
       // Define all slots
-      const ALL_SLOTS = ["09:00", "09:45", "10:30", "11:15", "12:00", "12:45", "13:30", "14:15"];
+      const ALL_SLOTS = ALL_TRACK_SLOTS;
       
       let selectedSlots = [closingSlotStartTime];
       if (closingSlotEndTime) {
@@ -942,7 +945,7 @@ export default function AdminPanel() {
                         onChange={(e) => setAdminBookingSlot(e.target.value)}
                         className="w-full bg-zinc-900 border border-zinc-800 rounded-none px-1.5 py-1 text-[10px] text-white outline-none focus:border-brand font-mono"
                       >
-                        {["09:00", "09:45", "10:30", "11:15", "12:00", "12:45", "13:30", "14:15"].map(s => (
+                        {ALL_TRACK_SLOTS.map(s => (
                           <option key={s} value={s}>{s}</option>
                         ))}
                       </select>
@@ -1310,7 +1313,7 @@ export default function AdminPanel() {
                         className="w-full bg-zinc-900 border border-zinc-800 rounded-none px-1.5 py-1 text-[10px] text-white outline-none focus:border-brand font-mono"
                       >
                         <option value="">-- Choose --</option>
-                        {["09:00", "09:45", "10:30", "11:15", "12:00", "12:45", "13:30", "14:15"].map(slot => (
+                        {ALL_TRACK_SLOTS.map(slot => (
                           <option key={slot} value={slot}>{slot}</option>
                         ))}
                       </select>
@@ -1323,7 +1326,7 @@ export default function AdminPanel() {
                         className="w-full bg-zinc-900 border border-zinc-800 rounded-none px-1.5 py-1 text-[10px] text-white outline-none focus:border-brand font-mono"
                       >
                         <option value="">-- Single --</option>
-                        {["09:00", "09:45", "10:30", "11:15", "12:00", "12:45", "13:30", "14:15"].map(slot => (
+                        {ALL_TRACK_SLOTS.map(slot => (
                           <option key={slot} value={slot}>{slot}</option>
                         ))}
                       </select>

@@ -8,16 +8,28 @@ export default function PricingCalculator() {
 
   const rates = [
     {
-      item: "Pit Bike Rental (110cc Semi-Auto or CRF80 Clutch)",
+      item: "Pit Bike Rental (110cc Semi-Auto or CRF80 Clutch) • 10 Available",
       price: "R250",
       duration: "per 30 min session",
-      note: "110cc semi-automatic pit bike or Honda CRF80 with clutch. 45-minute slot intervals (30 min active ride time). Mandatory prior experience riding on dirt and changing gears (no beginners permitted on rental pit bikes). Max weight: 100 kg • Age 14+."
+      note: "110cc semi-automatic pit bike or Honda CRF80 with clutch. 45-minute slot intervals (30 min active ride time). Mandatory prior experience riding on dirt and changing gears. Max weight: 100 kg • Age 14+."
     },
     {
-      item: "Quad Bike Rental (80cc Quad)",
+      item: "Quad Bike Rental (80cc Quad) • 3 Available",
       price: "R300",
       duration: "per 30 min session",
       note: "80cc quad bike. 45-minute slot intervals (30 min active ride time). Beginners ARE permitted on rental quad bikes! Fun, simple throttle control on flat dirt."
+    },
+    {
+      item: "Off-Road Go Kart (70cc Kids) • 4 Available",
+      price: "R150",
+      duration: "per 10 min session",
+      note: "70cc off-road go kart for kids. 10-minute session. Thrilling dirt track handling with roll cage protection for kids."
+    },
+    {
+      item: "Mini Bike Rental (70cc) • 2 Available",
+      price: "R150",
+      duration: "per 10 min session",
+      note: "70cc mini bike. 10-minute session. Perfect for smaller or younger riders developing balance and throttle confidence."
     },
     {
       item: "Bring Your Own Bike/Pit Bike",

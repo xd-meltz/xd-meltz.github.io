@@ -295,9 +295,11 @@ export default function TicketPage({ bookingId }: TicketPageProps) {
             <div className="flex items-center gap-3 text-xs text-zinc-300 print:text-black">
               <Clock className="w-4 h-4 text-emerald-400 flex-shrink-0 print:text-neutral-600" />
               <div>
-                <span className="text-[9px] text-zinc-400 block leading-tight font-mono font-bold uppercase">Time Slot</span>
+                <span className="text-[9px] text-zinc-400 block leading-tight font-mono font-bold uppercase">
+                  Time Slot{booking.slots && booking.slots.length > 1 ? 's' : ''}
+                </span>
                 <span className="font-mono font-bold text-white text-xs print:text-black">
-                  {booking.slot}
+                  {booking.slots && booking.slots.length > 0 ? booking.slots.join(', ') : booking.slot}
                 </span>
               </div>
             </div>

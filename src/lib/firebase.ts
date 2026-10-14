@@ -79,7 +79,7 @@ export interface FirestoreBooking {
   syncedToCalendar?: boolean;
 }
 
-const DEFAULT_SLOTS = [
+export const STANDARD_SLOTS = [
   "09:00",
   "09:45",
   "10:30",
@@ -90,23 +90,47 @@ const DEFAULT_SLOTS = [
   "14:15",
 ];
 
+// 15-minute apart slots for Go Karts & Mini Bikes (10-minute active rides)
+export const KIDS_SLOTS = [
+  "09:00", "09:15", "09:30", "09:45",
+  "10:00", "10:15", "10:30", "10:45",
+  "11:00", "11:15", "11:30", "11:45",
+  "12:00", "12:15", "12:30", "12:45",
+  "13:00", "13:15", "13:30", "13:45",
+  "14:00", "14:15", "14:30", "14:45"
+];
+
 /**
  * Fetch availability directly from Firestore for a given date
  */
-export async function getAvailabilityDirect(date: string): Promise<Record<string, { pitbikes: number; quadbikes: number; isClosed?: boolean }>> {
-  const availabilityMap: Record<string, { pitbikes: number; quadbikes: number; isClosed?: boolean }> = {};
+export async function getAvailabilityDirect(date: string): Promise<Record<string, { pitbikes: number; quadbikes: number; gokarts: number; minibikes: number; isClosed?: boolean }>> {
+  const availabilityMap: Record<string, { pitbikes: number; quadbikes: number; gokarts: number; minibikes: number; isClosed?: boolean }> = {};
   
   // Parse date safely to avoid timezone misalignment
   const [year, month, day] = date.split('-').map(Number);
   const dayOfWeek = new Date(year, month - 1, day).getDay(); // 0 is Sunday, 6 is Saturday, 5 is Friday
 
-  // Set default availability (10 pitbikes, 3 quadbikes)
-  DEFAULT_SLOTS.forEach((slot) => {
-    // Sundays: Close at 2:30 PM (14:30) maximum, so exclude the 14:15 slot which runs to 15:00
+  // 1. Initialize Standard 45-minute slots (10 pitbikes, 3 quadbikes)
+  STANDARD_SLOTS.forEach((slot) => {
+    // Sundays: Close at 2:30 PM (14:30) maximum, so exclude 14:15 slot which runs to 15:00
     if (dayOfWeek === 0 && slot === "14:15") {
       return;
     }
-    availabilityMap[slot] = { pitbikes: 10, quadbikes: 3, isClosed: false };
+    availabilityMap[slot] = { pitbikes: 10, quadbikes: 3, gokarts: 0, minibikes: 0, isClosed: false };
+  });
+
+  // 2. Initialize Kids 15-minute slots for Go Karts & Mini Bikes (4 go karts, 2 mini bikes)
+  KIDS_SLOTS.forEach((slot) => {
+    // Sundays: Close at 2:30 PM (14:30) maximum, so exclude 14:30 and 14:45 slots
+    if (dayOfWeek === 0 && (slot === "14:30" || slot === "14:45")) {
+      return;
+    }
+    if (!availabilityMap[slot]) {
+      availabilityMap[slot] = { pitbikes: 0, quadbikes: 0, gokarts: 4, minibikes: 2, isClosed: false };
+    } else {
+      availabilityMap[slot].gokarts = 4;
+      availabilityMap[slot].minibikes = 2;
+    }
   });
 
   try {
@@ -119,12 +143,8 @@ export async function getAvailabilityDirect(date: string): Promise<Record<string
       bookings.push({ id: docSnap.id, ...docSnap.data() } as FirestoreBooking);
     });
 
-    // Subtract booked slots (only paid bookings block slots)
-    bookings.forEach((b) => {
-      const slot = b.slot;
-      if (!availabilityMap[slot]) return;
-
-      // Paid bookings block slots permanently; unpaid bookings block slots for 5 minutes (temporary checkout hold)
+    // Subtract booked slots (only paid bookings block slots; unpaid block for 5 minutes)
+    bookings.forEach((b: any) => {
       if (!b.paid) {
         const createdTime = parseSafeTime(b.createdAt);
         const now = Date.now();
@@ -134,13 +154,24 @@ export async function getAvailabilityDirect(date: string): Promise<Record<string
         }
       }
 
+      // Supports array of slots (b.slots) or single/comma-separated slot (b.slot)
+      const bookedSlots: string[] = Array.isArray(b.slots) && b.slots.length > 0
+        ? b.slots
+        : (b.slot ? b.slot.split(',').map((s: string) => s.trim()).filter(Boolean) : []);
+
       let bookedPit = 0;
       let bookedQuad = 0;
+      let bookedKart = 0;
+      let bookedMini = 0;
 
       if (b.bikeType === "PitBike") {
         bookedPit += b.quantity;
       } else if (b.bikeType === "QuadBike") {
         bookedQuad += b.quantity;
+      } else if (b.bikeType === "GoKart") {
+        bookedKart += b.quantity;
+      } else if (b.bikeType === "MiniBike") {
+        bookedMini += b.quantity;
       } else if (b.bikeType === "GroupPackage") {
         if (b.quantity >= 10) {
           bookedPit += 10;
@@ -150,10 +181,18 @@ export async function getAvailabilityDirect(date: string): Promise<Record<string
       } else if (b.bikeType === "Mixed") {
         bookedPit += b.pitBikeQty || 0;
         bookedQuad += b.quadBikeQty || 0;
+        bookedKart += b.goKartQty || 0;
+        bookedMini += b.miniBikeQty || 0;
       }
 
-      availabilityMap[slot].pitbikes = Math.max(0, availabilityMap[slot].pitbikes - bookedPit);
-      availabilityMap[slot].quadbikes = Math.max(0, availabilityMap[slot].quadbikes - bookedQuad);
+      bookedSlots.forEach((slot) => {
+        if (availabilityMap[slot]) {
+          availabilityMap[slot].pitbikes = Math.max(0, availabilityMap[slot].pitbikes - bookedPit);
+          availabilityMap[slot].quadbikes = Math.max(0, availabilityMap[slot].quadbikes - bookedQuad);
+          availabilityMap[slot].gokarts = Math.max(0, availabilityMap[slot].gokarts - bookedKart);
+          availabilityMap[slot].minibikes = Math.max(0, availabilityMap[slot].minibikes - bookedMini);
+        }
+      });
     });
 
     // Fetch and apply closed slots for this date
@@ -167,6 +206,8 @@ export async function getAvailabilityDirect(date: string): Promise<Record<string
         if (availabilityMap[slot]) {
           availabilityMap[slot].pitbikes = 0;
           availabilityMap[slot].quadbikes = 0;
+          availabilityMap[slot].gokarts = 0;
+          availabilityMap[slot].minibikes = 0;
           availabilityMap[slot].isClosed = true;
         }
       });
