@@ -53,18 +53,13 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
   const [idNumber, setIdNumber] = useState('');
   const [date, setDate] = useState('');
   
-  // Multi-slot selection states
-  const [selectedStandardSlots, setSelectedStandardSlots] = useState<string[]>([]);
-  const [selectedKidsSlots, setSelectedKidsSlots] = useState<string[]>([]);
+  // Multi-slot selection state (15-min intervals for Go Karts & Mini Bikes)
+  const [selectedSlots, setSelectedSlots] = useState<string[]>([]);
 
-  const [bikeType, setBikeType] = useState<'PitBike' | 'QuadBike' | 'GroupPackage' | 'Mixed'>('Mixed');
-  const [pitBikeQty, setPitBikeQty] = useState(1);
-  const [quadBikeQty, setQuadBikeQty] = useState(0);
-  const [goKartQty, setGoKartQty] = useState(0);
+  // Online booking is exclusively for Kids Off-Road Go Karts (70cc) & Mini Bikes (70cc)
+  // Pit bikes and quad bikes are strictly walk-in / first-come first-served on-site at the track gate
+  const [goKartQty, setGoKartQty] = useState(1);
   const [miniBikeQty, setMiniBikeQty] = useState(0);
-  const [groupSize, setGroupSize] = useState<5 | 10>(5);
-  const [groupDuration, setGroupDuration] = useState<30 | 60 | 240>(60);
-  const [quantity, setQuantity] = useState(1);
 
   // Calendar navigation states
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
@@ -137,17 +132,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
     if (!date) return;
 
     setLoadingAvailability(true);
-    setSelectedStandardSlots([]);
-    setSelectedKidsSlots([]);
-
-    // If day of week changes, default the bike type appropriately
-    const dayOfWeek = new Date(date).getDay(); // 0 is Sunday, 6 is Saturday, 5 is Friday
-    const isWeekday = dayOfWeek >= 1 && dayOfWeek <= 4;
-    if (isWeekday) {
-      setBikeType('GroupPackage');
-    } else {
-      setBikeType('Mixed');
-    }
+    setSelectedSlots([]);
 
     const loadAvailability = (isInitial = false) => {
       if (isInitial) {
@@ -205,85 +190,36 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
     return dayOfWeek === 0 || dayOfWeek === 6 || dayOfWeek === 5; // Sunday, Saturday, or Friday
   };
 
-  // Helper properties for multi-slot logic
-  const selectedSlots = [...selectedStandardSlots, ...selectedKidsSlots];
   const selectedSlot = selectedSlots.join(', ');
-
-  const hasStandardVehicles = bikeType === 'GroupPackage' || pitBikeQty > 0 || quadBikeQty > 0;
-  const hasKidsVehicles = isWeekendSelected() && (goKartQty > 0 || miniBikeQty > 0);
 
   // Helper to format selected vehicles summary
   const getSelectedVehiclesSummary = () => {
     const list: string[] = [];
-    if (pitBikeQty > 0) list.push(`${pitBikeQty} Pit Bike${pitBikeQty > 1 ? 's' : ''}`);
-    if (quadBikeQty > 0) list.push(`${quadBikeQty} Quad Bike${quadBikeQty > 1 ? 's' : ''}`);
     if (goKartQty > 0) list.push(`${goKartQty} Off-Road Go Kart${goKartQty > 1 ? 's' : ''} (70cc Kids)`);
     if (miniBikeQty > 0) list.push(`${miniBikeQty} Mini Bike${miniBikeQty > 1 ? 's' : ''} (70cc)`);
     return list.length > 0 ? list.join(' + ') : 'None selected';
   };
 
-  // Pricing Calculation: Pit Bike R250 (30m), Quad Bike R300 (30m), Go Kart R150 (10m), Mini Bike R150 (10m)
-  // Multiplied by number of chosen slots for each category
+  // Pricing Calculation: R150 per 10-minute session per vehicle (Go Kart & Mini Bike)
+  // Multiplied by number of chosen 15-minute time slots
   const getPrice = () => {
-    if (bikeType === 'GroupPackage') {
-      const slotCount = Math.max(1, selectedStandardSlots.length);
-      if (groupDuration === 30) {
-        return (groupSize === 5 ? 1500 : 3000) * slotCount;
-      } else if (groupDuration === 60) {
-        return (groupSize === 5 ? 3000 : 5000) * slotCount;
-      } else if (groupDuration === 240) { // 4 Hours
-        return (groupSize === 5 ? 8000 : 15200) * slotCount;
-      }
-    } else {
-      const standardSlotCount = selectedStandardSlots.length;
-      const kidsSlotCount = selectedKidsSlots.length;
-
-      // In Step 3 (before any slots chosen), show base rate for 1 session of selected vehicles:
-      if (standardSlotCount === 0 && kidsSlotCount === 0) {
-        return (250 * pitBikeQty) + (300 * quadBikeQty) + (150 * goKartQty) + (150 * miniBikeQty);
-      }
-
-      const standardRate = (250 * pitBikeQty) + (300 * quadBikeQty);
-      const kidsRate = (150 * goKartQty) + (150 * miniBikeQty);
-
-      const standardMultiplier = hasStandardVehicles && standardSlotCount > 0 ? standardSlotCount : (hasStandardVehicles ? 1 : 0);
-      const kidsMultiplier = hasKidsVehicles && kidsSlotCount > 0 ? kidsSlotCount : (hasKidsVehicles ? 1 : 0);
-
-      return (standardRate * standardMultiplier) + (kidsRate * kidsMultiplier);
+    const baseRatePerSession = (150 * goKartQty) + (150 * miniBikeQty);
+    const slotCount = Math.max(1, selectedSlots.length);
+    if (selectedSlots.length === 0) {
+      return baseRatePerSession; // Preview rate for 1 session in Step 3
     }
-    return 0;
+    return baseRatePerSession * slotCount;
   };
 
-  // Toggle selection for 45-min Standard Slots
-  const toggleStandardSlot = (slot: string) => {
+  // Toggle selection for 15-min Slots
+  const toggleSlot = (slot: string) => {
     setError(null);
-    setSelectedStandardSlots(prev =>
+    setSelectedSlots(prev =>
       prev.includes(slot) ? prev.filter(s => s !== slot) : [...prev, slot].sort()
     );
   };
 
-  // Toggle selection for 15-min Kids Slots
-  const toggleKidsSlot = (slot: string) => {
-    setError(null);
-    setSelectedKidsSlots(prev =>
-      prev.includes(slot) ? prev.filter(s => s !== slot) : [...prev, slot].sort()
-    );
-  };
-
-  const isStandardSlotDisabled = (slot: string) => {
-    const slotAvail = availability[slot];
-    if (!slotAvail) return true;
-    if (slotAvail.isClosed) return true;
-
-    if (bikeType === 'GroupPackage') {
-      return (slotAvail.pitbikes ?? 0) < (groupSize === 10 ? 10 : 5);
-    }
-    if (pitBikeQty > 0 && (slotAvail.pitbikes ?? 0) < pitBikeQty) return true;
-    if (quadBikeQty > 0 && (slotAvail.quadbikes ?? 0) < quadBikeQty) return true;
-    return false;
-  };
-
-  const isKidsSlotDisabled = (slot: string) => {
+  const isSlotDisabled = (slot: string) => {
     const slotAvail = availability[slot];
     if (!slotAvail) return true;
     if (slotAvail.isClosed) return true;
@@ -328,12 +264,10 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
 
   const handleNextFromStep3 = () => {
     setError(null);
-    if (isWeekendSelected()) {
-      const totalSelected = pitBikeQty + quadBikeQty + goKartQty + miniBikeQty;
-      if (totalSelected === 0) {
-        setError('Please select at least 1 vehicle to rent.');
-        return;
-      }
+    const totalSelected = goKartQty + miniBikeQty;
+    if (totalSelected === 0) {
+      setError('Please select at least 1 Go Kart or Mini Bike to rent.');
+      return;
     }
     setCurrentStep(4);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -341,28 +275,14 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
 
   const handleNextFromStep4 = () => {
     setError(null);
-    if (hasStandardVehicles && selectedStandardSlots.length === 0) {
-      setError('Please select at least one 45-minute time slot for your Pit / Quad Bikes.');
-      return;
-    }
-    if (hasKidsVehicles && selectedKidsSlots.length === 0) {
-      setError('Please select at least one 15-minute time slot for your Kids Go Karts / Mini Bikes.');
-      return;
-    }
-    if (!hasStandardVehicles && !hasKidsVehicles && selectedSlots.length === 0) {
-      setError('Please select at least one available time slot.');
+    if (selectedSlots.length === 0) {
+      setError('Please select at least one 15-minute time slot for your Go Kart / Mini Bike session.');
       return;
     }
 
-    for (const s of selectedStandardSlots) {
-      if (isStandardSlotDisabled(s)) {
-        setError(`Slot ${s} does not have sufficient capacity for your Pit / Quad Bikes.`);
-        return;
-      }
-    }
-    for (const s of selectedKidsSlots) {
-      if (isKidsSlotDisabled(s)) {
-        setError(`Slot ${s} does not have sufficient capacity for your Go Karts / Mini Bikes.`);
+    for (const s of selectedSlots) {
+      if (isSlotDisabled(s)) {
+        setError(`Slot ${s} does not have sufficient capacity for your selected vehicles.`);
         return;
       }
     }
@@ -376,39 +296,19 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
     e.preventDefault();
     setError(null);
 
-    const allSelectedSlots = [...selectedStandardSlots, ...selectedKidsSlots];
-
-    if (!name || !email || !phone || !idNumber || !date || allSelectedSlots.length === 0) {
+    if (!name || !email || !phone || !idNumber || !date || selectedSlots.length === 0) {
       setError('Please make sure all steps are complete before proceeding to payment.');
       return;
     }
 
-    const totalSelected = pitBikeQty + quadBikeQty + goKartQty + miniBikeQty;
-
-    // Capacity checks on each selected slot
-    for (const checkSlot of selectedStandardSlots) {
-      const slotAvail = availability[checkSlot];
-      if (slotAvail) {
-        if (bikeType === 'Mixed') {
-          if (pitBikeQty > (slotAvail.pitbikes ?? 0)) {
-            setError(`Only ${slotAvail.pitbikes} pit bikes are available for slot ${checkSlot}.`);
-            return;
-          }
-          if (quadBikeQty > (slotAvail.quadbikes ?? 0)) {
-            setError(`Only ${slotAvail.quadbikes} quad bikes are available for slot ${checkSlot}.`);
-            return;
-          }
-        } else if (bikeType === 'GroupPackage') {
-          const reqCount = groupSize === 10 ? 10 : 5;
-          if ((slotAvail.pitbikes ?? 0) < reqCount) {
-            setError(`The track does not have enough pitbikes for your group at slot ${checkSlot}.`);
-            return;
-          }
-        }
-      }
+    const totalSelected = goKartQty + miniBikeQty;
+    if (totalSelected === 0) {
+      setError('Please select at least 1 vehicle to rent.');
+      return;
     }
 
-    for (const checkSlot of selectedKidsSlots) {
+    // Capacity checks on each selected slot
+    for (const checkSlot of selectedSlots) {
       const slotAvail = availability[checkSlot];
       if (slotAvail) {
         if (goKartQty > (slotAvail.gokarts ?? 0)) {
@@ -424,28 +324,22 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
 
     setSubmitting(true);
 
-    const totalSlotCount = allSelectedSlots.length;
+    const totalSlotCount = selectedSlots.length;
     const bookingPayload = {
       name,
       email,
       phone,
       idNumber,
       date,
-      slot: allSelectedSlots.join(', '),
-      slots: allSelectedSlots,
-      standardSlots: selectedStandardSlots,
-      kidsSlots: selectedKidsSlots,
-      bikeType,
-      packageName: bikeType === 'GroupPackage' 
-        ? `Group Package (${groupDuration === 240 ? '4 Hours' : `${groupDuration} Mins`}, ${groupSize} Bikes) - ${selectedStandardSlots.length} Session${selectedStandardSlots.length > 1 ? 's' : ''}` 
-        : `Weekend Rental (${getSelectedVehiclesSummary()}) - ${totalSlotCount} Session${totalSlotCount > 1 ? 's' : ''} (${allSelectedSlots.join(', ')})`,
-      quantity: bikeType === 'GroupPackage' 
-        ? groupSize * Math.max(1, selectedStandardSlots.length) 
-        : (pitBikeQty + quadBikeQty) * Math.max(1, selectedStandardSlots.length) + (goKartQty + miniBikeQty) * Math.max(1, selectedKidsSlots.length),
-      pitBikeQty: bikeType === 'Mixed' && pitBikeQty > 0 ? pitBikeQty : undefined,
-      quadBikeQty: bikeType === 'Mixed' && quadBikeQty > 0 ? quadBikeQty : undefined,
-      goKartQty: bikeType === 'Mixed' && goKartQty > 0 ? goKartQty : undefined,
-      miniBikeQty: bikeType === 'Mixed' && miniBikeQty > 0 ? miniBikeQty : undefined,
+      slot: selectedSlots.join(', '),
+      slots: selectedSlots,
+      bikeType: 'Mixed',
+      packageName: `Go Kart & Mini Bike Booking (${getSelectedVehiclesSummary()}) - ${totalSlotCount} Session${totalSlotCount > 1 ? 's' : ''} (${selectedSlots.join(', ')})`,
+      quantity: totalSelected * totalSlotCount,
+      pitBikeQty: 0,
+      quadBikeQty: 0,
+      goKartQty: goKartQty > 0 ? goKartQty : undefined,
+      miniBikeQty: miniBikeQty > 0 ? miniBikeQty : undefined,
       amount: getPrice(),
       paid: false,
     };
@@ -460,13 +354,11 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
         date,
         slot: bookingPayload.slot,
         slots: bookingPayload.slots,
-        standardSlots: bookingPayload.standardSlots,
-        kidsSlots: bookingPayload.kidsSlots,
-        bikeType,
+        bikeType: 'Mixed',
         packageName: bookingPayload.packageName,
         quantity: bookingPayload.quantity,
-        pitBikeQty: bookingPayload.pitBikeQty,
-        quadBikeQty: bookingPayload.quadBikeQty,
+        pitBikeQty: 0,
+        quadBikeQty: 0,
         goKartQty: bookingPayload.goKartQty,
         miniBikeQty: bookingPayload.miniBikeQty,
         amount: bookingPayload.amount,
@@ -495,7 +387,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
         email_address: email,
         m_payment_id: bookingId,
         amount: getPrice().toFixed(2),
-        item_name: `Rix Compound Booking - ${date} (${allSelectedSlots.join(', ')})`.slice(0, 100),
+        item_name: `Rix Compound Booking - ${date} (${selectedSlots.join(', ')})`.slice(0, 100),
       };
 
       const activeFields: Record<string, string> = {};
@@ -575,145 +467,61 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
 
   const dayOfWeekName = date ? new Date(date).toLocaleDateString('en-US', { weekday: 'long' }) : '';
 
-  const renderCapacityDots = (slot: string, category: 'standard' | 'kids' | 'all' = 'all') => {
+  const renderCapacityDots = (slot: string) => {
     const slotAvail = availability[slot];
     if (!slotAvail) return null;
 
-    const totalPitbikes = 10;
-    const totalQuadbikes = 3;
     const totalGoKarts = 4;
     const totalMiniBikes = 2;
 
-    const availablePit = slotAvail.pitbikes ?? 0;
-    const availableQuad = slotAvail.quadbikes ?? 0;
     const availableKart = slotAvail.gokarts ?? 4;
     const availableMini = slotAvail.minibikes ?? 2;
 
-    const isWeekend = isWeekendSelected();
-
-    const showPit = category === 'kids' 
-      ? false 
-      : (category === 'standard' 
-        ? (isWeekend ? (pitBikeQty > 0 || (pitBikeQty === 0 && quadBikeQty === 0)) : true) 
-        : (isWeekend ? pitBikeQty > 0 : true));
-
-    const showQuad = category === 'kids' 
-      ? false 
-      : (category === 'standard' 
-        ? (isWeekend ? quadBikeQty > 0 : false) 
-        : (isWeekend && quadBikeQty > 0));
-
-    const showKart = category === 'standard' 
-      ? false 
-      : (category === 'kids' 
-        ? (goKartQty > 0 || (goKartQty === 0 && miniBikeQty === 0)) 
-        : (isWeekend && goKartQty > 0));
-
-    const showMini = category === 'standard' 
-      ? false 
-      : (category === 'kids' 
-        ? (miniBikeQty > 0) 
-        : (isWeekend && miniBikeQty > 0));
-
-    const showAll = category === 'all' && isWeekend && !showPit && !showQuad && !showKart && !showMini;
-
     return (
-      <div className="mt-1.5 pt-1.5 border-t border-zinc-800 w-full space-y-1.5 text-left">
-        {/* Pit Bikes */}
-        {(showPit || showAll) && (
-          <div>
-            <div className="flex items-center justify-between text-[8.5px] sm:text-[9.5px] text-zinc-300 font-mono font-bold tracking-wider leading-none mb-0.5">
-              <span>{isWeekend ? 'PIT' : 'BIKES'} ({availablePit}/{totalPitbikes})</span>
-            </div>
-            <div className="flex items-center gap-0.5 sm:gap-1 flex-nowrap">
-              {Array.from({ length: totalPitbikes }).map((_, i) => {
-                const isAvailable = i < availablePit;
-                return (
-                  <span
-                    key={i}
-                    className={`w-1.5 h-1.5 rounded-full flex-shrink-0 transition-all ${
-                      isAvailable 
-                        ? 'bg-emerald-500 shadow-xs' 
-                        : 'bg-zinc-700 border border-zinc-800'
-                    }`}
-                  />
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* Quad Bikes */}
-        {(showQuad || showAll) && (
-          <div>
-            <div className="flex items-center justify-between text-[8.5px] sm:text-[9.5px] text-zinc-300 font-mono font-bold tracking-wider leading-none mb-0.5">
-              <span>QUAD ({availableQuad}/{totalQuadbikes})</span>
-            </div>
-            <div className="flex items-center gap-0.5 sm:gap-1 flex-nowrap">
-              {Array.from({ length: totalQuadbikes }).map((_, i) => {
-                const isAvailable = i < availableQuad;
-                return (
-                  <span
-                    key={i}
-                    className={`w-1.5 h-1.5 rounded-full flex-shrink-0 transition-all ${
-                      isAvailable 
-                        ? 'bg-emerald-500 shadow-xs' 
-                        : 'bg-zinc-700 border border-zinc-800'
-                    }`}
-                  />
-                );
-              })}
-            </div>
-          </div>
-        )}
-
+      <div className="mt-1.5 pt-1.5 border-t border-zinc-800 w-full space-y-1 text-left">
         {/* Off-Road Go Karts */}
-        {(showKart || showAll) && (
-          <div>
-            <div className="flex items-center justify-between text-[8.5px] sm:text-[9.5px] text-zinc-300 font-mono font-bold tracking-wider leading-none mb-0.5">
-              <span>GO KART ({availableKart}/{totalGoKarts})</span>
-            </div>
-            <div className="flex items-center gap-0.5 sm:gap-1 flex-nowrap">
-              {Array.from({ length: totalGoKarts }).map((_, i) => {
-                const isAvailable = i < availableKart;
-                return (
-                  <span
-                    key={i}
-                    className={`w-1.5 h-1.5 rounded-full flex-shrink-0 transition-all ${
-                      isAvailable 
-                        ? 'bg-emerald-500 shadow-xs' 
-                        : 'bg-zinc-700 border border-zinc-800'
-                    }`}
-                  />
-                );
-              })}
-            </div>
+        <div>
+          <div className="flex items-center justify-between text-[8px] sm:text-[9px] text-zinc-300 font-mono font-bold tracking-wider leading-none mb-0.5">
+            <span>KARTS ({availableKart}/{totalGoKarts})</span>
           </div>
-        )}
+          <div className="flex items-center gap-0.5 sm:gap-1 flex-nowrap">
+            {Array.from({ length: totalGoKarts }).map((_, i) => {
+              const isAvailable = i < availableKart;
+              return (
+                <span
+                  key={i}
+                  className={`w-1.5 h-1.5 rounded-full flex-shrink-0 transition-all ${
+                    isAvailable 
+                      ? 'bg-emerald-500 shadow-xs' 
+                      : 'bg-zinc-700 border border-zinc-800'
+                  }`}
+                />
+              );
+            })}
+          </div>
+        </div>
 
         {/* Mini Bikes (70cc) */}
-        {(showMini || showAll) && (
-          <div>
-            <div className="flex items-center justify-between text-[8.5px] sm:text-[9.5px] text-zinc-300 font-mono font-bold tracking-wider leading-none mb-0.5">
-              <span>MINI BIKE ({availableMini}/{totalMiniBikes})</span>
-            </div>
-            <div className="flex items-center gap-0.5 sm:gap-1 flex-nowrap">
-              {Array.from({ length: totalMiniBikes }).map((_, i) => {
-                const isAvailable = i < availableMini;
-                return (
-                  <span
-                    key={i}
-                    className={`w-1.5 h-1.5 rounded-full flex-shrink-0 transition-all ${
-                      isAvailable 
-                        ? 'bg-emerald-500 shadow-xs' 
-                        : 'bg-zinc-700 border border-zinc-800'
-                    }`}
-                  />
-                );
-              })}
-            </div>
+        <div>
+          <div className="flex items-center justify-between text-[8px] sm:text-[9px] text-zinc-300 font-mono font-bold tracking-wider leading-none mb-0.5">
+            <span>MINI ({availableMini}/{totalMiniBikes})</span>
           </div>
-        )}
+          <div className="flex items-center gap-0.5 sm:gap-1 flex-nowrap">
+            {Array.from({ length: totalMiniBikes }).map((_, i) => {
+              const isAvailable = i < availableMini;
+              return (
+                <span
+                  key={i}
+                  className={`w-1.5 h-1.5 rounded-full flex-shrink-0 transition-all ${
+                    isAvailable 
+                      ? 'bg-emerald-500 shadow-xs' 
+                      : 'bg-zinc-700 border border-zinc-800'
+                  }`}
+                />
+              );
+            })}
+          </div>
+        </div>
       </div>
     );
   };
@@ -1126,7 +934,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
               </motion.div>
             )}
 
-            {/* STEP 3: RENTAL PACKAGE & BIKES */}
+            {/* STEP 3: SELECT VEHICLES (GO KARTS & MINI BIKES ONLY) */}
             {currentStep === 3 && (
               <motion.div
                 key="step-3"
@@ -1139,357 +947,159 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                 <div>
                   <h3 className="font-mono text-sm uppercase tracking-wider text-emerald-400 flex items-center gap-2 font-bold">
                     <span className="bg-zinc-950 border border-zinc-700 text-emerald-400 px-2 py-0.5 text-xs font-mono">03</span>
-                    Select Bikes
+                    Select Vehicles
                   </h3>
                 </div>
 
-                <div className="space-y-4 pt-1">
-                  {!isWeekendSelected() ? (
-                    /* Weekday group packages */
-                    <div className="space-y-4 bg-zinc-950/80 border border-zinc-700 p-4">
-                      <span className="px-2 py-0.5 bg-zinc-900 text-zinc-200 text-[10px] font-mono font-bold uppercase tracking-wider border border-zinc-700 shadow-xs">
-                        Weekday Group Package
+                {/* Important Notice: Pit Bikes and Quad Bikes are strictly First Come First Serve */}
+                <div className="p-3.5 sm:p-4 bg-amber-950/70 border-2 border-amber-600/80 text-xs sm:text-sm font-sans text-amber-200 shadow-lg">
+                  <div className="flex items-start gap-2.5">
+                    <span className="text-base sm:text-lg flex-shrink-0">⚠️</span>
+                    <div>
+                      <span className="font-mono font-black uppercase text-amber-300 block mb-0.5 tracking-wider">
+                        Pit Bikes & Quad Bikes: Strictly First-Come, First-Served On-Site!
                       </span>
-                      <p className="text-zinc-400 text-xs mt-1">
-                        Select your group duration and size:
+                      <p className="text-zinc-200 text-xs sm:text-xs leading-relaxed font-semibold">
+                        Pit bikes (110cc / CRF80) and Quad bikes (80cc) are strictly walk-in / arrive-and-drive at the track — pay at the gate on arrival (no advance online booking required).
+                        <strong className="text-white block mt-1">Advance online bookings below are exclusively reserved for Kids Off-Road Go Karts & Mini Bikes (R150 per 10-minute session).</strong>
                       </p>
+                    </div>
+                  </div>
+                </div>
 
-                      <div>
-                        <label className="block text-xs font-mono uppercase text-zinc-400 mb-1.5 font-bold">
-                          Session Duration
-                        </label>
-                        <div className="grid grid-cols-3 gap-2">
-                          {[
-                            { label: '30 Min', value: 30 },
-                            { label: '60 Min', value: 60 },
-                            { label: '4 Hours', value: 240 }
-                          ].map((dur) => (
-                            <button
-                              type="button"
-                              key={dur.value}
-                              onClick={() => setGroupDuration(dur.value as 30 | 60 | 240)}
-                              className={`py-2 px-2 border font-mono font-bold text-center text-xs transition-all cursor-pointer ${
-                                groupDuration === dur.value
-                                  ? 'border-emerald-500 bg-zinc-900 text-emerald-400 shadow-sm'
-                                  : 'border-zinc-700 hover:border-zinc-500 bg-zinc-950 text-zinc-300'
-                              }`}
-                            >
-                              {dur.label}
-                            </button>
-                          ))}
+                <div className="space-y-4 pt-1">
+                  <div className="space-y-3 bg-zinc-950/80 p-4 sm:p-6 border-2 border-zinc-700 divide-y-2 divide-zinc-800">
+                    {/* 1. Off-Road Go Kart Selection (4 available) */}
+                    <div className="pb-3 sm:pb-4">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+                        <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
+                          <div className="w-16 h-16 sm:w-20 sm:h-20 bg-zinc-900 border-2 border-zinc-700 overflow-hidden flex-shrink-0 relative flex items-center justify-center">
+                            {VEHICLE_IMAGES.gokart ? (
+                              <img 
+                                src={VEHICLE_IMAGES.gokart} 
+                                alt="Off-Road Go Kart 70cc (Kids)" 
+                                className="w-full h-full object-cover" 
+                              />
+                            ) : (
+                              <div className="w-full h-full flex flex-col items-center justify-center bg-zinc-950 border border-dashed border-zinc-700/80 p-1 text-center">
+                                <Car className="w-4 h-4 sm:w-5 sm:h-5 text-zinc-500 mb-0.5" />
+                                <span className="text-[8px] font-mono uppercase tracking-wider text-zinc-400 font-bold leading-tight">Image Space</span>
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <h4 className="font-sans font-black text-sm sm:text-base uppercase text-white truncate">Off-Road Go Kart (70cc Kids)</h4>
+                              <span className="px-1.5 py-0.5 bg-zinc-900 border border-zinc-700 text-[10px] font-mono text-emerald-400 font-bold whitespace-nowrap">
+                                4 Available
+                              </span>
+                            </div>
+                            <p className="text-xs text-zinc-300 font-bold mt-0.5 leading-snug">
+                              70cc off-road racing go kart for kids with roll cage & safety belt
+                            </p>
+                            <span className="font-sans text-sm sm:text-base text-emerald-400 font-black mt-1 block">
+                              R150 <span className="text-xs text-zinc-400 font-bold">per 10 min ride</span>
+                            </span>
+                          </div>
                         </div>
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-mono uppercase text-zinc-400 mb-1.5 font-bold">
-                          Group Size
-                        </label>
-                        <div className="grid grid-cols-2 gap-3">
+                        
+                        {/* Quantity Selector */}
+                        <div className="flex items-center gap-2 self-end sm:self-center">
                           <button
                             type="button"
-                            onClick={() => {
-                              setBikeType('GroupPackage');
-                              setGroupSize(5);
-                            }}
-                            className={`p-3 border text-center transition-all cursor-pointer ${
-                              bikeType === 'GroupPackage' && groupSize === 5
-                                ? 'border-emerald-500 bg-zinc-900 text-emerald-400 shadow-sm'
-                                : 'border-zinc-700 hover:border-zinc-500 bg-zinc-950 text-zinc-300'
-                            }`}
+                            onClick={() => setGoKartQty(Math.max(0, goKartQty - 1))}
+                            className="w-9 h-9 sm:w-10 sm:h-10 bg-zinc-900 border-2 border-zinc-700 flex items-center justify-center text-white hover:bg-zinc-800 transition-colors text-lg sm:text-xl font-black cursor-pointer shadow-sm active:scale-95"
+                            aria-label="Decrease go karts"
                           >
-                            <Users className="w-4 h-4 mx-auto mb-1 text-emerald-400" />
-                            <span className="font-mono font-bold text-xs block uppercase">5 Bikes</span>
-                            <span className="text-[11px] font-mono text-emerald-400 font-bold">
-                              R{groupDuration === 30 ? '1,500' : groupDuration === 60 ? '3,000' : '8,000'}
-                            </span>
+                            -
                           </button>
-                          
+                          <span className="w-8 text-center font-sans font-black text-base sm:text-lg text-white">
+                            {goKartQty}
+                          </span>
                           <button
                             type="button"
-                            onClick={() => {
-                              setBikeType('GroupPackage');
-                              setGroupSize(10);
-                            }}
-                            className={`p-3 border text-center transition-all cursor-pointer ${
-                              bikeType === 'GroupPackage' && groupSize === 10
-                                ? 'border-emerald-500 bg-zinc-900 text-emerald-400 shadow-sm'
-                                : 'border-zinc-700 hover:border-zinc-500 bg-zinc-950 text-zinc-300'
-                            }`}
+                            onClick={() => setGoKartQty(Math.min(4, goKartQty + 1))}
+                            className="w-9 h-9 sm:w-10 sm:h-10 bg-zinc-900 border-2 border-zinc-700 flex items-center justify-center text-white hover:bg-zinc-800 transition-colors text-lg sm:text-xl font-black cursor-pointer shadow-sm active:scale-95"
+                            aria-label="Increase go karts"
                           >
-                            <Users className="w-4 h-4 mx-auto mb-1 text-emerald-400" />
-                            <span className="font-mono font-bold text-xs block uppercase">10 Bikes</span>
-                            <span className="text-[11px] font-mono text-emerald-400 font-bold">
-                              R{groupDuration === 30 ? '3,000' : groupDuration === 60 ? '5,000' : '15,200'}
-                            </span>
+                            +
                           </button>
                         </div>
                       </div>
                     </div>
-                  ) : (
-                    /* Weekend rentals with 4 vehicle types */
-                    <div className="space-y-4">
-                      <div className="space-y-3 bg-zinc-950/80 p-4 sm:p-6 border-2 border-zinc-700 divide-y-2 divide-zinc-800">
-                        {/* 1. Pit Bike Selection (10 available) */}
-                        <div className="pb-3 sm:pb-4">
-                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
-                            {/* Left: Image Space + Vehicle Name & Price */}
-                            <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
-                              {/* Image Space - User will add photo manually */}
-                              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-zinc-900 border-2 border-zinc-700 overflow-hidden flex-shrink-0 relative flex items-center justify-center">
-                                {VEHICLE_IMAGES.pitbike ? (
-                                  <img 
-                                    src={VEHICLE_IMAGES.pitbike} 
-                                    alt="Pit Bike" 
-                                    className="w-full h-full object-cover" 
-                                  />
-                                ) : (
-                                  <div className="w-full h-full flex flex-col items-center justify-center bg-zinc-950 border border-dashed border-zinc-700/80 p-1 text-center">
-                                    <Bike className="w-4 h-4 sm:w-5 sm:h-5 text-zinc-500 mb-0.5" />
-                                    <span className="text-[8px] font-mono uppercase tracking-wider text-zinc-400 font-bold leading-tight">Image Space</span>
-                                  </div>
-                                )}
-                              </div>
 
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-2 flex-wrap">
-                                  <h4 className="font-sans font-black text-sm sm:text-base uppercase text-white truncate">Pit Bike Rental</h4>
-                                  <span className="px-1.5 py-0.5 bg-zinc-900 border border-zinc-700 text-[10px] font-mono text-emerald-400 font-bold whitespace-nowrap">
-                                    10 Available
-                                  </span>
-                                </div>
-                                <p className="text-xs text-zinc-300 font-bold mt-0.5 leading-snug">
-                                  110cc semi-automatic or CRF80 with clutch
-                                </p>
-                                <span className="font-sans text-sm sm:text-base text-emerald-400 font-black mt-1 block">
-                                  R250 <span className="text-xs text-zinc-400 font-bold">per 30 min ride</span>
-                                </span>
+                    {/* 2. Mini Bike (70cc) Selection (2 available) */}
+                    <div className="pt-3 sm:pt-4">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+                        <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
+                          <div className="w-16 h-16 sm:w-20 sm:h-20 bg-zinc-900 border-2 border-zinc-700 overflow-hidden flex-shrink-0 relative flex items-center justify-center">
+                            {VEHICLE_IMAGES.minibike ? (
+                              <img 
+                                src={VEHICLE_IMAGES.minibike} 
+                                alt="Mini Bike 70cc" 
+                                className="w-full h-full object-cover" 
+                              />
+                            ) : (
+                              <div className="w-full h-full flex flex-col items-center justify-center bg-zinc-950 border border-dashed border-zinc-700/80 p-1 text-center">
+                                <Bike className="w-4 h-4 sm:w-5 sm:h-5 text-zinc-500 mb-0.5" />
+                                <span className="text-[8px] font-mono uppercase tracking-wider text-zinc-400 font-bold leading-tight">Image Space</span>
                               </div>
-                            </div>
-                            
-                            {/* Right: Quantity Selector */}
-                            <div className="flex items-center gap-2 self-end sm:self-center">
-                              <button
-                                type="button"
-                                onClick={() => setPitBikeQty(Math.max(0, pitBikeQty - 1))}
-                                className="w-9 h-9 sm:w-10 sm:h-10 bg-zinc-900 border-2 border-zinc-700 flex items-center justify-center text-white hover:bg-zinc-800 transition-colors text-lg sm:text-xl font-black cursor-pointer shadow-sm active:scale-95"
-                                aria-label="Decrease pit bikes"
-                              >
-                                -
-                              </button>
-                              <span className="w-8 text-center font-sans font-black text-base sm:text-lg text-white">
-                                {pitBikeQty}
+                            )}
+                          </div>
+
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <h4 className="font-sans font-black text-sm sm:text-base uppercase text-white truncate">Mini Bike (70cc)</h4>
+                              <span className="px-1.5 py-0.5 bg-zinc-900 border border-zinc-700 text-[10px] font-mono text-emerald-400 font-bold whitespace-nowrap">
+                                2 Available
                               </span>
-                              <button
-                                type="button"
-                                onClick={() => setPitBikeQty(Math.min(10, pitBikeQty + 1))}
-                                className="w-9 h-9 sm:w-10 sm:h-10 bg-zinc-900 border-2 border-zinc-700 flex items-center justify-center text-white hover:bg-zinc-800 transition-colors text-lg sm:text-xl font-black cursor-pointer shadow-sm active:scale-95"
-                                aria-label="Increase pit bikes"
-                              >
-                                +
-                              </button>
                             </div>
+                            <p className="text-xs text-zinc-300 font-bold mt-0.5 leading-snug">
+                              70cc mini bike (great for smaller/younger riders developing throttle control)
+                            </p>
+                            <span className="font-sans text-sm sm:text-base text-emerald-400 font-black mt-1 block">
+                              R150 <span className="text-xs text-zinc-400 font-bold">per 10 min ride</span>
+                            </span>
                           </div>
                         </div>
-
-                        {/* 2. Quad Bike Selection (3 available) */}
-                        <div className="py-3 sm:py-4">
-                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
-                            {/* Left: Image Space + Vehicle Name & Price */}
-                            <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
-                              {/* Image Space - User will add photo manually */}
-                              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-zinc-900 border-2 border-zinc-700 overflow-hidden flex-shrink-0 relative flex items-center justify-center">
-                                {VEHICLE_IMAGES.quadbike ? (
-                                  <img 
-                                    src={VEHICLE_IMAGES.quadbike} 
-                                    alt="Quad Bike" 
-                                    className="w-full h-full object-cover" 
-                                  />
-                                ) : (
-                                  <div className="w-full h-full flex flex-col items-center justify-center bg-zinc-950 border border-dashed border-zinc-700/80 p-1 text-center">
-                                    <Bike className="w-4 h-4 sm:w-5 sm:h-5 text-zinc-500 mb-0.5" />
-                                    <span className="text-[8px] font-mono uppercase tracking-wider text-zinc-400 font-bold leading-tight">Image Space</span>
-                                  </div>
-                                )}
-                              </div>
-
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-2 flex-wrap">
-                                  <h4 className="font-sans font-black text-sm sm:text-base uppercase text-white truncate">Quad Bike Rental</h4>
-                                  <span className="px-1.5 py-0.5 bg-zinc-900 border border-zinc-700 text-[10px] font-mono text-emerald-400 font-bold whitespace-nowrap">
-                                    3 Available
-                                  </span>
-                                </div>
-                                <p className="text-xs text-zinc-300 font-bold mt-0.5 leading-snug">
-                                  80cc quad bike (beginner friendly)
-                                </p>
-                                <span className="font-sans text-sm sm:text-base text-emerald-400 font-black mt-1 block">
-                                  R300 <span className="text-xs text-zinc-400 font-bold">per 30 min ride</span>
-                                </span>
-                              </div>
-                            </div>
-                            
-                            {/* Right: Quantity Selector */}
-                            <div className="flex items-center gap-2 self-end sm:self-center">
-                              <button
-                                type="button"
-                                onClick={() => setQuadBikeQty(Math.max(0, quadBikeQty - 1))}
-                                className="w-9 h-9 sm:w-10 sm:h-10 bg-zinc-900 border-2 border-zinc-700 flex items-center justify-center text-white hover:bg-zinc-800 transition-colors text-lg sm:text-xl font-black cursor-pointer shadow-sm active:scale-95"
-                                aria-label="Decrease quad bikes"
-                              >
-                                -
-                              </button>
-                              <span className="w-8 text-center font-sans font-black text-base sm:text-lg text-white">
-                                {quadBikeQty}
-                              </span>
-                              <button
-                                type="button"
-                                onClick={() => setQuadBikeQty(Math.min(3, quadBikeQty + 1))}
-                                className="w-9 h-9 sm:w-10 sm:h-10 bg-zinc-900 border-2 border-zinc-700 flex items-center justify-center text-white hover:bg-zinc-800 transition-colors text-lg sm:text-xl font-black cursor-pointer shadow-sm active:scale-95"
-                                aria-label="Increase quad bikes"
-                              >
-                                +
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* 3. Off-Road Go Kart Selection (4 available) */}
-                        <div className="py-3 sm:py-4">
-                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
-                            {/* Left: Image Space + Vehicle Name & Price */}
-                            <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
-                              {/* Image Space - User will add photo manually */}
-                              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-zinc-900 border-2 border-zinc-700 overflow-hidden flex-shrink-0 relative flex items-center justify-center">
-                                {VEHICLE_IMAGES.gokart ? (
-                                  <img 
-                                    src={VEHICLE_IMAGES.gokart} 
-                                    alt="Off-Road Go Kart 70cc (Kids)" 
-                                    className="w-full h-full object-cover" 
-                                  />
-                                ) : (
-                                  <div className="w-full h-full flex flex-col items-center justify-center bg-zinc-950 border border-dashed border-zinc-700/80 p-1 text-center">
-                                    <Car className="w-4 h-4 sm:w-5 sm:h-5 text-zinc-500 mb-0.5" />
-                                    <span className="text-[8px] font-mono uppercase tracking-wider text-zinc-400 font-bold leading-tight">Image Space</span>
-                                  </div>
-                                )}
-                              </div>
-
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-2 flex-wrap">
-                                  <h4 className="font-sans font-black text-sm sm:text-base uppercase text-white truncate">Off-Road Go Kart (70cc Kids)</h4>
-                                  <span className="px-1.5 py-0.5 bg-zinc-900 border border-zinc-700 text-[10px] font-mono text-emerald-400 font-bold whitespace-nowrap">
-                                    4 Available
-                                  </span>
-                                </div>
-                                <p className="text-xs text-zinc-300 font-bold mt-0.5 leading-snug">
-                                  70cc off-road racing go kart for kids
-                                </p>
-                                <span className="font-sans text-sm sm:text-base text-emerald-400 font-black mt-1 block">
-                                  R150 <span className="text-xs text-zinc-400 font-bold">per 10 min ride</span>
-                                </span>
-                              </div>
-                            </div>
-                            
-                            {/* Right: Quantity Selector */}
-                            <div className="flex items-center gap-2 self-end sm:self-center">
-                              <button
-                                type="button"
-                                onClick={() => setGoKartQty(Math.max(0, goKartQty - 1))}
-                                className="w-9 h-9 sm:w-10 sm:h-10 bg-zinc-900 border-2 border-zinc-700 flex items-center justify-center text-white hover:bg-zinc-800 transition-colors text-lg sm:text-xl font-black cursor-pointer shadow-sm active:scale-95"
-                                aria-label="Decrease go karts"
-                              >
-                                -
-                              </button>
-                              <span className="w-8 text-center font-sans font-black text-base sm:text-lg text-white">
-                                {goKartQty}
-                              </span>
-                              <button
-                                type="button"
-                                onClick={() => setGoKartQty(Math.min(4, goKartQty + 1))}
-                                className="w-9 h-9 sm:w-10 sm:h-10 bg-zinc-900 border-2 border-zinc-700 flex items-center justify-center text-white hover:bg-zinc-800 transition-colors text-lg sm:text-xl font-black cursor-pointer shadow-sm active:scale-95"
-                                aria-label="Increase go karts"
-                              >
-                                +
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* 4. Mini Bike (70cc) Selection (2 available) */}
-                        <div className="pt-3 sm:pt-4">
-                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
-                            {/* Left: Image Space + Vehicle Name & Price */}
-                            <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
-                              {/* Image Space - User will add photo manually */}
-                              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-zinc-900 border-2 border-zinc-700 overflow-hidden flex-shrink-0 relative flex items-center justify-center">
-                                {VEHICLE_IMAGES.minibike ? (
-                                  <img 
-                                    src={VEHICLE_IMAGES.minibike} 
-                                    alt="Mini Bike 70cc" 
-                                    className="w-full h-full object-cover" 
-                                  />
-                                ) : (
-                                  <div className="w-full h-full flex flex-col items-center justify-center bg-zinc-950 border border-dashed border-zinc-700/80 p-1 text-center">
-                                    <Bike className="w-4 h-4 sm:w-5 sm:h-5 text-zinc-500 mb-0.5" />
-                                    <span className="text-[8px] font-mono uppercase tracking-wider text-zinc-400 font-bold leading-tight">Image Space</span>
-                                  </div>
-                                )}
-                              </div>
-
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-2 flex-wrap">
-                                  <h4 className="font-sans font-black text-sm sm:text-base uppercase text-white truncate">Mini Bike (70cc)</h4>
-                                  <span className="px-1.5 py-0.5 bg-zinc-900 border border-zinc-700 text-[10px] font-mono text-emerald-400 font-bold whitespace-nowrap">
-                                    2 Available
-                                  </span>
-                                </div>
-                                <p className="text-xs text-zinc-300 font-bold mt-0.5 leading-snug">
-                                  70cc mini bike (great for smaller/younger riders & kids)
-                                </p>
-                                <span className="font-sans text-sm sm:text-base text-emerald-400 font-black mt-1 block">
-                                  R150 <span className="text-xs text-zinc-400 font-bold">per 10 min ride</span>
-                                </span>
-                              </div>
-                            </div>
-                            
-                            {/* Right: Quantity Selector */}
-                            <div className="flex items-center gap-2 self-end sm:self-center">
-                              <button
-                                type="button"
-                                onClick={() => setMiniBikeQty(Math.max(0, miniBikeQty - 1))}
-                                className="w-9 h-9 sm:w-10 sm:h-10 bg-zinc-900 border-2 border-zinc-700 flex items-center justify-center text-white hover:bg-zinc-800 transition-colors text-lg sm:text-xl font-black cursor-pointer shadow-sm active:scale-95"
-                                aria-label="Decrease mini bikes"
-                              >
-                                -
-                              </button>
-                              <span className="w-8 text-center font-sans font-black text-base sm:text-lg text-white">
-                                {miniBikeQty}
-                              </span>
-                              <button
-                                type="button"
-                                onClick={() => setMiniBikeQty(Math.min(2, miniBikeQty + 1))}
-                                className="w-9 h-9 sm:w-10 sm:h-10 bg-zinc-900 border-2 border-zinc-700 flex items-center justify-center text-white hover:bg-zinc-800 transition-colors text-lg sm:text-xl font-black cursor-pointer shadow-sm active:scale-95"
-                                aria-label="Increase mini bikes"
-                              >
-                                +
-                              </button>
-                            </div>
-                          </div>
+                        
+                        {/* Quantity Selector */}
+                        <div className="flex items-center gap-2 self-end sm:self-center">
+                          <button
+                            type="button"
+                            onClick={() => setMiniBikeQty(Math.max(0, miniBikeQty - 1))}
+                            className="w-9 h-9 sm:w-10 sm:h-10 bg-zinc-900 border-2 border-zinc-700 flex items-center justify-center text-white hover:bg-zinc-800 transition-colors text-lg sm:text-xl font-black cursor-pointer shadow-sm active:scale-95"
+                            aria-label="Decrease mini bikes"
+                          >
+                            -
+                          </button>
+                          <span className="w-8 text-center font-sans font-black text-base sm:text-lg text-white">
+                            {miniBikeQty}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => setMiniBikeQty(Math.min(2, miniBikeQty + 1))}
+                            className="w-9 h-9 sm:w-10 sm:h-10 bg-zinc-900 border-2 border-zinc-700 flex items-center justify-center text-white hover:bg-zinc-800 transition-colors text-lg sm:text-xl font-black cursor-pointer shadow-sm active:scale-95"
+                            aria-label="Increase mini bikes"
+                          >
+                            +
+                          </button>
                         </div>
                       </div>
-
-                      {pitBikeQty === 0 && quadBikeQty === 0 && goKartQty === 0 && miniBikeQty === 0 && (
-                        <p className="text-xs sm:text-sm text-amber-300 font-sans font-black p-2.5 bg-amber-950/70 border border-amber-800">
-                          * Please select at least 1 vehicle to proceed.
-                        </p>
-                      )}
                     </div>
+                  </div>
+
+                  {goKartQty === 0 && miniBikeQty === 0 && (
+                    <p className="text-xs sm:text-sm text-amber-300 font-sans font-black p-2.5 bg-amber-950/70 border border-amber-800">
+                      * Please select at least 1 vehicle (Go Kart or Mini Bike) to proceed.
+                    </p>
                   )}
 
                   {/* Pricing Preview Box */}
                   <div className="p-4 sm:p-5 bg-zinc-950 border-2 border-zinc-700 flex items-center justify-between">
                     <div>
-                      <span className="text-xs text-zinc-400 font-sans uppercase block font-black">Subtotal</span>
+                      <span className="text-xs text-zinc-400 font-sans uppercase block font-black">Subtotal (per session)</span>
                       <span className="text-xs sm:text-sm text-zinc-200 font-sans font-bold">
                         {getSelectedVehiclesSummary()}
                       </span>
@@ -1519,14 +1129,14 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                     className="flex-1 sm:flex-initial h-12 px-5 sm:px-7 bg-emerald-500 hover:bg-emerald-400 text-black font-mono font-black text-xs sm:text-sm uppercase tracking-wider transition-all border border-emerald-400 flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-emerald-500/20 active:scale-95"
                   >
                     <span className="sm:hidden">Next Step</span>
-                    <span className="hidden sm:inline">Next: Choose Time Slot</span>
+                    <span className="hidden sm:inline">Next: Choose Time Slot(s)</span>
                     <ArrowRight className="w-4 h-4 flex-shrink-0" />
                   </button>
                 </div>
               </motion.div>
             )}
 
-            {/* STEP 4: TIME SLOT SELECTION */}
+            {/* STEP 4: TIME SLOT SELECTION (15-MIN INTERVALS FOR GO KARTS & MINI BIKES) */}
             {currentStep === 4 && (
               <motion.div
                 key="step-4"
@@ -1547,7 +1157,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                     </span>
                   </div>
                   <p className="text-xs text-zinc-400 font-sans mt-1">
-                    Select one or more available time slots. Tap any slot to add or remove it from your booking.
+                    Select one or more 15-minute time slots (10-minute active rides • R150 per session). Tap any slot to add or remove it from your booking!
                   </p>
                 </div>
 
@@ -1574,7 +1184,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
 
                   {/* Weather for selected slot */}
                   {date && (
-                    <WeatherWidget date={date} selectedSlot={selectedStandardSlots[0] || selectedKidsSlots[0]} />
+                    <WeatherWidget date={date} selectedSlot={selectedSlots[0]} />
                   )}
 
                   {loadingAvailability ? (
@@ -1582,204 +1192,102 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                       <div className="w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
                       <span className="text-xs font-mono text-zinc-400">Loading real-time track slots...</span>
                     </div>
-                  ) : (
-                    <div className="space-y-6">
-                      {/* SECTION 1: Standard 45-Minute Slots (Pit Bikes & Quad Bikes / Group Packages) */}
-                      {(hasStandardVehicles || (!hasStandardVehicles && !hasKidsVehicles)) && (() => {
-                        const [year, month, day] = date ? date.split('-').map(Number) : [2026, 1, 1];
-                        const dOfWeek = date ? new Date(year, month - 1, day).getDay() : 6;
-                        const standardSlotList = STANDARD_SLOTS.filter(s => !(dOfWeek === 0 && s === "14:15"));
+                  ) : (() => {
+                    const [year, month, day] = date ? date.split('-').map(Number) : [2026, 1, 1];
+                    const dOfWeek = date ? new Date(year, month - 1, day).getDay() : 6;
+                    // On Sunday, track closes at 14:30, so exclude 14:30 and 14:45
+                    const kidsSlotList = KIDS_SLOTS.filter(s => !(dOfWeek === 0 && (s === "14:30" || s === "14:45")));
 
-                        return (
-                          <div className="bg-zinc-950/60 p-3 sm:p-4 border-2 border-zinc-800 space-y-3">
-                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 border-b border-zinc-800 pb-2">
-                              <div>
-                                <h4 className="font-mono text-xs sm:text-sm uppercase tracking-wider text-white font-black flex items-center gap-2">
-                                  <Bike className="w-4 h-4 text-emerald-400" />
-                                  Pit Bike & Quad Bike Sessions
-                                  <span className="text-[10px] text-emerald-400 font-normal font-sans">(45-Min Slots • 30m Active Ride)</span>
-                                </h4>
-                                <span className="text-[11px] text-zinc-400">
-                                  {isWeekendSelected() ? 'R250 Pit Bike / R300 Quad Bike per session' : 'Weekday Group Package Session'}
-                                </span>
-                              </div>
-                              {selectedStandardSlots.length > 0 && (
-                                <button
-                                  type="button"
-                                  onClick={() => setSelectedStandardSlots([])}
-                                  className="text-[11px] font-mono text-zinc-400 hover:text-red-400 uppercase font-bold self-start sm:self-auto underline"
-                                >
-                                  Clear Standard ({selectedStandardSlots.length})
-                                </button>
-                              )}
-                            </div>
-
-                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                              {standardSlotList.map((slot) => {
-                                const disabled = isStandardSlotDisabled(slot);
-                                const selected = selectedStandardSlots.includes(slot);
-                                return (
-                                  <button
-                                    type="button"
-                                    key={`std-${slot}`}
-                                    disabled={disabled}
-                                    onClick={() => toggleStandardSlot(slot)}
-                                    className={`p-2.5 rounded-none border text-left flex flex-col justify-between transition-all relative ${
-                                      disabled 
-                                        ? availability[slot]?.isClosed
-                                          ? 'border-red-900/60 bg-red-950/40 text-red-400 opacity-60 cursor-not-allowed'
-                                          : 'border-zinc-800 bg-zinc-950 text-zinc-600 opacity-60 cursor-not-allowed'
-                                        : selected
-                                          ? 'border-2 border-emerald-400 bg-emerald-950/90 text-emerald-200 shadow-md ring-1 ring-emerald-400/40'
-                                          : 'border-zinc-700 hover:border-emerald-500 bg-zinc-950 hover:bg-emerald-950/30 text-zinc-200 cursor-pointer shadow-xs'
-                                    }`}
-                                  >
-                                    <div className="flex items-center justify-between w-full mb-1">
-                                      <span className={`font-mono text-xs font-black tracking-wider ${
-                                        selected 
-                                          ? 'text-emerald-300' 
-                                          : availability[slot]?.isClosed
-                                            ? 'text-red-400 line-through' 
-                                            : disabled
-                                              ? 'text-zinc-600 line-through'
-                                              : 'text-white'
-                                      }`}>
-                                        {slot}
-                                      </span>
-                                      {selected ? (
-                                        <span className="flex items-center gap-1 text-[7.5px] font-mono font-bold text-black uppercase bg-emerald-400 px-1.5 py-0.5">
-                                          <Check className="w-2.5 h-2.5 stroke-[3]" />
-                                          Selected
-                                        </span>
-                                      ) : availability[slot]?.isClosed ? (
-                                        <span className="text-[7.5px] font-mono font-bold text-red-300 uppercase bg-red-950/80 border border-red-700 px-1 py-0.5">
-                                          Closed
-                                        </span>
-                                      ) : disabled ? (
-                                        <span className="text-[7.5px] font-mono font-bold text-zinc-400 uppercase bg-zinc-800 border border-zinc-700 px-1 py-0.5">
-                                          Booked
-                                        </span>
-                                      ) : (
-                                        <span className="text-[7.5px] font-mono font-bold text-emerald-300 uppercase bg-emerald-950/80 border border-emerald-600 px-1 py-0.5">
-                                          Open
-                                        </span>
-                                      )}
-                                    </div>
-                                    
-                                    {/* Capacity Dots */}
-                                    {renderCapacityDots(slot, 'standard')}
-                                  </button>
-                                );
-                              })}
-                            </div>
-
-                            {selectedStandardSlots.length > 0 && (
-                              <div className="p-2 bg-emerald-950/40 border border-emerald-600/40 text-xs font-mono text-emerald-300 flex items-center justify-between">
-                                <span>✓ Selected: {selectedStandardSlots.join(', ')} ({selectedStandardSlots.length} session{selectedStandardSlots.length > 1 ? 's' : ''})</span>
-                              </div>
-                            )}
+                    return (
+                      <div className="bg-zinc-950/60 p-3 sm:p-4 border-2 border-zinc-800 space-y-3">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 border-b border-zinc-800 pb-2">
+                          <div>
+                            <h4 className="font-mono text-xs sm:text-sm uppercase tracking-wider text-white font-black flex items-center gap-2">
+                              <Car className="w-4 h-4 text-emerald-400" />
+                              Go Kart & Mini Bike Sessions
+                              <span className="text-[10px] text-emerald-400 font-normal font-sans">(15-Min Intervals • 10m Active Ride • R150)</span>
+                            </h4>
+                            <span className="text-[11px] text-zinc-400">
+                              Choose multiple slots to extend ride time • Pit bikes & Quad bikes are walk-in only
+                            </span>
                           </div>
-                        );
-                      })()}
+                          {selectedSlots.length > 0 && (
+                            <button
+                              type="button"
+                              onClick={() => setSelectedSlots([])}
+                              className="text-[11px] font-mono text-zinc-400 hover:text-red-400 uppercase font-bold self-start sm:self-auto underline cursor-pointer"
+                            >
+                              Clear Selection ({selectedSlots.length})
+                            </button>
+                          )}
+                        </div>
 
-                      {/* SECTION 2: Kids 15-Minute Apart Slots (Go Karts & Mini Bikes) */}
-                      {hasKidsVehicles && (() => {
-                        const [year, month, day] = date ? date.split('-').map(Number) : [2026, 1, 1];
-                        const dOfWeek = date ? new Date(year, month - 1, day).getDay() : 6;
-                        const kidsSlotList = KIDS_SLOTS.filter(s => !(dOfWeek === 0 && (s === "14:30" || s === "14:45")));
+                        <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                          {kidsSlotList.map((slot) => {
+                            const disabled = isSlotDisabled(slot);
+                            const selected = selectedSlots.includes(slot);
+                            return (
+                              <button
+                                type="button"
+                                key={`kids-${slot}`}
+                                disabled={disabled}
+                                onClick={() => toggleSlot(slot)}
+                                className={`p-2 rounded-none border text-left flex flex-col justify-between transition-all relative ${
+                                  disabled 
+                                    ? availability[slot]?.isClosed
+                                      ? 'border-red-900/60 bg-red-950/40 text-red-400 opacity-60 cursor-not-allowed'
+                                      : 'border-zinc-800 bg-zinc-950 text-zinc-600 opacity-60 cursor-not-allowed'
+                                    : selected
+                                      ? 'border-2 border-emerald-400 bg-emerald-950/90 text-emerald-200 shadow-md ring-1 ring-emerald-400/40'
+                                      : 'border-zinc-700 hover:border-emerald-500 bg-zinc-950 hover:bg-emerald-950/30 text-zinc-200 cursor-pointer shadow-xs'
+                                }`}
+                              >
+                                <div className="flex items-center justify-between w-full mb-1">
+                                  <span className={`font-mono text-xs font-black tracking-wider ${
+                                    selected 
+                                      ? 'text-emerald-300' 
+                                      : availability[slot]?.isClosed
+                                        ? 'text-red-400 line-through' 
+                                        : disabled
+                                          ? 'text-zinc-600 line-through'
+                                          : 'text-white'
+                                  }`}>
+                                    {slot}
+                                  </span>
+                                  {selected ? (
+                                    <span className="flex items-center gap-0.5 text-[7px] font-mono font-bold text-black uppercase bg-emerald-400 px-1 py-0.5">
+                                      <Check className="w-2 h-2 stroke-[3]" />
+                                    </span>
+                                  ) : availability[slot]?.isClosed ? (
+                                    <span className="text-[7px] font-mono font-bold text-red-300 uppercase bg-red-950/80 px-1 py-0.5">
+                                      ✕
+                                    </span>
+                                  ) : disabled ? (
+                                    <span className="text-[7px] font-mono font-bold text-zinc-500 uppercase">
+                                      FULL
+                                    </span>
+                                  ) : (
+                                    <span className="text-[7px] font-mono font-bold text-emerald-400 uppercase">
+                                      OPEN
+                                    </span>
+                                  )}
+                                </div>
+                                
+                                {/* Capacity Dots */}
+                                {renderCapacityDots(slot)}
+                              </button>
+                            );
+                          })}
+                        </div>
 
-                        return (
-                          <div className="bg-zinc-950/60 p-3 sm:p-4 border-2 border-zinc-800 space-y-3">
-                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 border-b border-zinc-800 pb-2">
-                              <div>
-                                <h4 className="font-mono text-xs sm:text-sm uppercase tracking-wider text-white font-black flex items-center gap-2">
-                                  <Car className="w-4 h-4 text-emerald-400" />
-                                  Kids Go Kart & Mini Bike Sessions
-                                  <span className="text-[10px] text-emerald-400 font-normal font-sans">(15-Min Intervals • 10m Active Ride • R150)</span>
-                                </h4>
-                                <span className="text-[11px] text-zinc-400">
-                                  70cc Off-Road Go Karts & 70cc Mini Bikes for kids • R150 per 10-minute session
-                                </span>
-                              </div>
-                              {selectedKidsSlots.length > 0 && (
-                                <button
-                                  type="button"
-                                  onClick={() => setSelectedKidsSlots([])}
-                                  className="text-[11px] font-mono text-zinc-400 hover:text-red-400 uppercase font-bold self-start sm:self-auto underline"
-                                >
-                                  Clear Kids ({selectedKidsSlots.length})
-                                </button>
-                              )}
-                            </div>
-
-                            <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
-                              {kidsSlotList.map((slot) => {
-                                const disabled = isKidsSlotDisabled(slot);
-                                const selected = selectedKidsSlots.includes(slot);
-                                return (
-                                  <button
-                                    type="button"
-                                    key={`kids-${slot}`}
-                                    disabled={disabled}
-                                    onClick={() => toggleKidsSlot(slot)}
-                                    className={`p-2 rounded-none border text-left flex flex-col justify-between transition-all relative ${
-                                      disabled 
-                                        ? availability[slot]?.isClosed
-                                          ? 'border-red-900/60 bg-red-950/40 text-red-400 opacity-60 cursor-not-allowed'
-                                          : 'border-zinc-800 bg-zinc-950 text-zinc-600 opacity-60 cursor-not-allowed'
-                                        : selected
-                                          ? 'border-2 border-emerald-400 bg-emerald-950/90 text-emerald-200 shadow-md ring-1 ring-emerald-400/40'
-                                          : 'border-zinc-700 hover:border-emerald-500 bg-zinc-950 hover:bg-emerald-950/30 text-zinc-200 cursor-pointer shadow-xs'
-                                    }`}
-                                  >
-                                    <div className="flex items-center justify-between w-full mb-1">
-                                      <span className={`font-mono text-xs font-black tracking-wider ${
-                                        selected 
-                                          ? 'text-emerald-300' 
-                                          : availability[slot]?.isClosed
-                                            ? 'text-red-400 line-through' 
-                                            : disabled
-                                              ? 'text-zinc-600 line-through'
-                                              : 'text-white'
-                                      }`}>
-                                        {slot}
-                                      </span>
-                                      {selected ? (
-                                        <span className="flex items-center gap-0.5 text-[7px] font-mono font-bold text-black uppercase bg-emerald-400 px-1 py-0.5">
-                                          <Check className="w-2 h-2 stroke-[3]" />
-                                        </span>
-                                      ) : availability[slot]?.isClosed ? (
-                                        <span className="text-[7px] font-mono font-bold text-red-300 uppercase bg-red-950/80 px-1 py-0.5">
-                                          ✕
-                                        </span>
-                                      ) : disabled ? (
-                                        <span className="text-[7px] font-mono font-bold text-zinc-500 uppercase">
-                                          FULL
-                                        </span>
-                                      ) : (
-                                        <span className="text-[7px] font-mono font-bold text-emerald-400 uppercase">
-                                          OPEN
-                                        </span>
-                                      )}
-                                    </div>
-                                    
-                                    {/* Capacity Dots */}
-                                    {renderCapacityDots(slot, 'kids')}
-                                  </button>
-                                );
-                              })}
-                            </div>
-
-                            {selectedKidsSlots.length > 0 && (
-                              <div className="p-2 bg-emerald-950/40 border border-emerald-600/40 text-xs font-mono text-emerald-300 flex items-center justify-between">
-                                <span>✓ Selected: {selectedKidsSlots.join(', ')} ({selectedKidsSlots.length} ride{selectedKidsSlots.length > 1 ? 's' : ''})</span>
-                              </div>
-                            )}
+                        {selectedSlots.length > 0 && (
+                          <div className="p-2 bg-emerald-950/40 border border-emerald-600/40 text-xs font-mono text-emerald-300 flex items-center justify-between">
+                            <span>✓ Selected: {selectedSlots.join(', ')} ({selectedSlots.length} session{selectedSlots.length > 1 ? 's' : ''})</span>
                           </div>
-                        );
-                      })()}
-                    </div>
-                  )}
+                        )}
+                      </div>
+                    );
+                  })()}
 
                   {/* Multi-slot summary counter bar */}
                   <div className="bg-zinc-900 border-2 border-zinc-700 p-3 sm:p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-md">
@@ -1867,16 +1375,9 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                     <div>
                       <span className="text-[10px] font-mono uppercase text-zinc-400 block mb-0.5 font-bold">Reserved Date & Time</span>
                       <h4 className="font-bold text-white text-sm">{date} ({dayOfWeekName})</h4>
-                      {selectedStandardSlots.length > 0 && (
-                        <p className="text-xs text-emerald-400 font-mono font-bold mt-1">
-                          Pit / Quad Bike Slots (45m): {selectedStandardSlots.join(', ')} ({selectedStandardSlots.length} session{selectedStandardSlots.length > 1 ? 's' : ''})
-                        </p>
-                      )}
-                      {selectedKidsSlots.length > 0 && (
-                        <p className="text-xs text-emerald-400 font-mono font-bold mt-1">
-                          Kids Go Kart / Mini Bike Slots (15m): {selectedKidsSlots.join(', ')} ({selectedKidsSlots.length} ride{selectedKidsSlots.length > 1 ? 's' : ''})
-                        </p>
-                      )}
+                      <p className="text-xs text-emerald-400 font-mono font-bold mt-1">
+                        Selected Time Slots (15-min intervals): {selectedSlots.join(', ')} ({selectedSlots.length} session{selectedSlots.length > 1 ? 's' : ''} of 10 min each)
+                      </p>
                     </div>
                     <button
                       type="button"
@@ -1892,12 +1393,10 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                     <div>
                       <span className="text-[10px] font-mono uppercase text-zinc-400 block mb-0.5 font-bold">Selected Vehicles & Sessions</span>
                       <h4 className="font-bold text-white text-sm">
-                        {bikeType === 'GroupPackage' 
-                          ? `Weekday Group (${groupDuration === 240 ? '4 Hours' : `${groupDuration} Mins`}, ${groupSize} Bikes)` 
-                          : getSelectedVehiclesSummary()}
+                        {getSelectedVehiclesSummary()}
                       </h4>
                       <p className="text-xs text-zinc-400 mt-1 font-mono">
-                        {selectedSlots.length} total slot session{selectedSlots.length > 1 ? 's' : ''} on {date}
+                        {selectedSlots.length} session{selectedSlots.length > 1 ? 's' : ''} × R150 per vehicle on {date}
                       </p>
                     </div>
                     <button
@@ -1922,7 +1421,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                 <div className="bg-emerald-950/70 border-2 border-emerald-600 p-3.5 text-xs sm:text-sm font-sans leading-snug text-emerald-200 flex items-center gap-3 font-bold">
                   <Clock className="w-5 h-5 text-emerald-400 flex-shrink-0" />
                   <div>
-                    <span className="font-black text-emerald-300">⚡ 5-MINUTE RESERVATION LOCK:</span> Your bikes will be locked for 5 minutes during checkout. Uncompleted checkouts are released back to the track automatically.
+                    <span className="font-black text-emerald-300">⚡ 5-MINUTE RESERVATION LOCK:</span> Your vehicles will be locked for 5 minutes during checkout. Uncompleted checkouts are released back to the track automatically.
                   </div>
                 </div>
 

@@ -67,11 +67,14 @@ export interface FirestoreBooking {
   phone: string;
   date: string;
   slot: string;
+  slots?: string[];
   bikeType: 'PitBike' | 'QuadBike' | 'GroupPackage' | 'Mixed';
   packageName: string;
   quantity: number;
   pitBikeQty?: number;
   quadBikeQty?: number;
+  goKartQty?: number;
+  miniBikeQty?: number;
   amount: number;
   paid: boolean;
   createdAt: string;

@@ -8,34 +8,44 @@ export default function PricingCalculator() {
 
   const rates = [
     {
-      item: "Pit Bike Rental (110cc Semi-Auto or CRF80 Clutch) • 10 Available",
-      price: "R250",
-      duration: "per 30 min session",
-      note: "110cc semi-automatic pit bike or Honda CRF80 with clutch. 45-minute slot intervals (30 min active ride time). Mandatory prior experience riding on dirt and changing gears. Max weight: 100 kg • Age 14+."
-    },
-    {
-      item: "Quad Bike Rental (80cc Quad) • 3 Available",
-      price: "R300",
-      duration: "per 30 min session",
-      note: "80cc quad bike. 45-minute slot intervals (30 min active ride time). Beginners ARE permitted on rental quad bikes! Fun, simple throttle control on flat dirt."
-    },
-    {
       item: "Off-Road Go Kart (70cc Kids) • 4 Available",
       price: "R150",
       duration: "per 10 min session",
-      note: "70cc off-road go kart for kids. 10-minute session. Thrilling dirt track handling with roll cage protection for kids."
+      note: "70cc off-road go kart for kids. 10-minute session. Thrilling dirt track handling with roll cage protection for kids.",
+      tag: "Online Booking Available",
+      tagColor: "bg-emerald-950/80 border-emerald-500 text-emerald-300"
     },
     {
       item: "Mini Bike Rental (70cc) • 2 Available",
       price: "R150",
       duration: "per 10 min session",
-      note: "70cc mini bike. 10-minute session. Perfect for smaller or younger riders developing balance and throttle confidence."
+      note: "70cc mini bike. 10-minute session. Perfect for smaller or younger riders developing balance and throttle confidence.",
+      tag: "Online Booking Available",
+      tagColor: "bg-emerald-950/80 border-emerald-500 text-emerald-300"
+    },
+    {
+      item: "Pit Bike Rental (110cc Semi-Auto or CRF80 Clutch) • 10 Available",
+      price: "R250",
+      duration: "per 30 min session",
+      note: "110cc semi-automatic pit bike or Honda CRF80 with clutch. 30 min active ride time. First come, first served on-site! Pay on arrival at the track (no advance online booking). Mandatory prior experience riding on dirt and changing gears. Max weight: 100 kg • Age 14+.",
+      tag: "First Come, First Served",
+      tagColor: "bg-amber-950/80 border-amber-500 text-amber-300"
+    },
+    {
+      item: "Quad Bike Rental (80cc Quad) • 3 Available",
+      price: "R300",
+      duration: "per 30 min session",
+      note: "80cc quad bike. 30 min active ride time. First come, first served on-site! Pay on arrival at the track (no advance online booking). Beginners permitted on rental quad bikes! Fun, simple throttle control on flat dirt.",
+      tag: "First Come, First Served",
+      tagColor: "bg-amber-950/80 border-amber-500 text-amber-300"
     },
     {
       item: "Bring Your Own Bike/Pit Bike",
       price: "R150",
       duration: "per day",
-      note: "Pay on-site. No online booking required. Show up and ride during open hours."
+      note: "Pay on-site at the track gate. No online booking required. Show up and ride during open hours.",
+      tag: "Walk-In On-Site",
+      tagColor: "bg-zinc-800 border-zinc-600 text-zinc-300"
     }
   ];
 
@@ -62,18 +72,28 @@ export default function PricingCalculator() {
 
         {/* Rates Sheet (Tabular) */}
         <div className="border sm:border-2 border-zinc-700 bg-zinc-900/90 mb-6 sm:mb-10 shadow-2xl">
-          <div className="border-b border-zinc-700 px-3.5 sm:px-5 py-3 sm:py-4 bg-zinc-950/80">
+          <div className="border-b border-zinc-700 px-3.5 sm:px-5 py-3 sm:py-4 bg-zinc-950/80 flex items-center justify-between flex-wrap gap-2">
             <h3 className="font-sans text-sm sm:text-base uppercase tracking-wider text-white font-black">
               Standard Compound Rates
             </h3>
+            <span className="text-[10px] sm:text-xs font-mono text-zinc-400 font-bold uppercase">
+              Pit & Quads: First Come, First Served • Go Karts & Mini Bikes: Online Booking
+            </span>
           </div>
           <div className="divide-y divide-zinc-800 font-sans">
             {rates.map((rate, idx) => (
               <div key={idx} className="p-3.5 sm:p-6 sm:flex sm:items-start sm:justify-between gap-4 sm:gap-6 hover:bg-zinc-800/50 transition-colors">
                 <div className="sm:max-w-xl">
-                  <h4 className="font-sans text-base sm:text-lg uppercase font-black text-white">
-                    {rate.item}
-                  </h4>
+                  <div className="flex items-center gap-2 flex-wrap mb-1">
+                    <h4 className="font-sans text-base sm:text-lg uppercase font-black text-white">
+                      {rate.item}
+                    </h4>
+                    {rate.tag && (
+                      <span className={`px-2 py-0.5 border text-[9px] font-mono uppercase font-bold tracking-wider ${rate.tagColor}`}>
+                        {rate.tag}
+                      </span>
+                    )}
+                  </div>
                   <p className="text-xs sm:text-sm font-semibold text-zinc-300 mt-1 leading-relaxed">
                     {rate.note}
                   </p>
@@ -94,14 +114,14 @@ export default function PricingCalculator() {
         {/* CTA */}
         <div className="border sm:border-2 border-zinc-700 bg-zinc-900/90 p-4 sm:p-8 text-center max-w-xl mx-auto shadow-2xl">
           <p className="font-sans text-sm sm:text-base font-bold text-zinc-200 leading-relaxed mb-4 sm:mb-5">
-            Guaranteed slots and rental unit availability require online booking. Choose dates, select your bikes, and checkout securely.
+            Advance online bookings are exclusively for Kids Off-Road Go Karts & Mini Bikes. Pit bikes and Quad bikes are strictly first come, first served on-site!
           </p>
           <button
             onClick={() => navigateTo('booking')}
             className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-3.5 bg-emerald-500 hover:bg-emerald-400 text-black font-sans font-black uppercase tracking-wider text-sm sm:text-base rounded-none transition-colors inline-flex items-center justify-center gap-2.5 cursor-pointer shadow-lg shadow-emerald-500/20 border sm:border-2 border-emerald-500"
           >
             <Calendar className="w-4 h-4" />
-            <span>Book Ride Online</span>
+            <span>Book Go Karts & Mini Bikes Online</span>
           </button>
         </div>
 
