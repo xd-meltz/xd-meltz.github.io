@@ -151,7 +151,7 @@ export default function AboutContact() {
           <div className="max-w-lg mx-auto border sm:border-2 border-zinc-700 bg-zinc-900/90 p-4 sm:p-8 text-center shadow-2xl">
             <Phone className="w-6 h-6 sm:w-7 sm:h-7 text-brand-light mx-auto mb-2 sm:mb-3" />
             <h3 className="font-sans text-base sm:text-lg uppercase font-black text-white mb-1.5 sm:mb-2">
-              Live Booking Support
+              Contact Us
             </h3>
             <p className="text-xs sm:text-sm text-zinc-200 font-sans leading-relaxed mb-4 sm:mb-5 font-bold">
               Need to check weather conditions, live track availability, or arrange custom private groups? Chat with us directly on WhatsApp.
@@ -181,7 +181,7 @@ export default function AboutContact() {
               className="flex items-center gap-2 cursor-pointer select-none active:scale-95 transition-transform"
               title="Click 5 times to access Admin Panel"
             >
-              <img src="/rc-monogram.png" alt="RC" className="h-5 sm:h-6 w-auto inline-block invert" />
+              <img src="/rc-monogram-white.png" alt="RC" className="h-5 sm:h-6 w-auto inline-block" />
               <h4 className="font-sans font-black text-white uppercase tracking-wider text-base sm:text-lg italic">
                 RIX<span className="text-brand-light">COMPOUND</span>
               </h4>

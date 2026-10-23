@@ -15,9 +15,11 @@ interface SprocketLogoProps {
 }
 
 export default function SprocketLogo({
-  circleLogoSrc = '/rc-monogram.png',
+  circleLogoSrc = '/rc-monogram-white.png',
   className = 'h-13 sm:h-16 w-auto',
 }: SprocketLogoProps) {
+  // Automatically use the natively white monogram asset so mobile browsers render it pure white without relying on CSS filter support
+  const activeLogoSrc = circleLogoSrc === '/rc-monogram.png' ? '/rc-monogram-white.png' : circleLogoSrc;
   // Geometry coordinates (viewBox: 0 0 240 56)
   // Large logo drive sprocket (left):
   const largeX = 29;
@@ -118,13 +120,12 @@ export default function SprocketLogo({
           {/* User's circular logo image */}
           <g clipPath="url(#sprocketLogoCircleClip)">
             <image
-              href={circleLogoSrc}
+              href={activeLogoSrc}
               x={largeX - largeR}
               y={largeY - largeR}
               width={largeR * 2}
               height={largeR * 2}
               preserveAspectRatio="xMidYMid meet"
-              className={circleLogoSrc === '/rc-monogram.png' ? 'filter invert' : ''}
             />
           </g>
 
