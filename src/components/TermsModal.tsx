@@ -85,13 +85,13 @@ export default function TermsModal({ isOpen, onAccept, onClose }: TermsModalProp
   const modalContent = (
     <div className="fixed inset-0 z-[9999] flex flex-col bg-zinc-950 text-white overflow-hidden animate-fade-in select-none">
       {/* Top Accent Line */}
-      <div className="h-1.5 bg-gradient-to-r from-emerald-500 via-emerald-400 to-emerald-600 flex-shrink-0" />
+      <div className="h-1.5 bg-gradient-to-r from-blue-600 via-blue-500 to-blue-700 flex-shrink-0" />
 
       {/* Full-Screen Modal Header */}
       <header className="p-4 sm:p-5 border-b border-zinc-800 bg-zinc-900/95 flex-shrink-0 flex items-center justify-between">
         <div className="max-w-4xl mx-auto w-full flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2 sm:p-2.5 bg-emerald-950/80 border border-emerald-500 text-emerald-400">
+            <div className="p-2 sm:p-2.5 bg-blue-950/80 border border-blue-500 text-blue-400">
               <FileText className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
             <div>
@@ -127,7 +127,7 @@ export default function TermsModal({ isOpen, onAccept, onClose }: TermsModalProp
           <ul className="space-y-3.5 sm:space-y-4 font-sans text-sm sm:text-base text-zinc-200 leading-relaxed">
             {termsList.map((term, index) => (
               <li key={index} className="flex items-start gap-3 bg-zinc-900/40 p-3 sm:p-4 border border-zinc-800/80">
-                <span className="text-emerald-400 font-black flex-shrink-0 text-base sm:text-lg">•</span>
+                <span className="text-blue-400 font-black flex-shrink-0 text-base sm:text-lg">•</span>
                 <span className="text-zinc-200 font-bold">{term}</span>
               </li>
             ))}
@@ -137,10 +137,10 @@ export default function TermsModal({ isOpen, onAccept, onClose }: TermsModalProp
 
       {/* Scroll Indicator Prompt if not at bottom */}
       {!hasScrolledToBottom && (
-        <div className="px-4 py-2 bg-amber-950/80 border-t border-amber-800 flex-shrink-0">
-          <div className="max-w-4xl mx-auto flex items-center justify-between text-xs sm:text-sm font-sans font-bold text-amber-200">
+        <div className="px-4 py-2 bg-red-950/80 border-t border-red-800 flex-shrink-0">
+          <div className="max-w-4xl mx-auto flex items-center justify-between text-xs sm:text-sm font-sans font-bold text-red-200">
             <span className="flex items-center gap-2">
-              <ArrowDown className="w-4 h-4 text-amber-400 animate-bounce flex-shrink-0" />
+              <ArrowDown className="w-4 h-4 text-red-400 animate-bounce flex-shrink-0" />
               Scroll to the bottom of the terms to enable acceptance
             </span>
             <button
@@ -167,11 +167,11 @@ export default function TermsModal({ isOpen, onAccept, onClose }: TermsModalProp
               hasScrolledToBottom ? 'cursor-pointer group' : 'cursor-not-allowed opacity-60'
             }`}
           >
-            <div className="mt-0.5 flex-shrink-0 text-emerald-400">
+            <div className="mt-0.5 flex-shrink-0 text-blue-400">
               {accepted && hasScrolledToBottom ? (
-                <CheckSquare className="w-5 h-5 sm:w-6 sm:h-6 fill-emerald-500 text-black" />
+                <CheckSquare className="w-5 h-5 sm:w-6 sm:h-6 fill-blue-500 text-black" />
               ) : (
-                <Square className={`w-5 h-5 sm:w-6 sm:h-6 ${hasScrolledToBottom ? 'text-zinc-500 group-hover:text-emerald-400' : 'text-zinc-700'} transition-colors`} />
+                <Square className={`w-5 h-5 sm:w-6 sm:h-6 ${hasScrolledToBottom ? 'text-zinc-500 group-hover:text-blue-400' : 'text-zinc-700'} transition-colors`} />
               )}
             </div>
             <span className="text-xs sm:text-sm font-sans font-black text-zinc-200 leading-normal">
@@ -193,7 +193,7 @@ export default function TermsModal({ isOpen, onAccept, onClose }: TermsModalProp
               onClick={handleConfirm}
               className={`px-5 sm:px-6 py-2.5 sm:py-3 font-sans text-xs sm:text-sm uppercase tracking-wider font-black transition-all flex items-center gap-2 cursor-pointer ${
                 accepted && hasScrolledToBottom
-                  ? 'bg-emerald-500 text-black hover:bg-emerald-400 shadow-md shadow-emerald-500/20' 
+                  ? 'bg-blue-600 text-white hover:bg-blue-500 shadow-md shadow-blue-500/20' 
                   : 'bg-zinc-800 text-zinc-500 border border-zinc-700 cursor-not-allowed opacity-60'
               }`}
             >

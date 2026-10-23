@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, X, Instagram } from 'lucide-react';
 import { navigateTo } from '../App';
+import SprocketLogo from './SprocketLogo';
 
 export default function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -62,8 +63,9 @@ export default function Navigation() {
 
   const navLinks = [
     { name: 'Home', href: '#home' },
-    { name: 'The Track', href: '#track' },
     { name: 'Pricing', href: '#pricing' },
+    { name: 'The Tracks', href: '#track' },
+    { name: 'Rider Requirements', href: '#rental-requirements' },
     { name: 'Events', href: '#events' },
     { name: 'Gallery', href: '#gallery' },
     { name: 'My Bookings', href: '?page=mybookings', page: 'mybookings' },
@@ -72,30 +74,25 @@ export default function Navigation() {
 
   return (
     <>
-      {/* Hidden SVG Filter for Instagram Gradient */}
+      {/* Hidden SVG Filter for Instagram Gradient (Red to Blue) */}
       <svg width="0" height="0" className="absolute pointer-events-none" style={{ width: 0, height: 0, overflow: 'hidden' }}>
         <defs>
           <linearGradient id="ig-nav-gradient" x1="0%" y1="100%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#fdf497" />
-            <stop offset="20%" stopColor="#f09433" />
-            <stop offset="40%" stopColor="#e6683c" />
-            <stop offset="60%" stopColor="#dc2743" />
-            <stop offset="80%" stopColor="#cc2366" />
-            <stop offset="100%" stopColor="#bc1888" />
+            <stop offset="0%" stopColor="#ef4444" />
+            <stop offset="50%" stopColor="#dc2626" />
+            <stop offset="100%" stopColor="#3b82f6" />
           </linearGradient>
         </defs>
       </svg>
 
       <nav
         id="mainNav"
-        className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 border-b bg-zinc-950/90 backdrop-blur-md ${
-          isScrolled
-            ? 'border-zinc-800 shadow-xl py-2.5'
-            : 'border-zinc-800/80 py-3.5'
-        }`}
+        className="fixed top-0 left-0 w-full z-50 transition-all duration-300 border-b border-zinc-800 bg-zinc-950/95 backdrop-blur-md shadow-xl"
       >
-        <div className="max-w-6xl mx-auto px-4 flex items-center justify-between">
-          {/* Brand Logo & Monogram Container */}
+        <div className={`max-w-6xl mx-auto px-4 flex items-center justify-between transition-all duration-300 ${
+          isScrolled ? 'py-1.5 sm:py-2' : 'py-2 sm:py-2.5'
+        }`}>
+          {/* Brand Logo: Animated Sprocket & Roller Chain */}
           <a
             href="#home"
             onClick={(e) => {
@@ -104,29 +101,18 @@ export default function Navigation() {
                 navigateTo('home');
               }
             }}
-            className="flex items-center gap-2.5 group z-10 scale-90 sm:scale-100 origin-left"
+            className="flex items-center group z-10 origin-left hover:opacity-95 transition-opacity"
+            title="Rix Compound Home"
           >
-            {/* Real isolated RC Monogram */}
-            <div className="relative h-8 sm:h-9 flex items-center justify-center flex-shrink-0 bg-white/10 p-1 border border-zinc-700/60">
-              <img 
-                src="/rc-monogram.png" 
-                alt="Rix Compound RC Monogram"
-                className="h-7 sm:h-8 w-auto object-contain block invert"
-              />
-            </div>
-            
-            {/* Wordmark next to the Monogram */}
-            <div className="flex flex-col justify-center leading-none">
-              <span className="font-sans font-black text-sm sm:text-base uppercase italic tracking-wider text-white leading-tight">
-                RIX <span className={currentPage === 'booking' ? 'text-emerald-400' : 'text-brand-light'}>COMPOUND</span>
-              </span>
-              <span className="font-sans text-[9px] sm:text-[10px] uppercase tracking-[0.16em] text-zinc-400 font-extrabold leading-none mt-0.5">
-                JUNIOR MX & PIT BIKE TRACK
-              </span>
-            </div>
+            {/* 
+              USER LOGO NOTE:
+              To replace the circle image inside the large drive sprocket,
+              pass circleLogoSrc="/your-logo.png" or update circleLogoSrc in SprocketLogo.tsx!
+            */}
+            <SprocketLogo className="h-13 sm:h-16 w-auto" />
           </a>
 
-        {/* Desktop Links */}
+        {/* Desktop Links (No Book Online Button At Top) */}
         <div className="hidden lg:flex items-center gap-4 xl:gap-6">
           {navLinks.map((link) => (
             <a
@@ -138,12 +124,6 @@ export default function Navigation() {
               {link.name}
             </a>
           ))}
-          <button
-            onClick={() => navigateTo('booking')}
-            className="px-3.5 py-1.5 bg-emerald-500 text-black font-sans text-xs sm:text-sm font-black tracking-wider uppercase hover:bg-emerald-400 transition-colors shadow-sm shadow-emerald-500/20 whitespace-nowrap flex-shrink-0 cursor-pointer"
-          >
-            Book Now
-          </button>
           <a
             href="https://www.instagram.com/rix.compound.mini.dirt.track?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
             target="_blank"
@@ -176,7 +156,7 @@ export default function Navigation() {
         </div>
       </div>
 
-      {/* Mobile / Tablet Drawer */}
+      {/* Mobile / Tablet Drawer (No Book Online Button) */}
       {mobileMenuOpen && (
         <div className="lg:hidden absolute top-full left-0 w-full bg-zinc-950/98 border-b border-zinc-800 shadow-2xl flex flex-col p-5 gap-3.5 z-40">
           {navLinks.map((link) => (
@@ -192,16 +172,6 @@ export default function Navigation() {
               {link.name}
             </a>
           ))}
-          <div className="h-px bg-zinc-800 my-1" />
-          <button
-            onClick={() => {
-              setMobileMenuOpen(false);
-              navigateTo('booking');
-            }}
-            className="w-full text-center py-2.5 bg-emerald-500 text-black font-sans text-xs sm:text-sm font-black tracking-widest uppercase hover:bg-emerald-400 transition-colors shadow-sm shadow-emerald-500/20 cursor-pointer"
-          >
-            Book Track Slot
-          </button>
         </div>
       )}
     </nav>

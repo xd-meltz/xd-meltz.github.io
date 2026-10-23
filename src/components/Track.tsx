@@ -233,40 +233,40 @@ export default function Track() {
                 {/* Status Banner directly underneath the image */}
                 <div className={`py-1.5 sm:py-2 px-2.5 sm:px-3.5 border sm:border-2 flex items-center justify-between ${
                   pitbikeStatus.isOpen
-                    ? 'bg-emerald-950/70 border-emerald-500 text-emerald-100'
+                    ? 'bg-blue-950/70 border-blue-500 text-blue-100'
                     : 'bg-zinc-950/80 border-zinc-700 text-zinc-200'
                 }`}>
                   <div className="flex items-center gap-2">
                     {pitbikeStatus.isOpen ? (
                       <>
                         <span className="relative flex h-2.5 w-2.5">
-                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                          <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-blue-500"></span>
                         </span>
-                        <span className="font-sans text-xs sm:text-sm font-black tracking-wider uppercase text-emerald-300">
+                        <span className="font-sans text-xs sm:text-sm font-black tracking-wider uppercase text-blue-300">
                           OPEN FOR RIDING
                         </span>
                       </>
                     ) : (
                       <>
-                        <Clock className="w-4 h-4 text-amber-400 flex-shrink-0" />
+                        <Clock className="w-4 h-4 text-red-400 flex-shrink-0" />
                         <div className="font-sans text-xs sm:text-sm font-black tracking-wider uppercase flex items-center gap-1.5 flex-wrap">
                           <span className="text-zinc-300">OPEN IN</span>
                           {pitbikeStatus.days !== undefined && pitbikeStatus.days > 0 && (
                             <>
-                              <span className="text-emerald-400 text-sm font-black">{pitbikeStatus.days}</span>
+                              <span className="text-blue-400 text-sm font-black">{pitbikeStatus.days}</span>
                               <span className="text-zinc-300">{pitbikeStatus.days > 1 ? 'DAYS' : 'DAY'}</span>
                             </>
                           )}
                           {pitbikeStatus.hours !== undefined && pitbikeStatus.hours > 0 && (
                             <>
-                              <span className="text-emerald-400 text-sm font-black">{pitbikeStatus.hours}</span>
+                              <span className="text-blue-400 text-sm font-black">{pitbikeStatus.hours}</span>
                               <span className="text-zinc-300">{pitbikeStatus.hours > 1 ? 'HRS' : 'HR'}</span>
                             </>
                           )}
                           {pitbikeStatus.mins !== undefined && pitbikeStatus.mins > 0 && (pitbikeStatus.days === 0 || pitbikeStatus.days === undefined) && (
                             <>
-                              <span className="text-emerald-400 text-sm font-black">{pitbikeStatus.mins}</span>
+                              <span className="text-blue-400 text-sm font-black">{pitbikeStatus.mins}</span>
                               <span className="text-zinc-300">{pitbikeStatus.mins > 1 ? 'MINS' : 'MIN'}</span>
                             </>
                           )}
@@ -278,7 +278,7 @@ export default function Track() {
                     )}
                   </div>
                   {pitbikeStatus.isOpen && (
-                    <span className="font-sans text-xs font-black uppercase tracking-wider hidden sm:inline text-emerald-400">
+                    <span className="font-sans text-xs font-black uppercase tracking-wider hidden sm:inline text-blue-400">
                       LIVE STATUS
                     </span>
                   )}
@@ -288,7 +288,7 @@ export default function Track() {
                 <div>
                   <h3 className="font-sans text-base sm:text-xl font-black uppercase text-white flex items-center gap-2">
                     {track.title}
-                    <span className="text-[10px] sm:text-xs font-sans px-2 py-0.5 bg-emerald-950/80 border border-emerald-500 text-emerald-300 uppercase font-black">
+                    <span className="text-[10px] sm:text-xs font-sans px-2 py-0.5 bg-blue-950/80 border border-blue-500 text-blue-300 uppercase font-black">
                       ACTIVE TRACK
                     </span>
                   </h3>

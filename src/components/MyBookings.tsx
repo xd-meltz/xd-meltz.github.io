@@ -131,11 +131,11 @@ export default function MyBookings() {
     <div className="pt-28 pb-16 sm:pt-32 sm:pb-24 bg-transparent min-h-screen text-white flex flex-col px-3 sm:px-6 lg:px-8">
       {/* Visual Header */}
       <div className="max-w-3xl mx-auto w-full text-center mb-8 sm:mb-12">
-        <div className="inline-flex bg-zinc-900 border border-emerald-500/50 p-1.5 sm:p-2 rounded-none mb-3 sm:mb-4">
-          <Ticket className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-400" />
+        <div className="inline-flex bg-zinc-900 border border-blue-500/50 p-1.5 sm:p-2 rounded-none mb-3 sm:mb-4">
+          <Ticket className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400" />
         </div>
         <h1 className="font-display font-black text-2xl sm:text-4xl text-white uppercase italic tracking-tight">
-          MY <span className="text-emerald-400">BOOKINGS</span>
+          MY <span className="text-blue-400">BOOKINGS</span>
         </h1>
         <p className="text-zinc-300 text-[11px] sm:text-sm mt-1.5 max-w-lg mx-auto font-sans px-2">
           Retrieve your reservation passes, view session statuses, or complete secure Payfast checkout for pending sessions.
@@ -146,7 +146,7 @@ export default function MyBookings() {
       <div className="max-w-2xl mx-auto w-full mb-6 sm:mb-8">
         <div className="bg-zinc-900/90 border-2 border-zinc-700 rounded-none p-4 sm:p-6 shadow-2xl relative overflow-hidden backdrop-blur-md">
           {/* Subtle Accent Line */}
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-emerald-400" />
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-600 to-blue-400" />
           
           <form onSubmit={handleSearch} className="space-y-4">
             <div>
@@ -160,16 +160,16 @@ export default function MyBookings() {
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="e.g. 9501015028088 or BK-123456"
-                  className="w-full bg-zinc-950 border border-zinc-700 rounded-none px-3 py-2.5 sm:py-3.5 pl-9 sm:pl-11 pr-24 sm:pr-28 text-xs sm:text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 font-sans transition-all"
+                  className="w-full bg-zinc-950 border border-zinc-700 rounded-none px-3 py-2.5 sm:py-3.5 pl-9 sm:pl-11 pr-24 sm:pr-28 text-xs sm:text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 font-sans transition-all"
                 />
-                <div className="absolute inset-y-0 left-3 sm:left-4 flex items-center pointer-events-none text-emerald-400">
+                <div className="absolute inset-y-0 left-3 sm:left-4 flex items-center pointer-events-none text-blue-400">
                   <Hash className="w-3.5 h-3.5" />
                 </div>
                 
                 <button
                   type="submit"
                   disabled={loading || !query.trim()}
-                  className="absolute right-1.5 top-1.5 bottom-1.5 px-3 sm:px-4 bg-emerald-500 text-black font-extrabold uppercase rounded-none hover:bg-emerald-400 active:scale-95 disabled:opacity-50 disabled:scale-100 flex items-center gap-1 sm:gap-1.5 transition-all text-[10px] sm:text-xs cursor-pointer"
+                  className="absolute right-1.5 top-1.5 bottom-1.5 px-3 sm:px-4 bg-blue-600 text-white font-extrabold uppercase rounded-none hover:bg-blue-500 active:scale-95 disabled:opacity-50 disabled:scale-100 flex items-center gap-1 sm:gap-1.5 transition-all text-[10px] sm:text-xs cursor-pointer"
                 >
                   {loading ? (
                     <Loader2 className="w-3 h-3 animate-spin" />
@@ -233,11 +233,11 @@ export default function MyBookings() {
                       {/* Booking Summary */}
                       <div className="space-y-2 sm:space-y-3">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-[10px] font-mono font-black text-emerald-400 tracking-wider bg-zinc-950 px-2 py-0.5 rounded-none border border-zinc-700">
+                          <span className="text-[10px] font-mono font-black text-blue-400 tracking-wider bg-zinc-950 px-2 py-0.5 rounded-none border border-zinc-700">
                             {booking.id}
                           </span>
                           
-                          <span className="text-[8px] sm:text-[9px] font-mono font-black uppercase tracking-widest bg-emerald-950/80 border border-emerald-600 text-emerald-300 px-2 py-0.5 rounded-none flex items-center gap-1">
+                          <span className="text-[8px] sm:text-[9px] font-mono font-black uppercase tracking-widest bg-blue-950/80 border border-blue-600 text-blue-300 px-2 py-0.5 rounded-none flex items-center gap-1">
                             <CheckCircle2 className="w-2.5 h-2.5" />
                             PAID & SECURED
                           </span>
@@ -255,15 +255,15 @@ export default function MyBookings() {
                         {/* Timing / Detail Blocks */}
                         <div className="flex items-center gap-3 sm:gap-4 text-[10px] sm:text-xs font-mono text-zinc-300 flex-wrap">
                           <div className="flex items-center gap-1">
-                            <Calendar className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-400" />
+                            <Calendar className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-blue-400" />
                             <span>{booking.date}</span>
                           </div>
                           <div className="flex items-center gap-1">
-                            <Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-400" />
+                            <Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-blue-400" />
                             <span>{booking.slot}</span>
                           </div>
                           <div className="flex items-center gap-1">
-                            <Receipt className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-400" />
+                            <Receipt className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-blue-400" />
                             <span>R {booking.amount}</span>
                           </div>
                         </div>
@@ -273,7 +273,7 @@ export default function MyBookings() {
                       <div className="flex items-center sm:self-center mt-1 sm:mt-0">
                         <button
                           onClick={() => navigateTo('ticket', booking.id)}
-                          className="w-full sm:w-auto px-3.5 py-2 sm:px-4 sm:py-2.5 font-extrabold uppercase rounded-none text-[10px] sm:text-xs tracking-wider transition-all flex items-center justify-center gap-1 sm:gap-1.5 cursor-pointer bg-emerald-500 hover:bg-emerald-400 text-black shadow-sm"
+                          className="w-full sm:w-auto px-3.5 py-2 sm:px-4 sm:py-2.5 font-extrabold uppercase rounded-none text-[10px] sm:text-xs tracking-wider transition-all flex items-center justify-center gap-1 sm:gap-1.5 cursor-pointer bg-blue-600 hover:bg-blue-500 text-white shadow-sm"
                         >
                           <span>View Pass</span>
                           <ArrowRight className="w-3 h-3" />

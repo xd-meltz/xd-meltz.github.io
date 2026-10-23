@@ -262,12 +262,12 @@ export default function WeatherWidget({ date, selectedSlot, className = '' }: We
       case 'rain':
         return <CloudRain className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-600 flex-shrink-0" />;
       case 'thunder':
-        return <CloudLightning className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-500 flex-shrink-0" />;
+        return <CloudLightning className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-red-500 flex-shrink-0" />;
       case 'cloudy':
         return <CloudSun className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-zinc-600 flex-shrink-0" />;
       case 'sunny':
       default:
-        return <Sun className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-500 flex-shrink-0" />;
+        return <Sun className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-red-500 flex-shrink-0" />;
     }
   };
 
@@ -281,7 +281,7 @@ export default function WeatherWidget({ date, selectedSlot, className = '' }: We
       </div>
 
       <div className="flex items-center gap-1.5 sm:gap-3 text-[9px] sm:text-[11px] shrink-0 font-mono">
-        <span className="text-emerald-400 font-black">{activeWeather.tempStr}</span>
+        <span className="text-blue-400 font-black">{activeWeather.tempStr}</span>
         <div className="flex items-center gap-0.5 sm:gap-1 text-blue-400 font-bold">
           <Droplets className="w-2.5 h-2.5 sm:w-3 sm:h-3 flex-shrink-0" />
           <span>{activeWeather.rainProb}%<span className="hidden sm:inline"> ({activeWeather.precipMm}mm)</span></span>

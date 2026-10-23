@@ -70,18 +70,18 @@ export default function RiderRequirements() {
             </div>
 
             {/* Quad Bike Requirements */}
-            <div className="border-l-2 sm:border-l-4 border-emerald-500 pl-3 sm:pl-4 py-1.5 sm:py-2 space-y-2 sm:space-y-3 bg-zinc-950/70 p-3 sm:p-4 border border-zinc-800">
+            <div className="border-l-2 sm:border-l-4 border-blue-500 pl-3 sm:pl-4 py-1.5 sm:py-2 space-y-2 sm:space-y-3 bg-zinc-950/70 p-3 sm:p-4 border border-zinc-800">
               <h3 className="font-sans text-base sm:text-lg font-black uppercase text-white tracking-wide flex items-center gap-2">
-                <Bike className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-400 flex-shrink-0" />
+                <Bike className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400 flex-shrink-0" />
                 <span>Quad Bike Rentals (80cc)</span>
               </h3>
               <p className="text-xs sm:text-sm font-bold text-zinc-200 leading-snug">
-                <strong className="text-emerald-400 font-black">Beginners ARE permitted</strong> on rental quad bikes!
+                <strong className="text-blue-400 font-black">Beginners ARE permitted</strong> on rental quad bikes!
               </p>
               <p className="text-xs sm:text-sm text-zinc-300 leading-normal font-semibold">
                 80cc quad bike riding is accessible and fun for beginners and experienced riders alike. Simple throttle control on flat terrain.
               </p>
-              <div className="p-2.5 sm:p-3 bg-emerald-950/60 border border-emerald-700/80 text-xs sm:text-sm text-zinc-100 font-bold">
+              <div className="p-2.5 sm:p-3 bg-blue-950/60 border border-blue-700/80 text-xs sm:text-sm text-zinc-100 font-bold">
                 • Kids under 14 with no experience may ride as passenger with a guardian (prior approval required).
               </div>
             </div>
@@ -89,7 +89,7 @@ export default function RiderRequirements() {
             {/* General Rules & Damage Policy */}
             <div className="border-l-2 sm:border-l-4 border-zinc-600 pl-3 sm:pl-4 py-1.5 sm:py-2 space-y-2 sm:space-y-3 bg-zinc-950/70 p-3 sm:p-4 border border-zinc-800">
               <h3 className="font-sans text-base sm:text-lg font-black uppercase text-white tracking-wide flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400 flex-shrink-0" />
+                <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5 text-red-400 flex-shrink-0" />
                 <span>Track Rules & Damage Policy</span>
               </h3>
               <p className="text-xs sm:text-sm text-zinc-300 leading-normal font-bold">

@@ -164,7 +164,7 @@ export default function AboutContact() {
               className="w-full flex items-center justify-center gap-2.5 sm:gap-3 py-3 sm:py-3.5 bg-zinc-950 border sm:border-2 border-zinc-700 hover:border-brand text-white hover:text-brand-light transition-colors text-sm sm:text-base font-sans uppercase font-black shadow-lg"
             >
               <span>{phoneFormatted}</span>
-              <span className="text-xs px-2 py-0.5 bg-emerald-950/80 text-emerald-300 font-sans uppercase border border-emerald-500 font-black">Chat Now</span>
+              <span className="text-xs px-2 py-0.5 bg-blue-950/80 text-blue-300 font-sans uppercase border border-blue-500 font-black">Chat Now</span>
             </a>
           </div>
         </div>

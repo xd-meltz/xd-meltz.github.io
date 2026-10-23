@@ -4,7 +4,6 @@
  */
 
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
 import Navigation from './components/Navigation';
 import WebsiteBackground from './components/WebsiteBackground';
 import Hero from './components/Hero';
@@ -18,7 +17,6 @@ import TicketPage from './components/TicketPage';
 import AdminPanel from './components/AdminPanel';
 import MyBookings from './components/MyBookings';
 import TermsModal from './components/TermsModal';
-import { ShieldAlert, X, Bike } from 'lucide-react';
 
 // Custom navigation emitter helper
 export function navigateTo(page: 'home' | 'booking' | 'ticket' | 'admin' | 'mybookings', bookingId?: string) {
@@ -27,37 +25,10 @@ export function navigateTo(page: 'home' | 'booking' | 'ticket' | 'admin' | 'mybo
 }
 
 export default function App() {
-  const [showNotification, setShowNotification] = useState(true);
   const [currentPage, setCurrentPage] = useState<'home' | 'booking' | 'ticket' | 'admin' | 'mybookings'>('home');
   const [currentBookingId, setCurrentBookingId] = useState<string | null>(null);
-  const [showFloatingBookBtn, setShowFloatingBookBtn] = useState(false);
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [hasAcceptedTerms, setHasAcceptedTerms] = useState(false);
-
-  const handleOpenBookingWithTerms = () => {
-    setShowTermsModal(true);
-  };
-
-  useEffect(() => {
-    if (currentPage !== 'home') {
-      setShowFloatingBookBtn(false);
-      return;
-    }
-
-    const handleScroll = () => {
-      const scrollTop = window.scrollY || document.documentElement.scrollTop;
-      if (scrollTop > 300) {
-        setShowFloatingBookBtn(true);
-      } else {
-        setShowFloatingBookBtn(false);
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll(); // initial run
-
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [currentPage]);
 
   useEffect(() => {
     // Process query parameters on load (e.g. from Payfast redirects)
@@ -131,31 +102,14 @@ export default function App() {
       {/* Redesigned Header Menu */}
       {currentPage !== 'admin' && <Navigation />}
 
-      {/* Simplified, Minimalist Floating "Book Online" Button */}
-      <AnimatePresence>
-        {showFloatingBookBtn && currentPage === 'home' && (
-          <motion.button
-            key="floating-book-btn"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
-            onClick={handleOpenBookingWithTerms}
-            className="fixed bottom-6 right-6 z-[45] flex items-center gap-2 px-4 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold uppercase tracking-wider text-[11px] rounded-none border border-emerald-600 shadow-md shadow-emerald-500/20 cursor-pointer transition-colors"
-          >
-            <Bike className="w-3.5 h-3.5" />
-            <span>Book Online</span>
-          </motion.button>
-        )}
-      </AnimatePresence>
-
       {/* Main content flow */}
       <main className="flex-1 w-full flex flex-col relative z-10">
         {currentPage === 'home' && (
           <>
             <Hero />
-            <RiderRequirements />
-            <Track />
             <PricingCalculator />
+            <Track />
+            <RiderRequirements />
             <EventsGallery />
             <AboutContact />
           </>

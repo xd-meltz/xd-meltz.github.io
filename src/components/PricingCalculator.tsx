@@ -9,35 +9,35 @@ export default function PricingCalculator() {
   const rates = [
     {
       item: "Off-Road Go Kart (70cc Kids) • 4 Available",
-      price: "R150",
-      duration: "per 10 min session",
-      note: "70cc off-road go kart for kids. 10-minute session. Thrilling dirt track handling with roll cage protection for kids.",
+      price: "R200 / R280",
+      duration: "10 min (R200) • 15 min (R280)",
+      note: "70cc off-road go kart for kids.",
       tag: "Online Booking Available",
-      tagColor: "bg-emerald-950/80 border-emerald-500 text-emerald-300"
+      tagColor: "bg-blue-950/80 border-blue-500 text-blue-300"
     },
     {
       item: "Mini Bike Rental (70cc) • 2 Available",
-      price: "R150",
-      duration: "per 10 min session",
-      note: "70cc mini bike. 10-minute session. Perfect for smaller or younger riders developing balance and throttle confidence.",
+      price: "R200 / R280",
+      duration: "10 min (R200) • 15 min (R280)",
+      note: "70cc mini bike.",
       tag: "Online Booking Available",
-      tagColor: "bg-emerald-950/80 border-emerald-500 text-emerald-300"
+      tagColor: "bg-blue-950/80 border-blue-500 text-blue-300"
     },
     {
       item: "Pit Bike Rental (110cc Semi-Auto or CRF80 Clutch) • 10 Available",
       price: "R250",
       duration: "per 30 min session",
-      note: "110cc semi-automatic pit bike or Honda CRF80 with clutch. 30 min active ride time. First come, first served on-site! Pay on arrival at the track (no advance online booking). Mandatory prior experience riding on dirt and changing gears. Max weight: 100 kg • Age 14+.",
+      note: "110cc semi-automatic pit bike or Honda CRF80 with clutch. Max weight: 100 kg • Age 14+.",
       tag: "First Come, First Served",
-      tagColor: "bg-amber-950/80 border-amber-500 text-amber-300"
+      tagColor: "bg-red-950/80 border-red-500 text-red-300"
     },
     {
       item: "Quad Bike Rental (80cc Quad) • 3 Available",
       price: "R300",
       duration: "per 30 min session",
-      note: "80cc quad bike. 30 min active ride time. First come, first served on-site! Pay on arrival at the track (no advance online booking). Beginners permitted on rental quad bikes! Fun, simple throttle control on flat dirt.",
+      note: "80cc quad bike.",
       tag: "First Come, First Served",
-      tagColor: "bg-amber-950/80 border-amber-500 text-amber-300"
+      tagColor: "bg-red-950/80 border-red-500 text-red-300"
     },
     {
       item: "Bring Your Own Bike/Pit Bike",
@@ -89,9 +89,21 @@ export default function PricingCalculator() {
                       {rate.item}
                     </h4>
                     {rate.tag && (
-                      <span className={`px-2 py-0.5 border text-[9px] font-mono uppercase font-bold tracking-wider ${rate.tagColor}`}>
-                        {rate.tag}
-                      </span>
+                      rate.tag === "Online Booking Available" ? (
+                        <button
+                          type="button"
+                          onClick={() => navigateTo('booking')}
+                          className={`px-2 py-0.5 border text-[9px] font-mono uppercase font-bold tracking-wider ${rate.tagColor} hover:bg-blue-600 hover:text-white hover:border-blue-400 transition-all cursor-pointer inline-flex items-center gap-1 group shadow-sm`}
+                          title="Click to Book Online Now"
+                        >
+                          <span>{rate.tag}</span>
+                          <span className="text-[10px] group-hover:translate-x-0.5 transition-transform font-bold">→</span>
+                        </button>
+                      ) : (
+                        <span className={`px-2 py-0.5 border text-[9px] font-mono uppercase font-bold tracking-wider ${rate.tagColor}`}>
+                          {rate.tag}
+                        </span>
+                      )
                     )}
                   </div>
                   <p className="text-xs sm:text-sm font-semibold text-zinc-300 mt-1 leading-relaxed">
@@ -99,7 +111,7 @@ export default function PricingCalculator() {
                   </p>
                 </div>
                 <div className="mt-2 sm:mt-0 text-left sm:text-right flex-shrink-0">
-                  <div className="font-sans text-2xl sm:text-3xl font-black text-emerald-400">
+                  <div className="font-sans text-2xl sm:text-3xl font-black text-blue-400">
                     {rate.price}
                   </div>
                   <div className="font-sans text-xs sm:text-sm font-bold uppercase text-zinc-400 mt-0.5">
@@ -114,11 +126,11 @@ export default function PricingCalculator() {
         {/* CTA */}
         <div className="border sm:border-2 border-zinc-700 bg-zinc-900/90 p-4 sm:p-8 text-center max-w-xl mx-auto shadow-2xl">
           <p className="font-sans text-sm sm:text-base font-bold text-zinc-200 leading-relaxed mb-4 sm:mb-5">
-            Advance online bookings are exclusively for Kids Off-Road Go Karts & Mini Bikes. Pit bikes and Quad bikes are strictly first come, first served on-site!
+            Advance online bookings are exclusively for Kids Off-Road Go Karts &amp; Mini Bikes (R200 for 10 min • R280 for 15 min). Pit bikes and Quad bikes are strictly first come, first served on-site (private bookings for pitbikes can be made by contacting Rix Compound directly)!
           </p>
           <button
             onClick={() => navigateTo('booking')}
-            className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-3.5 bg-emerald-500 hover:bg-emerald-400 text-black font-sans font-black uppercase tracking-wider text-sm sm:text-base rounded-none transition-colors inline-flex items-center justify-center gap-2.5 cursor-pointer shadow-lg shadow-emerald-500/20 border sm:border-2 border-emerald-500"
+            className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-sans font-black uppercase tracking-wider text-sm sm:text-base rounded-none transition-colors inline-flex items-center justify-center gap-2.5 cursor-pointer shadow-lg shadow-blue-500/20 border sm:border-2 border-blue-500"
           >
             <Calendar className="w-4 h-4" />
             <span>Book Go Karts & Mini Bikes Online</span>

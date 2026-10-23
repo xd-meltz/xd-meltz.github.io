@@ -232,11 +232,11 @@ export default function TicketPage({ bookingId }: TicketPageProps) {
 
       {/* Hero Welcome confirmation */}
       <div className="text-center max-w-xl mb-10 print:hidden">
-        <div className="w-12 h-12 bg-emerald-950/80 border border-emerald-500 rounded-none flex items-center justify-center text-emerald-400 mx-auto mb-4">
+        <div className="w-12 h-12 bg-blue-950/80 border border-blue-500 rounded-none flex items-center justify-center text-blue-400 mx-auto mb-4">
           <ShieldCheck className="w-6 h-6" />
         </div>
         <h1 className="font-mono text-xl sm:text-2xl font-bold uppercase tracking-wider text-white">
-          Payment <span className="text-emerald-400">Confirmed</span>
+          Payment <span className="text-blue-400">Confirmed</span>
         </h1>
         <p className="text-zinc-400 text-xs mt-2 font-sans">
           Your slot has been reserved. Please print or download your access ticket below to present at the Rix Compound entrance.
@@ -256,7 +256,7 @@ export default function TicketPage({ bookingId }: TicketPageProps) {
               RIX<span className="text-brand-light">COMPOUND</span>
             </h2>
           </div>
-          <span className="px-3 py-1 bg-emerald-950/80 border border-emerald-500 text-emerald-400 text-[10px] font-mono font-bold uppercase print:border-black print:text-black">
+          <span className="px-3 py-1 bg-blue-950/80 border border-blue-500 text-blue-400 text-[10px] font-mono font-bold uppercase print:border-black print:text-black">
             PAID
           </span>
         </div>
@@ -283,7 +283,7 @@ export default function TicketPage({ bookingId }: TicketPageProps) {
           {/* Location & Slot details */}
           <div className="space-y-4">
             <div className="flex items-center gap-3 text-xs text-zinc-300 print:text-black">
-              <Calendar className="w-4 h-4 text-emerald-400 flex-shrink-0 print:text-neutral-600" />
+              <Calendar className="w-4 h-4 text-blue-400 flex-shrink-0 print:text-neutral-600" />
               <div>
                 <span className="text-[9px] text-zinc-400 block leading-tight font-mono font-bold uppercase">Scheduled Date</span>
                 <span className="font-bold text-white text-xs print:text-black">
@@ -293,7 +293,7 @@ export default function TicketPage({ bookingId }: TicketPageProps) {
             </div>
 
             <div className="flex items-center gap-3 text-xs text-zinc-300 print:text-black">
-              <Clock className="w-4 h-4 text-emerald-400 flex-shrink-0 print:text-neutral-600" />
+              <Clock className="w-4 h-4 text-blue-400 flex-shrink-0 print:text-neutral-600" />
               <div>
                 <span className="text-[9px] text-zinc-400 block leading-tight font-mono font-bold uppercase">
                   Time Slot{booking.slots && booking.slots.length > 1 ? 's' : ''}
@@ -305,7 +305,7 @@ export default function TicketPage({ bookingId }: TicketPageProps) {
             </div>
 
             <div className="flex items-center gap-3 text-xs text-zinc-300 print:text-black">
-              <Bike className="w-4 h-4 text-emerald-400 flex-shrink-0 print:text-neutral-600" />
+              <Bike className="w-4 h-4 text-blue-400 flex-shrink-0 print:text-neutral-600" />
               <div>
                 <span className="text-[9px] text-zinc-400 block leading-tight font-mono font-bold uppercase">Rental Specification</span>
                 <span className="font-bold text-white text-xs print:text-black uppercase">
@@ -315,7 +315,7 @@ export default function TicketPage({ bookingId }: TicketPageProps) {
             </div>
 
             <div className="flex items-center gap-3 text-xs text-zinc-300 print:text-black">
-              <MapPin className="w-4 h-4 text-emerald-400 flex-shrink-0 print:text-neutral-600" />
+              <MapPin className="w-4 h-4 text-blue-400 flex-shrink-0 print:text-neutral-600" />
               <div>
                 <span className="text-[9px] text-zinc-400 block leading-tight font-mono font-bold uppercase">Track Location</span>
                 <span className="font-bold text-white text-xs print:text-black">
@@ -337,7 +337,7 @@ export default function TicketPage({ bookingId }: TicketPageProps) {
             </div>
             <div className="text-right">
               <span className="text-zinc-400 block uppercase font-sans text-xs font-black">Amount Paid</span>
-              <span className="font-sans font-black text-emerald-400 text-lg sm:text-xl print:text-black">
+              <span className="font-sans font-black text-blue-400 text-lg sm:text-xl print:text-black">
                 R{booking.amount.toLocaleString()}
               </span>
             </div>

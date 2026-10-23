@@ -48,11 +48,6 @@ export default function EventsGallery() {
       imgUrl: "https://lh3.googleusercontent.com/d/1T1wcEUFgq5E6Gg4_SAw0wh7dvJhpCW-K",
       title: "Track Showcase Flyer",
       badge: "Featured Event"
-    },
-    {
-      imgUrl: "https://lh3.googleusercontent.com/d/1kZyLMKXdsabDqyivA9mGQ3exA1YXYNdW",
-      title: "Weekend Open Session Flyer",
-      badge: "Open Session"
     }
   ];
 
@@ -90,14 +85,14 @@ export default function EventsGallery() {
         <div className="relative z-10 max-w-6xl mx-auto px-3 sm:px-4">
           
           {/* Header */}
-          <div className="mb-4 sm:mb-8">
+          <div className="mb-4 sm:mb-8 text-center sm:text-left">
             <h2 className="font-mono text-2xl sm:text-3xl lg:text-4xl font-bold uppercase tracking-tight italic text-white">
               Upcoming Events
             </h2>
           </div>
 
-          {/* Grid of Events */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 max-w-4xl mx-auto">
+          {/* Single Event Flyer Centered */}
+          <div className="max-w-xl mx-auto">
             {upcomingEvents.map((event, idx) => (
               <div 
                 key={idx} 

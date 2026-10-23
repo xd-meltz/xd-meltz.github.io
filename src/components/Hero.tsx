@@ -4,8 +4,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { CalendarDays, Compass, ShieldAlert, Clock, CheckCircle2, AlertOctagon } from 'lucide-react';
-import { navigateTo } from '../App';
+import { CalendarDays, Compass, ShieldAlert, Clock, CheckCircle2 } from 'lucide-react';
 import { getPitbikeStatus, PitbikeStatus } from '../lib/trackStatus';
 import { getClosedDatesDirect, getClosedSlotsDirect } from '../lib/firebase';
 import { getShuffledPhoto, MAIN_LANDING_PHOTO } from '../lib/backgroundPhotos';
@@ -30,7 +29,7 @@ export default function Hero() {
   return (
     <section 
       id="home" 
-      className="relative min-h-[48vh] sm:min-h-[70vh] pt-16 sm:pt-24 pb-5 sm:pb-8 px-3 sm:px-4 flex flex-col justify-center border-b border-zinc-800 text-white overflow-hidden"
+      className="relative min-h-[48vh] sm:min-h-[70vh] pt-24 sm:pt-32 pb-5 sm:pb-8 px-3 sm:px-4 flex flex-col justify-center border-b border-zinc-800 text-white overflow-hidden"
     >
       {/* Hero photographic background from Google Drive - optimized without backdrop blur */}
       <div className="absolute inset-0 z-0 pointer-events-none transform-gpu">
@@ -63,7 +62,7 @@ export default function Hero() {
               </span>
             </h1>
             <p className="mt-2 sm:mt-3 text-sm sm:text-base text-zinc-200 max-w-xl leading-relaxed font-sans font-bold drop-shadow-sm">
-              A private pit bike and junior MX track on Bottelary Road. Bring your own bike/pit bike (R150) or rent ours for a thrilling, secure day out on the dirt. Simple as that!
+              Bottelary Road&apos;s premier dirt track offering 5 thrilling activities: Off-Road Go Karts (Kids), Mini Bikes, Pit Bikes, Quad Bikes, and Bring Your Own Bike (BYOB) track access. Private bookings for pitbikes are also available by contacting Rix Compound directly!
             </p>
           </div>
 
@@ -73,26 +72,26 @@ export default function Hero() {
             {/* Open / Closed Live Status Box */}
             <div className={`p-3 sm:p-4 border sm:border-2 flex flex-col justify-center ${
               pitbikeStatus.isOpen
-                ? 'bg-emerald-950/70 border-emerald-500 text-emerald-100 shadow-lg'
+                ? 'bg-blue-950/70 border-blue-500 text-blue-100 shadow-lg'
                 : 'bg-zinc-900/85 border-zinc-700 text-zinc-100 shadow-md'
             }`}>
               <div className="flex items-center gap-2.5">
                 {pitbikeStatus.isOpen ? (
                   <div className="flex items-center gap-2 sm:gap-2.5">
                     <span className="relative flex h-2.5 w-2.5 sm:h-3 sm:w-3 flex-shrink-0">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 sm:h-3 sm:w-3 bg-emerald-500"></span>
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 sm:h-3 sm:w-3 bg-blue-500"></span>
                     </span>
-                    <CheckCircle2 className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-400" />
-                    <span className="font-sans text-base sm:text-xl font-black tracking-wider uppercase text-emerald-300">
+                    <CheckCircle2 className="w-5 h-5 sm:w-6 sm:h-6 text-blue-400" />
+                    <span className="font-sans text-base sm:text-xl font-black tracking-wider uppercase text-blue-300">
                       TRACK IS OPEN
                     </span>
                   </div>
                 ) : (
                   <div className="flex items-start gap-2 sm:gap-2.5">
-                    <Clock className="w-5 h-5 sm:w-6 sm:h-6 text-amber-400 flex-shrink-0 mt-0.5" />
+                    <Clock className="w-5 h-5 sm:w-6 sm:h-6 text-red-400 flex-shrink-0 mt-0.5" />
                     <div>
-                      <span className="font-sans text-sm sm:text-base font-black tracking-wider uppercase text-amber-300 block">
+                      <span className="font-sans text-sm sm:text-base font-black tracking-wider uppercase text-red-300 block">
                         TRACK IS CLOSED
                       </span>
                       {pitbikeStatus.text && pitbikeStatus.text !== 'CLOSED' && (
@@ -123,13 +122,17 @@ export default function Hero() {
           </div>
 
           <div className="flex flex-col gap-2.5 mt-1 sm:mt-2 max-w-md">
-            {/* Top Row: Track Layouts & Rider Requirements next to each other */}
+            {/* Top Row: Pricing & Rider Requirements next to each other */}
             <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
               <a
-                href="#track"
+                href="#pricing"
+                onClick={(e) => {
+                  e.preventDefault();
+                  document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' });
+                }}
                 className="py-2.5 sm:py-3 px-3 sm:px-3.5 bg-zinc-900/90 text-white border sm:border-2 border-zinc-700 font-sans text-xs sm:text-sm uppercase tracking-wider hover:bg-zinc-800 transition-colors text-center flex items-center justify-center font-black shadow-md"
               >
-                Track Layouts
+                Pricing
               </a>
               <a
                 href="#rental-requirements"
@@ -144,13 +147,19 @@ export default function Hero() {
               </a>
             </div>
 
-            {/* Bottom Row: Book Online full width */}
-            <button
-              onClick={() => navigateTo('booking')}
-              className="w-full py-3 sm:py-3.5 px-4 sm:px-5 bg-emerald-500 text-black font-sans font-black uppercase tracking-wider text-sm sm:text-base cursor-pointer hover:bg-emerald-400 transition-colors shadow-lg shadow-emerald-500/20 text-center flex items-center justify-center"
-            >
-              Book Online Now
-            </button>
+            {/* Top Info Banner */}
+            <div className="p-3 sm:p-3.5 bg-zinc-900/95 border sm:border-2 border-zinc-700 shadow-lg">
+              <div className="space-y-1 font-mono text-xs sm:text-sm font-bold uppercase tracking-wider">
+                <div className="text-red-400 flex items-center gap-2">
+                  <span className="w-2 h-2 bg-red-500 flex-shrink-0" />
+                  <span>Pitbikes &amp; Quadbikes: First Come First Serve</span>
+                </div>
+                <div className="text-blue-400 flex items-center gap-2">
+                  <span className="w-2 h-2 bg-blue-500 flex-shrink-0" />
+                  <span>Go Karts &amp; Mini Bikes: Online Booking</span>
+                </div>
+              </div>
+            </div>
           </div>
 
         </div>

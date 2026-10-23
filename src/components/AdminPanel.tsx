@@ -782,7 +782,7 @@ export default function AdminPanel() {
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-zinc-850 pb-2 gap-2">
           <div>
             <div className="flex items-center gap-1 mb-0.5">
-              <span className="h-1 w-1 rounded-none bg-emerald-500 animate-pulse" />
+              <span className="h-1 w-1 rounded-none bg-blue-500 animate-pulse" />
               <span className="text-[8px] font-mono text-neutral-400 uppercase tracking-widest font-bold">
                 Owner Dashboard
               </span>
@@ -853,11 +853,11 @@ export default function AdminPanel() {
               </div>
               <div className="py-1 border-l border-zinc-800/40">
                 <span className="text-[8px] font-mono text-neutral-400 block uppercase tracking-wider mb-0.5">Paid</span>
-                <span className="text-sm font-black font-mono text-emerald-400">{paidBookings}</span>
+                <span className="text-sm font-black font-mono text-blue-400">{paidBookings}</span>
               </div>
               <div className="py-1 border-l border-zinc-800/40">
                 <span className="text-[8px] font-mono text-neutral-400 block uppercase tracking-wider mb-0.5">Unpaid</span>
-                <span className="text-sm font-black font-mono text-amber-500">{pendingBookings}</span>
+                <span className="text-sm font-black font-mono text-red-500">{pendingBookings}</span>
               </div>
               <div className="py-1 border-l border-zinc-800/40">
                 <span className="text-[8px] font-mono text-neutral-400 block uppercase tracking-wider mb-0.5">Revenue</span>
@@ -982,7 +982,7 @@ export default function AdminPanel() {
                         required
                         value={adminBookingAmount}
                         onChange={(e) => setAdminBookingAmount(Number(e.target.value))}
-                        className="w-full bg-zinc-900 border border-zinc-800 rounded-none px-2 py-1 text-[10px] text-emerald-400 font-bold outline-none focus:border-brand font-mono"
+                        className="w-full bg-zinc-900 border border-zinc-800 rounded-none px-2 py-1 text-[10px] text-blue-400 font-bold outline-none focus:border-brand font-mono"
                       />
                     </div>
                   </div>
@@ -1034,8 +1034,8 @@ export default function AdminPanel() {
                         onClick={() => setAdminBookingPaid(!adminBookingPaid)}
                         className={`px-2 py-0.5 text-[9px] font-mono font-bold uppercase rounded-none border cursor-pointer ${
                           adminBookingPaid
-                            ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-400'
-                            : 'bg-amber-500/10 border-amber-500/40 text-amber-500'
+                            ? 'bg-blue-500/10 border-blue-500/40 text-blue-400'
+                            : 'bg-red-500/10 border-red-500/40 text-red-500'
                         }`}
                       >
                         {adminBookingPaid ? 'Marked as Paid' : 'Unpaid / Pending'}
@@ -1092,13 +1092,13 @@ export default function AdminPanel() {
                 </button>
                 <button
                   onClick={() => setStatusFilter('paid')}
-                  className={`flex-1 py-1 rounded-none transition-all font-bold cursor-pointer ${statusFilter === 'paid' ? 'bg-emerald-500/20 text-emerald-400' : 'text-neutral-400 hover:text-white'}`}
+                  className={`flex-1 py-1 rounded-none transition-all font-bold cursor-pointer ${statusFilter === 'paid' ? 'bg-blue-500/20 text-blue-400' : 'text-neutral-400 hover:text-white'}`}
                 >
                   Paid
                 </button>
                 <button
                   onClick={() => setStatusFilter('pending')}
-                  className={`flex-1 py-1 rounded-none transition-all font-bold cursor-pointer ${statusFilter === 'pending' ? 'bg-amber-500/20 text-amber-500' : 'text-neutral-400 hover:text-white'}`}
+                  className={`flex-1 py-1 rounded-none transition-all font-bold cursor-pointer ${statusFilter === 'pending' ? 'bg-red-500/20 text-red-500' : 'text-neutral-400 hover:text-white'}`}
                 >
                   Unpaid
                 </button>
@@ -1162,8 +1162,8 @@ export default function AdminPanel() {
                             onClick={() => handleTogglePaid(b.id)}
                             className={`px-2 py-0.5 rounded-none text-[8px] font-mono font-bold uppercase border transition-all cursor-pointer ${
                               b.paid
-                                ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20'
-                                : 'bg-amber-500/10 border-amber-500/30 text-amber-500 hover:bg-amber-500/20'
+                                ? 'bg-blue-500/10 border-blue-500/30 text-blue-400 hover:bg-blue-500/20'
+                                : 'bg-red-500/10 border-red-500/30 text-red-500 hover:bg-red-500/20'
                             }`}
                           >
                             {b.paid ? 'Paid' : 'Unpaid'}
@@ -1358,7 +1358,7 @@ export default function AdminPanel() {
               {/* Locked Dates */}
               <div className="bg-zinc-950 border border-zinc-800 p-2.5 rounded-none space-y-2">
                 <h3 className="font-mono text-[10px] font-black text-white uppercase tracking-widest flex items-center gap-1 border-b border-zinc-900 pb-1">
-                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                  <ShieldCheck className="w-3.5 h-3.5 text-blue-400" />
                   Active Date Locks ({closedDays.length})
                 </h3>
                 <div className="max-h-[160px] overflow-y-auto space-y-1.5 pr-1">
@@ -1377,14 +1377,14 @@ export default function AdminPanel() {
                         </div>
                         {reopenConfirmDate === item.date ? (
                           <div className="flex items-center gap-0.5 bg-zinc-950 p-0.5 border border-zinc-800">
-                            <span className="text-[8px] text-emerald-400 font-mono font-bold px-0.5 uppercase">Reopen?</span>
-                            <button onClick={() => handleReopenDay(item.date)} className="p-0.5 bg-emerald-600 text-white rounded-none cursor-pointer"><Check className="w-2.5 h-2.5" /></button>
+                            <span className="text-[8px] text-blue-400 font-mono font-bold px-0.5 uppercase">Reopen?</span>
+                            <button onClick={() => handleReopenDay(item.date)} className="p-0.5 bg-blue-600 text-white rounded-none cursor-pointer"><Check className="w-2.5 h-2.5" /></button>
                             <button onClick={() => setReopenConfirmDate(null)} className="p-0.5 bg-zinc-800 text-neutral-400 rounded-none cursor-pointer"><X className="w-2.5 h-2.5" /></button>
                           </div>
                         ) : (
                           <button
                             onClick={() => setReopenConfirmDate(item.date)}
-                            className="px-1.5 py-0.5 bg-zinc-950 hover:bg-zinc-800 border border-zinc-800 hover:text-emerald-400 text-[8px] font-mono font-bold uppercase rounded-none transition-colors cursor-pointer"
+                            className="px-1.5 py-0.5 bg-zinc-950 hover:bg-zinc-800 border border-zinc-800 hover:text-blue-400 text-[8px] font-mono font-bold uppercase rounded-none transition-colors cursor-pointer"
                           >
                             Reopen
                           </button>
@@ -1398,7 +1398,7 @@ export default function AdminPanel() {
               {/* Locked Slots */}
               <div className="bg-zinc-950 border border-zinc-800 p-2.5 rounded-none space-y-2">
                 <h3 className="font-mono text-[10px] font-black text-white uppercase tracking-widest flex items-center gap-1 border-b border-zinc-900 pb-1">
-                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                  <ShieldCheck className="w-3.5 h-3.5 text-blue-400" />
                   Active Slot Locks ({closedSlots.length})
                 </h3>
                 <div className="max-h-[160px] overflow-y-auto space-y-1.5 pr-1">
@@ -1420,14 +1420,14 @@ export default function AdminPanel() {
                           </div>
                           {reopenConfirmSlotId === itemKey ? (
                             <div className="flex items-center gap-0.5 bg-zinc-950 p-0.5 border border-zinc-800">
-                              <span className="text-[8px] text-emerald-400 font-mono font-bold px-0.5 uppercase">Reopen?</span>
-                              <button onClick={() => handleReopenSlot(item.date, item.slot)} className="p-0.5 bg-emerald-600 text-white rounded-none cursor-pointer"><Check className="w-2.5 h-2.5" /></button>
+                              <span className="text-[8px] text-blue-400 font-mono font-bold px-0.5 uppercase">Reopen?</span>
+                              <button onClick={() => handleReopenSlot(item.date, item.slot)} className="p-0.5 bg-blue-600 text-white rounded-none cursor-pointer"><Check className="w-2.5 h-2.5" /></button>
                               <button onClick={() => setReopenConfirmSlotId(null)} className="p-0.5 bg-zinc-800 text-neutral-400 rounded-none cursor-pointer"><X className="w-2.5 h-2.5" /></button>
                             </div>
                           ) : (
                             <button
                               onClick={() => setReopenConfirmSlotId(itemKey)}
-                              className="px-1.5 py-0.5 bg-zinc-950 hover:bg-zinc-800 border border-zinc-800 hover:text-emerald-400 text-[8px] font-mono font-bold uppercase rounded-none transition-colors cursor-pointer"
+                              className="px-1.5 py-0.5 bg-zinc-950 hover:bg-zinc-800 border border-zinc-800 hover:text-blue-400 text-[8px] font-mono font-bold uppercase rounded-none transition-colors cursor-pointer"
                             >
                               Reopen
                             </button>
@@ -1487,7 +1487,7 @@ export default function AdminPanel() {
                 </h3>
                 <div className="text-[10px] text-neutral-400 space-y-0.5 font-mono">
                   <div>Active User: <span className="text-white font-bold">{username}</span></div>
-                  <div>Status: <span className="text-emerald-400 font-bold">AUTHORIZED LEVEL</span></div>
+                  <div>Status: <span className="text-blue-400 font-bold">AUTHORIZED LEVEL</span></div>
                 </div>
               </div>
               <button

@@ -60,6 +60,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
   // Pit bikes and quad bikes are strictly walk-in / first-come first-served on-site at the track gate
   const [goKartQty, setGoKartQty] = useState(1);
   const [miniBikeQty, setMiniBikeQty] = useState(0);
+  const [sessionDuration, setSessionDuration] = useState<10 | 15>(10);
 
   // Calendar navigation states
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
@@ -71,7 +72,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Date constraints (cannot book on the day, max 1 month ahead)
+  // Date constraints (same-day booking allowed up to 30 min beforehand, max 1 month ahead)
   const [minDate, setMinDate] = useState('');
   const [maxDate, setMaxDate] = useState('');
   const [closedDates, setClosedDates] = useState<string[]>([]);
@@ -200,10 +201,11 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
     return list.length > 0 ? list.join(' + ') : 'None selected';
   };
 
-  // Pricing Calculation: R150 per 10-minute session per vehicle (Go Kart & Mini Bike)
+  // Pricing Calculation: R200 for 10 min session or R280 for 15 min session per vehicle (Go Kart & Mini Bike)
   // Multiplied by number of chosen 15-minute time slots
   const getPrice = () => {
-    const baseRatePerSession = (150 * goKartQty) + (150 * miniBikeQty);
+    const ratePerVehicle = sessionDuration === 15 ? 280 : 200;
+    const baseRatePerSession = (ratePerVehicle * goKartQty) + (ratePerVehicle * miniBikeQty);
     const slotCount = Math.max(1, selectedSlots.length);
     if (selectedSlots.length === 0) {
       return baseRatePerSession; // Preview rate for 1 session in Step 3
@@ -226,6 +228,21 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
 
     if (goKartQty > 0 && (slotAvail.gokarts ?? 0) < goKartQty) return true;
     if (miniBikeQty > 0 && (slotAvail.minibikes ?? 0) < miniBikeQty) return true;
+
+    // Same-day cutoff: must book at least 30 minutes beforehand
+    if (date) {
+      const today = new Date();
+      const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+      if (date === todayStr) {
+        const [slotH, slotM] = slot.split(":").map(Number);
+        const slotMinutes = slotH * 60 + slotM;
+        const currentMinutes = today.getHours() * 60 + today.getMinutes();
+        if (slotMinutes - currentMinutes < 30) {
+          return true;
+        }
+      }
+    }
+
     return false;
   };
 
@@ -325,6 +342,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
     setSubmitting(true);
 
     const totalSlotCount = selectedSlots.length;
+    const ratePerVehicle = sessionDuration === 15 ? 280 : 200;
     const bookingPayload = {
       name,
       email,
@@ -334,7 +352,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
       slot: selectedSlots.join(', '),
       slots: selectedSlots,
       bikeType: 'Mixed',
-      packageName: `Go Kart & Mini Bike Booking (${getSelectedVehiclesSummary()}) - ${totalSlotCount} Session${totalSlotCount > 1 ? 's' : ''} (${selectedSlots.join(', ')})`,
+      packageName: `Go Kart & Mini Bike Booking (${getSelectedVehiclesSummary()}) - ${sessionDuration} min (${ratePerVehicle === 280 ? 'R280' : 'R200'}) - ${totalSlotCount} Session${totalSlotCount > 1 ? 's' : ''} (${selectedSlots.join(', ')})`,
       quantity: totalSelected * totalSlotCount,
       pitBikeQty: 0,
       quadBikeQty: 0,
@@ -492,7 +510,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                   key={i}
                   className={`w-1.5 h-1.5 rounded-full flex-shrink-0 transition-all ${
                     isAvailable 
-                      ? 'bg-emerald-500 shadow-xs' 
+                      ? 'bg-blue-500 shadow-xs' 
                       : 'bg-zinc-700 border border-zinc-800'
                   }`}
                 />
@@ -514,7 +532,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                   key={i}
                   className={`w-1.5 h-1.5 rounded-full flex-shrink-0 transition-all ${
                     isAvailable 
-                      ? 'bg-emerald-500 shadow-xs' 
+                      ? 'bg-blue-500 shadow-xs' 
                       : 'bg-zinc-700 border border-zinc-800'
                   }`}
                 />
@@ -544,15 +562,15 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
             <button 
               type="button"
               onClick={() => navigateTo('home')}
-              className="inline-flex items-center gap-2 px-3.5 py-2 bg-zinc-900 border-2 border-zinc-700 hover:border-emerald-500 text-zinc-200 font-mono font-bold text-xs sm:text-sm shadow-md active:scale-95 transition-all cursor-pointer"
+              className="inline-flex items-center gap-2 px-3.5 py-2 bg-zinc-900 border-2 border-zinc-700 hover:border-blue-500 text-zinc-200 font-mono font-bold text-xs sm:text-sm shadow-md active:scale-95 transition-all cursor-pointer"
             >
-              <ArrowLeft className="w-4 h-4 text-emerald-400" />
+              <ArrowLeft className="w-4 h-4 text-blue-400" />
               <span>Back to Home</span>
             </button>
             
             {/* Step Counter Badge */}
             <span className="font-mono text-xs text-zinc-300 uppercase tracking-widest bg-zinc-900/90 border border-zinc-700 px-3 py-1.5 shadow-md">
-              Step <span className="text-emerald-400 font-bold">{currentStep}</span> of 5
+              Step <span className="text-blue-400 font-bold">{currentStep}</span> of 5
             </span>
           </div>
         )}
@@ -561,7 +579,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
         {!isInline && (
           <div className="mb-4 sm:mb-6 text-center sm:text-left">
             <h1 className="font-display text-2xl sm:text-5xl font-black uppercase tracking-tight italic text-white">
-              Online <span className="text-emerald-400">Booking</span>
+              Online <span className="text-blue-400">Booking</span>
             </h1>
           </div>
         )}
@@ -587,23 +605,23 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                   }}
                   className={`py-2 px-1 text-center font-mono transition-all rounded-none flex flex-col items-center justify-center relative ${
                     isCurrent
-                      ? 'bg-zinc-900 border-2 border-emerald-500 text-emerald-400 shadow-sm'
+                      ? 'bg-zinc-900 border-2 border-blue-500 text-blue-400 shadow-sm'
                       : isCompleted
-                        ? 'bg-zinc-900 border border-emerald-600/80 text-zinc-200 hover:border-emerald-500 cursor-pointer'
+                        ? 'bg-zinc-900 border border-blue-600/80 text-zinc-200 hover:border-blue-500 cursor-pointer'
                         : 'bg-zinc-950/60 border border-zinc-800 text-zinc-500 opacity-60 cursor-not-allowed'
                   }`}
                 >
                   <div className="flex items-center gap-1">
                     {isCompleted ? (
-                      <Check className="w-3 h-3 text-emerald-400" />
+                      <Check className="w-3 h-3 text-blue-400" />
                     ) : (
-                      <span className={`text-[10px] font-bold ${isCurrent ? 'text-emerald-400' : 'text-zinc-500'}`}>
+                      <span className={`text-[10px] font-bold ${isCurrent ? 'text-blue-400' : 'text-zinc-500'}`}>
                         0{s.num}
                       </span>
                     )}
                   </div>
                   <span className={`text-[9px] sm:text-[11px] uppercase font-bold tracking-wider mt-0.5 truncate max-w-full ${
-                    isCurrent ? 'text-emerald-400 font-black' : isCompleted ? 'text-zinc-200' : 'text-zinc-500'
+                    isCurrent ? 'text-blue-400 font-black' : isCompleted ? 'text-zinc-200' : 'text-zinc-500'
                   }`}>
                     {s.title}
                   </span>
@@ -619,26 +637,26 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
             <div className="flex items-center gap-3 flex-wrap">
               {name && (
                 <span className="text-zinc-200 flex items-center gap-1">
-                  <User className="w-3 h-3 text-emerald-400" />
+                  <User className="w-3 h-3 text-blue-400" />
                   <strong className="text-white">{name.split(' ')[0]}</strong>
                 </span>
               )}
               {date && (
                 <span className="text-zinc-200 flex items-center gap-1">
-                  <Calendar className="w-3 h-3 text-emerald-400" />
+                  <Calendar className="w-3 h-3 text-blue-400" />
                   <span>{date}</span>
                 </span>
               )}
               {selectedSlot && (
                 <span className="text-zinc-200 flex items-center gap-1">
-                  <Clock className="w-3 h-3 text-emerald-400" />
+                  <Clock className="w-3 h-3 text-blue-400" />
                   <span>{selectedSlot}</span>
                 </span>
               )}
             </div>
             <div className="flex items-center gap-1.5 ml-auto">
               <span className="text-zinc-400 text-[10px] uppercase font-bold">Total:</span>
-              <span className="text-emerald-400 font-black text-sm">R{getPrice().toLocaleString()}</span>
+              <span className="text-blue-400 font-black text-sm">R{getPrice().toLocaleString()}</span>
             </div>
           </div>
         )}
@@ -669,8 +687,8 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                 className="space-y-4"
               >
                 <div>
-                  <h3 className="font-mono text-sm uppercase tracking-wider text-emerald-400 flex items-center gap-2 font-bold">
-                    <span className="bg-zinc-950 border border-zinc-700 text-emerald-400 px-2 py-0.5 text-xs font-mono">01</span>
+                  <h3 className="font-mono text-sm uppercase tracking-wider text-blue-400 flex items-center gap-2 font-bold">
+                    <span className="bg-zinc-950 border border-zinc-700 text-blue-400 px-2 py-0.5 text-xs font-mono">01</span>
                     Rider Details
                   </h3>
                 </div>
@@ -682,7 +700,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                     <strong className="text-white font-mono uppercase text-[11px] block sm:inline sm:mr-1">
                       Bringing your own bike/pit bike?
                     </strong>
-                    You do not need to book online! Simply show up at the track and pay <strong className="text-emerald-400 font-bold">R150 on site</strong>.
+                    You do not need to book online! Simply show up at the track and pay <strong className="text-blue-400 font-bold">R150 on site</strong>.
                   </p>
                 </div>
 
@@ -762,7 +780,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                   <button
                     type="button"
                     onClick={handleNextFromStep1}
-                    className="flex-1 sm:flex-initial h-12 px-5 sm:px-7 bg-emerald-500 hover:bg-emerald-400 text-black font-mono font-black text-xs sm:text-sm uppercase tracking-wider transition-all border border-emerald-400 flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-emerald-500/20 active:scale-95"
+                    className="flex-1 sm:flex-initial h-12 px-5 sm:px-7 bg-blue-600 hover:bg-blue-500 text-white font-mono font-black text-xs sm:text-sm uppercase tracking-wider transition-all border border-blue-500 flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-blue-500/20 active:scale-95"
                   >
                     <span className="sm:hidden">Next Step</span>
                     <span className="hidden sm:inline">Next: Choose Date</span>
@@ -783,8 +801,8 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                 className="space-y-4"
               >
                 <div>
-                  <h3 className="font-mono text-sm uppercase tracking-wider text-emerald-400 flex items-center gap-2 font-bold">
-                    <span className="bg-zinc-950 border border-zinc-700 text-emerald-400 px-2 py-0.5 text-xs font-mono">02</span>
+                  <h3 className="font-mono text-sm uppercase tracking-wider text-blue-400 flex items-center gap-2 font-bold">
+                    <span className="bg-zinc-950 border border-zinc-700 text-blue-400 px-2 py-0.5 text-xs font-mono">02</span>
                     Select Date
                   </h3>
                 </div>
@@ -805,7 +823,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                           }
                         }}
                         disabled={currentYear === new Date().getFullYear() && currentMonth === new Date().getMonth()}
-                        className="p-1.5 bg-zinc-900 border border-zinc-700 text-zinc-300 hover:border-emerald-500 hover:text-emerald-400 disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer shadow-xs"
+                        className="p-1.5 bg-zinc-900 border border-zinc-700 text-zinc-300 hover:border-blue-500 hover:text-blue-400 disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer shadow-xs"
                       >
                         <ChevronLeft className="w-4 h-4" />
                       </button>
@@ -829,7 +847,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                           nextMonthLimit.setMonth(new Date().getMonth() + 1);
                           return currentYear === nextMonthLimit.getFullYear() && currentMonth === nextMonthLimit.getMonth();
                         })()}
-                        className="p-1.5 bg-zinc-900 border border-zinc-700 text-zinc-300 hover:border-emerald-500 hover:text-emerald-400 disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer shadow-xs"
+                        className="p-1.5 bg-zinc-900 border border-zinc-700 text-zinc-300 hover:border-blue-500 hover:text-blue-400 disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer shadow-xs"
                       >
                         <ChevronRight className="w-4 h-4" />
                       </button>
@@ -874,19 +892,19 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                               }}
                               className={`aspect-square w-full rounded-none text-xs font-mono transition-all flex flex-col items-center justify-center relative ${
                                 isSelected
-                                  ? 'bg-emerald-500 text-black font-black z-10 shadow-md shadow-emerald-500/20'
+                                  ? 'bg-blue-600 text-white font-black z-10 shadow-md shadow-blue-500/20'
                                   : isClosed
                                     ? 'bg-red-950/60 border border-red-800 text-red-400 cursor-not-allowed font-bold'
                                     : !isSelectable
                                       ? 'text-zinc-600 bg-zinc-900/30 cursor-not-allowed opacity-30'
-                                      : 'text-zinc-200 hover:bg-zinc-800 hover:text-emerald-300 font-bold bg-zinc-900 border border-zinc-700 hover:border-emerald-400 cursor-pointer shadow-xs'
+                                      : 'text-zinc-200 hover:bg-zinc-800 hover:text-blue-300 font-bold bg-zinc-900 border border-zinc-700 hover:border-blue-400 cursor-pointer shadow-xs'
                               }`}
                             >
                               <span className="text-xs">{d}</span>
                               {isClosed ? (
                                 <span className="text-[7.5px] font-black tracking-tight text-red-400 uppercase leading-none mt-1">Closed</span>
                               ) : isSelectable && !isSelected ? (
-                                <span className="w-1.5 h-1.5 rounded-none absolute bottom-1 bg-emerald-400" />
+                                <span className="w-1.5 h-1.5 rounded-none absolute bottom-1 bg-blue-400" />
                               ) : null}
                             </button>
                           );
@@ -901,7 +919,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                     <div className="space-y-3">
                       <div className="p-3 bg-zinc-950/80 border border-zinc-700 flex items-center justify-between">
                         <span className="text-xs text-zinc-400 font-mono font-medium">Selected Day:</span>
-                        <span className="text-sm font-mono font-bold text-emerald-400">{date} ({dayOfWeekName})</span>
+                        <span className="text-sm font-mono font-bold text-blue-400">{date} ({dayOfWeekName})</span>
                       </div>
                       <WeatherWidget date={date} />
                     </div>
@@ -924,7 +942,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                   <button
                     type="button"
                     onClick={handleNextFromStep2}
-                    className="flex-1 sm:flex-initial h-12 px-5 sm:px-7 bg-emerald-500 hover:bg-emerald-400 text-black font-mono font-black text-xs sm:text-sm uppercase tracking-wider transition-all border border-emerald-400 flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-emerald-500/20 active:scale-95"
+                    className="flex-1 sm:flex-initial h-12 px-5 sm:px-7 bg-blue-600 hover:bg-blue-500 text-white font-mono font-black text-xs sm:text-sm uppercase tracking-wider transition-all border border-blue-500 flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-blue-500/20 active:scale-95"
                   >
                     <span className="sm:hidden">Next Step</span>
                     <span className="hidden sm:inline">Next: Rental Package</span>
@@ -945,29 +963,67 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                 className="space-y-4"
               >
                 <div>
-                  <h3 className="font-mono text-sm uppercase tracking-wider text-emerald-400 flex items-center gap-2 font-bold">
-                    <span className="bg-zinc-950 border border-zinc-700 text-emerald-400 px-2 py-0.5 text-xs font-mono">03</span>
+                  <h3 className="font-mono text-sm uppercase tracking-wider text-blue-400 flex items-center gap-2 font-bold">
+                    <span className="bg-zinc-950 border border-zinc-700 text-blue-400 px-2 py-0.5 text-xs font-mono">03</span>
                     Select Vehicles
                   </h3>
                 </div>
 
                 {/* Important Notice: Pit Bikes and Quad Bikes are strictly First Come First Serve */}
-                <div className="p-3.5 sm:p-4 bg-amber-950/70 border-2 border-amber-600/80 text-xs sm:text-sm font-sans text-amber-200 shadow-lg">
+                <div className="p-3.5 sm:p-4 bg-red-950/70 border-2 border-red-600/80 text-xs sm:text-sm font-sans text-red-200 shadow-lg">
                   <div className="flex items-start gap-2.5">
                     <span className="text-base sm:text-lg flex-shrink-0">⚠️</span>
                     <div>
-                      <span className="font-mono font-black uppercase text-amber-300 block mb-0.5 tracking-wider">
+                      <span className="font-mono font-black uppercase text-red-300 block mb-0.5 tracking-wider">
                         Pit Bikes & Quad Bikes: Strictly First-Come, First-Served On-Site!
                       </span>
                       <p className="text-zinc-200 text-xs sm:text-xs leading-relaxed font-semibold">
                         Pit bikes (110cc / CRF80) and Quad bikes (80cc) are strictly walk-in / arrive-and-drive at the track — pay at the gate on arrival (no advance online booking required).
-                        <strong className="text-white block mt-1">Advance online bookings below are exclusively reserved for Kids Off-Road Go Karts & Mini Bikes (R150 per 10-minute session).</strong>
+                        <strong className="text-white block mt-1">Advance online bookings below are exclusively reserved for Kids Off-Road Go Karts &amp; Mini Bikes (R200 for 10 min • R280 for 15 min).</strong>
                       </p>
                     </div>
                   </div>
                 </div>
 
                 <div className="space-y-4 pt-1">
+                  {/* Ride Duration Selection: 10 min (R200) vs 15 min (R280) */}
+                  <div className="p-3.5 sm:p-4 bg-zinc-950/90 border-2 border-zinc-700 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="font-mono text-xs uppercase font-black text-white">Choose Session Duration:</span>
+                      <span className="text-[10px] font-mono text-blue-400 uppercase font-bold">Both Vehicles Same Rates</span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2.5">
+                      <button
+                        type="button"
+                        onClick={() => setSessionDuration(10)}
+                        className={`p-3 border-2 text-center transition-all cursor-pointer ${
+                          sessionDuration === 10
+                            ? 'bg-blue-950/90 border-blue-500 text-white shadow-md ring-1 ring-blue-500'
+                            : 'bg-zinc-900 border-zinc-700 text-zinc-300 hover:border-zinc-500'
+                        }`}
+                      >
+                        <div className="font-mono text-xs font-black uppercase tracking-wider">10 Min Session</div>
+                        <div className="font-sans text-base sm:text-lg font-black text-blue-400 mt-0.5">
+                          R200 <span className="text-xs text-zinc-400 font-bold uppercase">/ vehicle</span>
+                        </div>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setSessionDuration(15)}
+                        className={`p-3 border-2 text-center transition-all cursor-pointer ${
+                          sessionDuration === 15
+                            ? 'bg-blue-950/90 border-blue-500 text-white shadow-md ring-1 ring-blue-500'
+                            : 'bg-zinc-900 border-zinc-700 text-zinc-300 hover:border-zinc-500'
+                        }`}
+                      >
+                        <div className="font-mono text-xs font-black uppercase tracking-wider">15 Min Session</div>
+                        <div className="font-sans text-base sm:text-lg font-black text-blue-400 mt-0.5">
+                          R280 <span className="text-xs text-zinc-400 font-bold uppercase">/ vehicle</span>
+                        </div>
+                      </button>
+                    </div>
+                  </div>
+
                   <div className="space-y-3 bg-zinc-950/80 p-4 sm:p-6 border-2 border-zinc-700 divide-y-2 divide-zinc-800">
                     {/* 1. Off-Road Go Kart Selection (4 available) */}
                     <div className="pb-3 sm:pb-4">
@@ -991,15 +1047,15 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 flex-wrap">
                               <h4 className="font-sans font-black text-sm sm:text-base uppercase text-white truncate">Off-Road Go Kart (70cc Kids)</h4>
-                              <span className="px-1.5 py-0.5 bg-zinc-900 border border-zinc-700 text-[10px] font-mono text-emerald-400 font-bold whitespace-nowrap">
+                              <span className="px-1.5 py-0.5 bg-zinc-900 border border-zinc-700 text-[10px] font-mono text-blue-400 font-bold whitespace-nowrap">
                                 4 Available
                               </span>
                             </div>
                             <p className="text-xs text-zinc-300 font-bold mt-0.5 leading-snug">
                               70cc off-road racing go kart for kids with roll cage & safety belt
                             </p>
-                            <span className="font-sans text-sm sm:text-base text-emerald-400 font-black mt-1 block">
-                              R150 <span className="text-xs text-zinc-400 font-bold">per 10 min ride</span>
+                            <span className="font-sans text-sm sm:text-base text-blue-400 font-black mt-1 block">
+                              R{sessionDuration === 15 ? 280 : 200} <span className="text-xs text-zinc-400 font-bold">per {sessionDuration} min ride</span>
                             </span>
                           </div>
                         </div>
@@ -1051,15 +1107,15 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 flex-wrap">
                               <h4 className="font-sans font-black text-sm sm:text-base uppercase text-white truncate">Mini Bike (70cc)</h4>
-                              <span className="px-1.5 py-0.5 bg-zinc-900 border border-zinc-700 text-[10px] font-mono text-emerald-400 font-bold whitespace-nowrap">
+                              <span className="px-1.5 py-0.5 bg-zinc-900 border border-zinc-700 text-[10px] font-mono text-blue-400 font-bold whitespace-nowrap">
                                 2 Available
                               </span>
                             </div>
                             <p className="text-xs text-zinc-300 font-bold mt-0.5 leading-snug">
                               70cc mini bike (great for smaller/younger riders developing throttle control)
                             </p>
-                            <span className="font-sans text-sm sm:text-base text-emerald-400 font-black mt-1 block">
-                              R150 <span className="text-xs text-zinc-400 font-bold">per 10 min ride</span>
+                            <span className="font-sans text-sm sm:text-base text-blue-400 font-black mt-1 block">
+                              R{sessionDuration === 15 ? 280 : 200} <span className="text-xs text-zinc-400 font-bold">per {sessionDuration} min ride</span>
                             </span>
                           </div>
                         </div>
@@ -1091,7 +1147,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                   </div>
 
                   {goKartQty === 0 && miniBikeQty === 0 && (
-                    <p className="text-xs sm:text-sm text-amber-300 font-sans font-black p-2.5 bg-amber-950/70 border border-amber-800">
+                    <p className="text-xs sm:text-sm text-red-300 font-sans font-black p-2.5 bg-red-950/70 border border-red-800">
                       * Please select at least 1 vehicle (Go Kart or Mini Bike) to proceed.
                     </p>
                   )}
@@ -1099,12 +1155,12 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                   {/* Pricing Preview Box */}
                   <div className="p-4 sm:p-5 bg-zinc-950 border-2 border-zinc-700 flex items-center justify-between">
                     <div>
-                      <span className="text-xs text-zinc-400 font-sans uppercase block font-black">Subtotal (per session)</span>
+                      <span className="text-xs text-zinc-400 font-sans uppercase block font-black">Subtotal (per {sessionDuration} min session)</span>
                       <span className="text-xs sm:text-sm text-zinc-200 font-sans font-bold">
                         {getSelectedVehiclesSummary()}
                       </span>
                     </div>
-                    <span className="text-xl sm:text-2xl font-sans font-black text-emerald-400">
+                    <span className="text-xl sm:text-2xl font-sans font-black text-blue-400">
                       R{getPrice().toLocaleString()}
                     </span>
                   </div>
@@ -1126,7 +1182,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                   <button
                     type="button"
                     onClick={handleNextFromStep3}
-                    className="flex-1 sm:flex-initial h-12 px-5 sm:px-7 bg-emerald-500 hover:bg-emerald-400 text-black font-mono font-black text-xs sm:text-sm uppercase tracking-wider transition-all border border-emerald-400 flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-emerald-500/20 active:scale-95"
+                    className="flex-1 sm:flex-initial h-12 px-5 sm:px-7 bg-blue-600 hover:bg-blue-500 text-white font-mono font-black text-xs sm:text-sm uppercase tracking-wider transition-all border border-blue-500 flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-blue-500/20 active:scale-95"
                   >
                     <span className="sm:hidden">Next Step</span>
                     <span className="hidden sm:inline">Next: Choose Time Slot(s)</span>
@@ -1148,16 +1204,16 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
               >
                 <div>
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                    <h3 className="font-mono text-sm uppercase tracking-wider text-emerald-400 flex items-center gap-2 font-bold">
-                      <span className="bg-zinc-950 border border-zinc-700 text-emerald-400 px-2 py-0.5 text-xs font-mono">04</span>
+                    <h3 className="font-mono text-sm uppercase tracking-wider text-blue-400 flex items-center gap-2 font-bold">
+                      <span className="bg-zinc-950 border border-zinc-700 text-blue-400 px-2 py-0.5 text-xs font-mono">04</span>
                       Choose Time Slot(s)
                     </h3>
-                    <span className="text-[11px] font-mono text-emerald-400 bg-emerald-950/80 border border-emerald-600/70 px-2 py-0.5 self-start sm:self-auto font-bold uppercase tracking-wider">
+                    <span className="text-[11px] font-mono text-blue-400 bg-blue-950/80 border border-blue-600/70 px-2 py-0.5 self-start sm:self-auto font-bold uppercase tracking-wider">
                       Multi-Slot Booking Enabled
                     </span>
                   </div>
                   <p className="text-xs text-zinc-400 font-sans mt-1">
-                    Select one or more 15-minute time slots (10-minute active rides • R150 per session). Tap any slot to add or remove it from your booking!
+                    Select one or more 15-minute time slots ({sessionDuration}-minute active rides • R{sessionDuration === 15 ? 280 : 200} per session). Tap any slot to add or remove it from your booking!
                   </p>
                 </div>
 
@@ -1165,8 +1221,8 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                   {/* Legend */}
                   <div className="flex items-center gap-4 bg-zinc-950/80 py-2 px-3 border border-zinc-700 text-xs font-mono">
                     <div className="flex items-center gap-1.5">
-                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-xs" />
-                      <span className="text-emerald-400 font-bold uppercase text-[10px]">Open</span>
+                      <span className="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-xs" />
+                      <span className="text-blue-400 font-bold uppercase text-[10px]">Open</span>
                     </div>
                     <div className="flex items-center gap-1.5">
                       <span className="w-2.5 h-2.5 rounded-full bg-zinc-500" />
@@ -1177,8 +1233,8 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                       <span className="text-red-400 font-bold uppercase text-[10px]">Closed</span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <span className="w-2.5 h-2.5 rounded-none bg-emerald-400 border border-emerald-300" />
-                      <span className="text-emerald-300 font-bold uppercase text-[10px]">Selected</span>
+                      <span className="w-2.5 h-2.5 rounded-none bg-blue-400 border border-blue-300" />
+                      <span className="text-blue-300 font-bold uppercase text-[10px]">Selected</span>
                     </div>
                   </div>
 
@@ -1189,7 +1245,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
 
                   {loadingAvailability ? (
                     <div className="text-center py-8">
-                      <div className="w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+                      <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
                       <span className="text-xs font-mono text-zinc-400">Loading real-time track slots...</span>
                     </div>
                   ) : (() => {
@@ -1203,9 +1259,9 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 border-b border-zinc-800 pb-2">
                           <div>
                             <h4 className="font-mono text-xs sm:text-sm uppercase tracking-wider text-white font-black flex items-center gap-2">
-                              <Car className="w-4 h-4 text-emerald-400" />
-                              Go Kart & Mini Bike Sessions
-                              <span className="text-[10px] text-emerald-400 font-normal font-sans">(15-Min Intervals • 10m Active Ride • R150)</span>
+                              <Car className="w-4 h-4 text-blue-400" />
+                              Go Kart &amp; Mini Bike Sessions
+                              <span className="text-[10px] text-blue-400 font-normal font-sans">(15-Min Intervals • {sessionDuration}m Active Ride • R{sessionDuration === 15 ? 280 : 200})</span>
                             </h4>
                             <span className="text-[11px] text-zinc-400">
                               Choose multiple slots to extend ride time • Pit bikes & Quad bikes are walk-in only
@@ -1238,14 +1294,14 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                                       ? 'border-red-900/60 bg-red-950/40 text-red-400 opacity-60 cursor-not-allowed'
                                       : 'border-zinc-800 bg-zinc-950 text-zinc-600 opacity-60 cursor-not-allowed'
                                     : selected
-                                      ? 'border-2 border-emerald-400 bg-emerald-950/90 text-emerald-200 shadow-md ring-1 ring-emerald-400/40'
-                                      : 'border-zinc-700 hover:border-emerald-500 bg-zinc-950 hover:bg-emerald-950/30 text-zinc-200 cursor-pointer shadow-xs'
+                                      ? 'border-2 border-blue-400 bg-blue-950/90 text-blue-200 shadow-md ring-1 ring-blue-400/40'
+                                      : 'border-zinc-700 hover:border-blue-500 bg-zinc-950 hover:bg-blue-950/30 text-zinc-200 cursor-pointer shadow-xs'
                                 }`}
                               >
                                 <div className="flex items-center justify-between w-full mb-1">
                                   <span className={`font-mono text-xs font-black tracking-wider ${
                                     selected 
-                                      ? 'text-emerald-300' 
+                                      ? 'text-blue-300' 
                                       : availability[slot]?.isClosed
                                         ? 'text-red-400 line-through' 
                                         : disabled
@@ -1255,7 +1311,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                                     {slot}
                                   </span>
                                   {selected ? (
-                                    <span className="flex items-center gap-0.5 text-[7px] font-mono font-bold text-black uppercase bg-emerald-400 px-1 py-0.5">
+                                    <span className="flex items-center gap-0.5 text-[7px] font-mono font-bold text-black uppercase bg-blue-400 px-1 py-0.5">
                                       <Check className="w-2 h-2 stroke-[3]" />
                                     </span>
                                   ) : availability[slot]?.isClosed ? (
@@ -1267,7 +1323,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                                       FULL
                                     </span>
                                   ) : (
-                                    <span className="text-[7px] font-mono font-bold text-emerald-400 uppercase">
+                                    <span className="text-[7px] font-mono font-bold text-blue-400 uppercase">
                                       OPEN
                                     </span>
                                   )}
@@ -1281,7 +1337,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                         </div>
 
                         {selectedSlots.length > 0 && (
-                          <div className="p-2 bg-emerald-950/40 border border-emerald-600/40 text-xs font-mono text-emerald-300 flex items-center justify-between">
+                          <div className="p-2 bg-blue-950/40 border border-blue-600/40 text-xs font-mono text-blue-300 flex items-center justify-between">
                             <span>✓ Selected: {selectedSlots.join(', ')} ({selectedSlots.length} session{selectedSlots.length > 1 ? 's' : ''})</span>
                           </div>
                         )}
@@ -1301,7 +1357,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                     </div>
                     <div className="text-right">
                       <span className="text-[10px] font-mono uppercase text-zinc-400 block font-bold">Total Amount</span>
-                      <span className="font-sans font-black text-xl text-emerald-400">
+                      <span className="font-sans font-black text-xl text-blue-400">
                         R{getPrice().toLocaleString()}
                       </span>
                     </div>
@@ -1324,7 +1380,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                   <button
                     type="button"
                     onClick={handleNextFromStep4}
-                    className="flex-1 sm:flex-initial h-12 px-5 sm:px-7 bg-emerald-500 hover:bg-emerald-400 text-black font-mono font-black text-xs sm:text-sm uppercase tracking-wider transition-all border border-emerald-400 flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-emerald-500/20 active:scale-95"
+                    className="flex-1 sm:flex-initial h-12 px-5 sm:px-7 bg-blue-600 hover:bg-blue-500 text-white font-mono font-black text-xs sm:text-sm uppercase tracking-wider transition-all border border-blue-500 flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-blue-500/20 active:scale-95"
                   >
                     <span className="sm:hidden">Review & Pay</span>
                     <span className="hidden sm:inline">Next: Review & Checkout</span>
@@ -1345,8 +1401,8 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                 className="space-y-4"
               >
                 <div>
-                  <h3 className="font-mono text-sm uppercase tracking-wider text-emerald-400 flex items-center gap-2 font-bold">
-                    <span className="bg-zinc-950 border border-zinc-700 text-emerald-400 px-2 py-0.5 text-xs font-mono">05</span>
+                  <h3 className="font-mono text-sm uppercase tracking-wider text-blue-400 flex items-center gap-2 font-bold">
+                    <span className="bg-zinc-950 border border-zinc-700 text-blue-400 px-2 py-0.5 text-xs font-mono">05</span>
                     Review & Checkout
                   </h3>
                 </div>
@@ -1373,10 +1429,10 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                   {/* Date & Slot Row */}
                   <div className="p-4 flex items-start justify-between">
                     <div>
-                      <span className="text-[10px] font-mono uppercase text-zinc-400 block mb-0.5 font-bold">Reserved Date & Time</span>
+                      <span className="text-[10px] font-mono uppercase text-zinc-400 block mb-0.5 font-bold">Reserved Date &amp; Time</span>
                       <h4 className="font-bold text-white text-sm">{date} ({dayOfWeekName})</h4>
-                      <p className="text-xs text-emerald-400 font-mono font-bold mt-1">
-                        Selected Time Slots (15-min intervals): {selectedSlots.join(', ')} ({selectedSlots.length} session{selectedSlots.length > 1 ? 's' : ''} of 10 min each)
+                      <p className="text-xs text-blue-400 font-mono font-bold mt-1">
+                        Selected Time Slots (15-min intervals): {selectedSlots.join(', ')} ({selectedSlots.length} session{selectedSlots.length > 1 ? 's' : ''} of {sessionDuration} min each)
                       </p>
                     </div>
                     <button
@@ -1391,12 +1447,12 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                   {/* Rental Package Row */}
                   <div className="p-4 flex items-start justify-between">
                     <div>
-                      <span className="text-[10px] font-mono uppercase text-zinc-400 block mb-0.5 font-bold">Selected Vehicles & Sessions</span>
+                      <span className="text-[10px] font-mono uppercase text-zinc-400 block mb-0.5 font-bold">Selected Vehicles &amp; Sessions</span>
                       <h4 className="font-bold text-white text-sm">
                         {getSelectedVehiclesSummary()}
                       </h4>
                       <p className="text-xs text-zinc-400 mt-1 font-mono">
-                        {selectedSlots.length} session{selectedSlots.length > 1 ? 's' : ''} × R150 per vehicle on {date}
+                        {selectedSlots.length} session{selectedSlots.length > 1 ? 's' : ''} ({sessionDuration} min) × R{sessionDuration === 15 ? 280 : 200} per vehicle on {date}
                       </p>
                     </div>
                     <button
@@ -1411,17 +1467,17 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                   {/* Total Price Row */}
                   <div className="p-4 bg-zinc-900 flex items-center justify-between">
                     <span className="font-mono text-xs uppercase font-bold text-zinc-300">Total Amount Payable</span>
-                    <span className="text-2xl font-mono font-black text-emerald-400">
+                    <span className="text-2xl font-mono font-black text-blue-400">
                       R{getPrice().toLocaleString()}
                     </span>
                   </div>
                 </div>
 
                 {/* 5-minute hold notice */}
-                <div className="bg-emerald-950/70 border-2 border-emerald-600 p-3.5 text-xs sm:text-sm font-sans leading-snug text-emerald-200 flex items-center gap-3 font-bold">
-                  <Clock className="w-5 h-5 text-emerald-400 flex-shrink-0" />
+                <div className="bg-blue-950/70 border-2 border-blue-600 p-3.5 text-xs sm:text-sm font-sans leading-snug text-blue-200 flex items-center gap-3 font-bold">
+                  <Clock className="w-5 h-5 text-blue-400 flex-shrink-0" />
                   <div>
-                    <span className="font-black text-emerald-300">⚡ 5-MINUTE RESERVATION LOCK:</span> Your vehicles will be locked for 5 minutes during checkout. Uncompleted checkouts are released back to the track automatically.
+                    <span className="font-black text-blue-300">⚡ 5-MINUTE RESERVATION LOCK:</span> Your vehicles will be locked for 5 minutes during checkout. Uncompleted checkouts are released back to the track automatically.
                   </div>
                 </div>
 
@@ -1434,7 +1490,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                     className={`w-full min-h-[56px] px-6 font-sans font-black uppercase text-sm sm:text-base tracking-wider transition-all flex items-center justify-center gap-3 border-2 cursor-pointer ${
                       submitting
                         ? 'bg-zinc-800 border-zinc-700 text-zinc-500 cursor-not-allowed'
-                        : 'bg-emerald-500 border-emerald-500 hover:bg-emerald-400 text-black shadow-lg shadow-emerald-500/20 active:scale-[0.98]'
+                        : 'bg-blue-600 border-blue-500 hover:bg-blue-500 text-white shadow-lg shadow-blue-500/20 active:scale-[0.98]'
                     }`}
                   >
                     <CreditCard className="w-5 h-5 flex-shrink-0" />
