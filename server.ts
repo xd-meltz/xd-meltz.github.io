@@ -19,6 +19,7 @@ interface Booking {
   name: string;
   email: string;
   phone: string;
+  idNumber?: string;
   date: string;
   slot: string;
   slots?: string[];
@@ -31,6 +32,8 @@ interface Booking {
   miniBikeQty?: number;
   amount: number;
   paid: boolean;
+  paymentStatus?: string;
+  confirmedAt?: string;
   createdAt: string;
   calendarEventId?: string;
   syncedToCalendar?: boolean;
@@ -695,11 +698,12 @@ async function startServer() {
       const bookings = getBookings();
       const dateBookings = bookings.filter((b) => {
         if (b.date !== date) return false;
-        if (!b.paid) {
+        const isPaid = b.paid === true || (b as any).paid === "true" || ((b.paymentStatus || "").toUpperCase() === "COMPLETE");
+        if (!isPaid) {
           const createdTime = parseSafeTime(b.createdAt);
           const now = Date.now();
-          const fiveMinutesInMs = 5 * 60 * 1000;
-          if (now - createdTime > fiveMinutesInMs) {
+          const holdDurationMs = 15 * 60 * 1000;
+          if (now - createdTime > holdDurationMs) {
             return false;
           }
         }
@@ -844,11 +848,12 @@ async function startServer() {
           ? b.slots 
           : (b.slot ? b.slot.split(',').map((s: string) => s.trim()) : []);
         if (!bSlots.includes(checkSlot)) return false;
-        if (b.paid) return true;
+        const isPaid = b.paid === true || (b as any).paid === "true" || ((b.paymentStatus || "").toUpperCase() === "COMPLETE");
+        if (isPaid) return true;
         const createdTime = parseSafeTime(b.createdAt);
         const now = Date.now();
-        const fiveMinutesInMs = 5 * 60 * 1000;
-        return now - createdTime < fiveMinutesInMs;
+        const holdDurationMs = 15 * 60 * 1000;
+        return now - createdTime < holdDurationMs;
       });
       
       let bookedPitbikes = 0;
@@ -943,6 +948,7 @@ async function startServer() {
       name,
       email,
       phone,
+      idNumber: req.body.idNumber ? String(req.body.idNumber).trim() : undefined,
       date,
       slot: requestedSlots.join(', '),
       slots: requestedSlots,
@@ -1047,8 +1053,9 @@ async function startServer() {
 
     // Local function to match search query
     const matchBooking = (b: any) => {
-      // ONLY return paid bookings (remove unpaid feature from normal user searches)
-      if (!b.paid) return false;
+      // ONLY return paid bookings (ensuring paid bookings stay permanently visible)
+      const isPaid = b.paid === true || (b as any).paid === "true" || ((b.paymentStatus || "").toUpperCase() === "COMPLETE");
+      if (!isPaid) return false;
 
       const qIdNum = idNumber ? (idNumber as string).trim().toLowerCase() : '';
       const qId = id ? (id as string).trim().toLowerCase() : '';
@@ -1112,14 +1119,32 @@ async function startServer() {
     const localIdx = bookings.findIndex((b) => b.id === id);
 
     if (!booking && localIdx === -1) {
-      res.status(404).json({ error: "Booking not found" });
-      return;
-    }
-
-    if (booking) {
-      // If we got it from Firestore, mark as paid
+      const fallbackData = req.body && (req.body.bookingData || (req.body.name ? req.body : null));
+      if (fallbackData) {
+        booking = {
+          ...fallbackData,
+          id: id,
+          paid: true,
+          paymentStatus: "COMPLETE",
+          confirmedAt: new Date().toISOString(),
+          createdAt: fallbackData.createdAt || new Date().toISOString()
+        } as Booking;
+        try {
+          await createBookingDirect(id, booking);
+        } catch (fsErr) {
+          console.warn("Failed saving restored booking to Firestore:", fsErr);
+        }
+        bookings.push(booking);
+        saveBookings(bookings);
+      } else {
+        res.status(404).json({ error: "Booking not found" });
+        return;
+      }
+    } else if (booking) {
+      // If found in Firestore, mark as paid
       booking.paid = true;
-      // Save back to Firestore
+      (booking as any).paymentStatus = "COMPLETE";
+      (booking as any).confirmedAt = new Date().toISOString();
       try {
         await createBookingDirect(id, booking);
       } catch (err) {
@@ -1128,16 +1153,24 @@ async function startServer() {
       // Sync local file too
       if (localIdx !== -1) {
         bookings[localIdx].paid = true;
+        (bookings[localIdx] as any).paymentStatus = "COMPLETE";
         saveBookings(bookings);
       } else {
         bookings.push(booking);
         saveBookings(bookings);
       }
-    } else {
+    } else if (localIdx !== -1) {
       // Fallback: only local booking found
       wasAlreadyPaid = bookings[localIdx].paid;
       bookings[localIdx].paid = true;
+      (bookings[localIdx] as any).paymentStatus = "COMPLETE";
       saveBookings(bookings);
+      booking = bookings[localIdx];
+      try {
+        await createBookingDirect(id, booking);
+      } catch (err) {
+        console.error("Failed to sync confirmed local booking to Firestore:", err);
+      }
     }
 
     const confirmedBooking = booking || bookings[localIdx];
@@ -1235,6 +1268,7 @@ async function startServer() {
       name,
       email,
       phone,
+      idNumber: req.body.idNumber ? String(req.body.idNumber).trim() : undefined,
       date,
       slot,
       bikeType,
@@ -1408,8 +1442,8 @@ async function startServer() {
 
     console.log(`[Payfast ITN] Received payload from IP ${clientIp} (whitelisted AWS IP: ${isWhitelisted}):`, req.body);
 
-    if (merchant_id && merchant_id !== "37096219") {
-      console.warn(`[Payfast ITN] Warning: ITN payload merchant_id ${merchant_id} differs from configured 37096219`);
+    if (merchant_id && merchant_id !== "10051106" && merchant_id !== "37096219") {
+      console.warn(`[Payfast ITN] Warning: ITN payload merchant_id ${merchant_id} differs from configured 10051106`);
     }
 
     if (!m_payment_id) {
@@ -1437,11 +1471,13 @@ async function startServer() {
 
     // Check for payment_status === 'COMPLETE' (case-insensitive)
     const normalizedStatus = (payment_status || "").toString().trim().toUpperCase();
-    if (normalizedStatus === "COMPLETE") {
+    if (normalizedStatus === "COMPLETE" || normalizedStatus === "PAID" || normalizedStatus === "SUCCESS") {
       let wasAlreadyPaid = false;
       if (booking) {
         wasAlreadyPaid = booking.paid;
         booking.paid = true;
+        (booking as any).paymentStatus = "COMPLETE";
+        (booking as any).confirmedAt = new Date().toISOString();
         try {
           await createBookingDirect(m_payment_id, booking);
         } catch (err) {
@@ -1449,6 +1485,7 @@ async function startServer() {
         }
         if (localIdx !== -1) {
           bookings[localIdx].paid = true;
+          (bookings[localIdx] as any).paymentStatus = "COMPLETE";
           saveBookings(bookings);
         } else {
           bookings.push(booking);
@@ -1457,6 +1494,7 @@ async function startServer() {
       } else {
         wasAlreadyPaid = bookings[localIdx].paid;
         bookings[localIdx].paid = true;
+        (bookings[localIdx] as any).paymentStatus = "COMPLETE";
         saveBookings(bookings);
         booking = bookings[localIdx];
       }

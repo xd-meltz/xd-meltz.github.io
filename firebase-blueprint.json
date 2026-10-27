@@ -41,6 +41,14 @@
           "type": "integer",
           "description": "Number of units rented"
         },
+        "slots": {
+          "type": "array",
+          "description": "List of selected 15-minute time slots"
+        },
+        "idNumber": {
+          "type": "string",
+          "description": "Rider national ID or passport number"
+        },
         "pitBikeQty": {
           "type": "integer",
           "description": "Count of pit bikes rented in mixed package"
@@ -49,6 +57,14 @@
           "type": "integer",
           "description": "Count of quad bikes rented in mixed package"
         },
+        "goKartQty": {
+          "type": "integer",
+          "description": "Count of kids go karts rented"
+        },
+        "miniBikeQty": {
+          "type": "integer",
+          "description": "Count of mini bikes rented"
+        },
         "amount": {
           "type": "number",
           "description": "Total price paid/payable"
@@ -56,6 +72,10 @@
         "paid": {
           "type": "boolean",
           "description": "Payment status flag"
+        },
+        "paymentStatus": {
+          "type": "string",
+          "description": "Payment gateway status string (e.g. COMPLETE)"
         },
         "createdAt": {
           "type": "string",

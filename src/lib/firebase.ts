@@ -93,7 +93,7 @@ export const STANDARD_SLOTS = [
   "14:15",
 ];
 
-// 15-minute apart slots for Go Karts & Mini Bikes (10-minute active rides)
+// 15-minute apart slots for Go Karts & Mini Bikes (15-minute active rides)
 export const KIDS_SLOTS = [
   "09:00", "09:15", "09:30", "09:45",
   "10:00", "10:15", "10:30", "10:45",
@@ -146,14 +146,15 @@ export async function getAvailabilityDirect(date: string): Promise<Record<string
       bookings.push({ id: docSnap.id, ...docSnap.data() } as FirestoreBooking);
     });
 
-    // Subtract booked slots (only paid bookings block slots; unpaid block for 5 minutes)
+    // Subtract booked slots (paid bookings stay permanently; unpaid block for 15 minutes during checkout)
     bookings.forEach((b: any) => {
-      if (!b.paid) {
+      const isPaid = b.paid === true || b.paid === 'true' || b.paymentStatus === 'PAID' || b.paymentStatus === 'COMPLETE';
+      if (!isPaid) {
         const createdTime = parseSafeTime(b.createdAt);
         const now = Date.now();
-        const fiveMinutesInMs = 5 * 60 * 1000;
-        if (now - createdTime > fiveMinutesInMs) {
-          return; // Expired 5-minute checkout hold
+        const holdDurationMs = 15 * 60 * 1000;
+        if (now - createdTime > holdDurationMs) {
+          return; // Expired checkout hold
         }
       }
 
@@ -247,6 +248,24 @@ export async function createBookingDirect(bookingId: string, bookingData: any): 
     paid: bookingData.paid !== undefined ? bookingData.paid : false // Default to false (unpaid) on creation/redirection
   });
   await setDoc(docRef, dataToSave);
+}
+
+/**
+ * Permanently confirm a booking as paid in Firestore (merges fields without overwriting)
+ */
+export async function confirmBookingDirect(bookingId: string, additionalData?: any): Promise<void> {
+  const docRef = doc(db, 'bookings', bookingId);
+  const patch: Record<string, any> = {
+    paid: true,
+    paymentStatus: 'COMPLETE',
+    confirmedAt: new Date().toISOString()
+  };
+  if (additionalData) {
+    const cleaned = removeUndefinedFields(additionalData);
+    Object.assign(patch, cleaned);
+    patch.paid = true;
+  }
+  await setDoc(docRef, patch, { merge: true });
 }
 
 /**

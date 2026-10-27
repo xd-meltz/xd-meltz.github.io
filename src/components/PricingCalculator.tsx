@@ -9,16 +9,16 @@ export default function PricingCalculator() {
   const rates = [
     {
       item: "Off-Road Go Kart (70cc Kids) • 4 Available",
-      price: "R200 / R280",
-      duration: "10 min (R200) • 15 min (R280)",
+      price: "R280",
+      duration: "per 15 min session",
       note: "70cc off-road go kart for kids.",
       tag: "Online Booking Available",
       tagColor: "bg-blue-950/80 border-blue-500 text-blue-300"
     },
     {
       item: "Mini Bike Rental (70cc) • 2 Available",
-      price: "R200 / R280",
-      duration: "10 min (R200) • 15 min (R280)",
+      price: "R280",
+      duration: "per 15 min session",
       note: "70cc mini bike.",
       tag: "Online Booking Available",
       tagColor: "bg-blue-950/80 border-blue-500 text-blue-300"
@@ -126,7 +126,7 @@ export default function PricingCalculator() {
         {/* CTA */}
         <div className="border sm:border-2 border-zinc-700 bg-zinc-900/90 p-4 sm:p-8 text-center max-w-xl mx-auto shadow-2xl">
           <p className="font-sans text-sm sm:text-base font-bold text-zinc-200 leading-relaxed mb-4 sm:mb-5">
-            Advance online bookings are exclusively for Kids Off-Road Go Karts &amp; Mini Bikes (R200 for 10 min • R280 for 15 min). Pit bikes and Quad bikes are strictly first come, first served on-site (private bookings for pitbikes can be made by contacting Rix Compound directly)!
+            Advance online bookings are exclusively for Kids Off-Road Go Karts &amp; Mini Bikes (R280 for 15 min). Pit bikes and Quad bikes are strictly first come, first served on-site (private bookings for pitbikes can be made by contacting Rix Compound directly)!
           </p>
           <button
             onClick={() => navigateTo('booking')}

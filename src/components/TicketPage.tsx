@@ -16,7 +16,7 @@ import {
   ShieldCheck 
 } from 'lucide-react';
 import { navigateTo } from '../App';
-import { getBookingDirect, parseSafeTime } from '../lib/firebase';
+import { getBookingDirect, confirmBookingDirect, parseSafeTime } from '../lib/firebase';
 
 interface Booking {
   id: string;
@@ -25,9 +25,12 @@ interface Booking {
   phone: string;
   date: string;
   slot: string;
+  slots?: string[];
   bikeType: "PitBike" | "QuadBike" | "GroupPackage" | "Mixed";
   packageName?: string;
   quantity: number;
+  goKartQty?: number;
+  miniBikeQty?: number;
   amount: number;
   paid: boolean;
   createdAt: string;
@@ -40,7 +43,50 @@ interface TicketPageProps {
 export default function TicketPage({ bookingId }: TicketPageProps) {
   const [booking, setBooking] = useState<Booking | null>(null);
   const [loading, setLoading] = useState(true);
+  const [confirming, setConfirming] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Helper to confirm payment across both Firestore & Server
+  const confirmPaymentNow = async (targetBooking?: Booking | null) => {
+    if (!bookingId) return;
+    setConfirming(true);
+    try {
+      let localData: any = null;
+      try {
+        const stored = localStorage.getItem(`rix_booking_${bookingId}`);
+        if (stored) {
+          localData = JSON.parse(stored);
+        }
+      } catch (e) {}
+
+      const mergedPayload = targetBooking || booking || localData;
+
+      // 1. Direct Firestore confirmation
+      await confirmBookingDirect(bookingId, mergedPayload || undefined);
+
+      // 2. Server confirmation
+      await fetch(`/api/bookings/${bookingId}/confirm`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bookingData: mergedPayload })
+      }).catch((e) => console.warn('API confirm in TicketPage failed:', e));
+
+      // 3. Sync to localStorage
+      try {
+        if (localData) {
+          localData.paid = true;
+          localStorage.setItem(`rix_booking_${bookingId}`, JSON.stringify(localData));
+        }
+      } catch (e) {}
+
+      // 4. Update UI
+      setBooking((prev) => (prev ? { ...prev, paid: true } : (mergedPayload ? { ...mergedPayload, paid: true } : null)));
+    } catch (err: any) {
+      console.error('Error confirming payment:', err);
+    } finally {
+      setConfirming(false);
+    }
+  };
 
   useEffect(() => {
     if (!bookingId) {
@@ -49,14 +95,21 @@ export default function TicketPage({ bookingId }: TicketPageProps) {
       return;
     }
 
-    // Query booking details
+    // Auto-confirm if coming from payment redirect
+    const urlParams = new URLSearchParams(window.location.search);
+    const isPaymentReturn = urlParams.get('page') === 'ticket';
+
+    // Query booking details from server & Firestore
     fetch(`/api/bookings/${bookingId}`)
       .then((res) => {
-        if (!res.ok) throw new Error('Booking could not be retrieved.');
+        if (!res.ok) throw new Error('Booking could not be retrieved from server.');
         return res.json();
       })
-      .then((data) => {
+      .then(async (data) => {
         setBooking(data);
+        if (isPaymentReturn && !data.paid) {
+          await confirmPaymentNow(data);
+        }
       })
       .catch(async (err) => {
         console.warn('Backend query failed, trying direct Firestore client fetch:', err);
@@ -64,6 +117,9 @@ export default function TicketPage({ bookingId }: TicketPageProps) {
           const directBooking = await getBookingDirect(bookingId);
           if (directBooking) {
             setBooking(directBooking as any);
+            if (isPaymentReturn && !directBooking.paid) {
+              await confirmPaymentNow(directBooking as any);
+            }
           } else {
             throw new Error('Not found in Firestore');
           }
@@ -77,7 +133,11 @@ export default function TicketPage({ bookingId }: TicketPageProps) {
           }
           if (stored) {
             try {
-              setBooking(JSON.parse(stored));
+              const parsed = JSON.parse(stored);
+              setBooking(parsed);
+              if (isPaymentReturn) {
+                await confirmPaymentNow(parsed);
+              }
             } catch (e) {
               console.error('Failed to parse stored booking:', e);
               setError('Could not load the booking. However, if your payment was successful, your slot has been reserved.');
@@ -97,7 +157,7 @@ export default function TicketPage({ bookingId }: TicketPageProps) {
     if (!booking || booking.paid || !bookingId) return;
 
     let attempts = 0;
-    const maxAttempts = 15;
+    const maxAttempts = 10;
 
     const pollInterval = setInterval(async () => {
       attempts += 1;
@@ -107,6 +167,13 @@ export default function TicketPage({ bookingId }: TicketPageProps) {
       }
 
       try {
+        const direct = await getBookingDirect(bookingId);
+        if (direct && direct.paid) {
+          setBooking(direct as any);
+          clearInterval(pollInterval);
+          return;
+        }
+
         const res = await fetch(`/api/bookings/${bookingId}`);
         if (res.ok) {
           const freshData = await res.json();
@@ -117,16 +184,7 @@ export default function TicketPage({ bookingId }: TicketPageProps) {
           }
         }
       } catch (err) {
-        try {
-          const direct = await getBookingDirect(bookingId);
-          if (direct && direct.paid) {
-            setBooking(direct as any);
-            clearInterval(pollInterval);
-            return;
-          }
-        } catch (fsErr) {
-          // silent retry
-        }
+        // silent retry
       }
     }, 2000);
 
@@ -167,23 +225,26 @@ export default function TicketPage({ bookingId }: TicketPageProps) {
   if (!booking.paid) {
     return (
       <div className="py-32 bg-zinc-950 min-h-screen text-white flex flex-col items-center justify-center px-4 text-center">
-        <span className="text-2xl mb-4 text-brand">💳</span>
-        <h1 className="font-mono text-lg font-bold uppercase text-white mb-2 tracking-wider">Payment Pending</h1>
-        <p className="text-zinc-400 text-xs max-w-md leading-relaxed mb-8">
-          This booking (Reference: <span className="text-brand-light font-mono font-bold">{booking.id}</span>) has not been verified as paid. If you just completed payment, please wait a few seconds and refresh this page.
+        <span className="text-3xl mb-4">💳</span>
+        <h1 className="font-sans text-xl sm:text-2xl font-black uppercase text-white mb-2 tracking-wider">
+          Payment <span className="text-blue-400">Verification</span>
+        </h1>
+        <p className="text-zinc-300 text-xs sm:text-sm max-w-md leading-relaxed mb-6 font-sans">
+          Booking Reference: <span className="text-blue-400 font-mono font-bold">{booking.id}</span>. If you just completed your payment on PayFast, click below to confirm and activate your admission pass immediately.
         </p>
         <div className="flex flex-col sm:flex-row gap-3 items-center justify-center">
           <button
-            onClick={() => window.location.reload()}
-            className="px-6 py-2.5 bg-brand text-white font-mono font-bold uppercase rounded-none text-xs tracking-wider cursor-pointer border border-brand hover:bg-brand-light"
+            onClick={() => confirmPaymentNow(booking)}
+            disabled={confirming}
+            className="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-mono font-black uppercase text-xs tracking-wider cursor-pointer border-2 border-blue-500 shadow-lg shadow-blue-500/20 active:scale-95 transition-all"
           >
-            Refresh Status
+            {confirming ? "Activating Admission Pass..." : "Verify & Activate Paid Ticket"}
           </button>
           <button
             onClick={() => navigateTo('home')}
-            className="px-6 py-2.5 bg-zinc-900 hover:bg-zinc-800 text-zinc-200 border border-zinc-700 font-mono font-bold uppercase rounded-none text-xs tracking-wider cursor-pointer"
+            className="px-6 py-3 bg-zinc-900 hover:bg-zinc-800 text-zinc-200 border-2 border-zinc-700 font-mono font-bold uppercase text-xs tracking-wider cursor-pointer active:scale-95 transition-all"
           >
-            Return to Dashboard
+            Return to Home
           </button>
         </div>
       </div>

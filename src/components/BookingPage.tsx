@@ -60,7 +60,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
   // Pit bikes and quad bikes are strictly walk-in / first-come first-served on-site at the track gate
   const [goKartQty, setGoKartQty] = useState(1);
   const [miniBikeQty, setMiniBikeQty] = useState(0);
-  const [sessionDuration, setSessionDuration] = useState<10 | 15>(10);
+  const sessionDuration = 15; // Strictly 15-minute sessions for R280
 
   // Calendar navigation states
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
@@ -201,10 +201,10 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
     return list.length > 0 ? list.join(' + ') : 'None selected';
   };
 
-  // Pricing Calculation: R200 for 10 min session or R280 for 15 min session per vehicle (Go Kart & Mini Bike)
+  // Pricing Calculation: strictly R280 for 15 min session per vehicle (Go Kart & Mini Bike)
   // Multiplied by number of chosen 15-minute time slots
   const getPrice = () => {
-    const ratePerVehicle = sessionDuration === 15 ? 280 : 200;
+    const ratePerVehicle = 280;
     const baseRatePerSession = (ratePerVehicle * goKartQty) + (ratePerVehicle * miniBikeQty);
     const slotCount = Math.max(1, selectedSlots.length);
     if (selectedSlots.length === 0) {
@@ -342,7 +342,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
     setSubmitting(true);
 
     const totalSlotCount = selectedSlots.length;
-    const ratePerVehicle = sessionDuration === 15 ? 280 : 200;
+    const ratePerVehicle = 280;
     const bookingPayload = {
       name,
       email,
@@ -352,7 +352,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
       slot: selectedSlots.join(', '),
       slots: selectedSlots,
       bikeType: 'Mixed',
-      packageName: `Go Kart & Mini Bike Booking (${getSelectedVehiclesSummary()}) - ${sessionDuration} min (${ratePerVehicle === 280 ? 'R280' : 'R200'}) - ${totalSlotCount} Session${totalSlotCount > 1 ? 's' : ''} (${selectedSlots.join(', ')})`,
+      packageName: `Go Kart & Mini Bike Booking (${getSelectedVehiclesSummary()}) - 15 min (R280) - ${totalSlotCount} Session${totalSlotCount > 1 ? 's' : ''} (${selectedSlots.join(', ')})`,
       quantity: totalSelected * totalSlotCount,
       pitBikeQty: 0,
       quadBikeQty: 0,
@@ -389,14 +389,14 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
         console.error('Failed to write to localStorage:', e);
       }
 
-      // Form post payload to Payfast (migrated AWS endpoint)
+      // Form post payload to Payfast Sandbox
       const payfastForm = document.createElement('form');
       payfastForm.method = 'POST';
-      payfastForm.action = 'https://payment.payfast.io/eng/process';
+      payfastForm.action = 'https://sandbox.payfast.co.za/eng/process';
 
       const fields: Record<string, string> = {
-        merchant_id: '37096219',
-        merchant_key: 'y0wll0wnpt4k3',
+        merchant_id: '10051106',
+        merchant_key: 'w3q3a42d6my8m',
         return_url: `${window.location.origin}/?page=ticket&bookingId=${bookingId}`,
         cancel_url: `${window.location.origin}/?page=booking`,
         notify_url: `${window.location.origin}/api/payfast-itn`,
@@ -495,51 +495,59 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
     const availableKart = slotAvail.gokarts ?? 4;
     const availableMini = slotAvail.minibikes ?? 2;
 
+    // Only show the dots for the vehicle the client chose
+    const showKarts = goKartQty > 0 || (goKartQty === 0 && miniBikeQty === 0);
+    const showMini = miniBikeQty > 0 || (goKartQty === 0 && miniBikeQty === 0);
+
     return (
       <div className="mt-1.5 pt-1.5 border-t border-zinc-800 w-full space-y-1 text-left">
         {/* Off-Road Go Karts */}
-        <div>
-          <div className="flex items-center justify-between text-[8px] sm:text-[9px] text-zinc-300 font-mono font-bold tracking-wider leading-none mb-0.5">
-            <span>KARTS ({availableKart}/{totalGoKarts})</span>
+        {showKarts && (
+          <div>
+            <div className="flex items-center justify-between text-[8px] sm:text-[9px] text-zinc-300 font-mono font-bold tracking-wider leading-none mb-0.5">
+              <span>KARTS ({availableKart}/{totalGoKarts})</span>
+            </div>
+            <div className="flex items-center gap-0.5 sm:gap-1 flex-nowrap">
+              {Array.from({ length: totalGoKarts }).map((_, i) => {
+                const isAvailable = i < availableKart;
+                return (
+                  <span
+                    key={i}
+                    className={`w-1.5 h-1.5 rounded-full flex-shrink-0 transition-all ${
+                      isAvailable 
+                        ? 'bg-blue-500 shadow-xs' 
+                        : 'bg-zinc-700 border border-zinc-800'
+                    }`}
+                  />
+                );
+              })}
+            </div>
           </div>
-          <div className="flex items-center gap-0.5 sm:gap-1 flex-nowrap">
-            {Array.from({ length: totalGoKarts }).map((_, i) => {
-              const isAvailable = i < availableKart;
-              return (
-                <span
-                  key={i}
-                  className={`w-1.5 h-1.5 rounded-full flex-shrink-0 transition-all ${
-                    isAvailable 
-                      ? 'bg-blue-500 shadow-xs' 
-                      : 'bg-zinc-700 border border-zinc-800'
-                  }`}
-                />
-              );
-            })}
-          </div>
-        </div>
+        )}
 
         {/* Mini Bikes (70cc) */}
-        <div>
-          <div className="flex items-center justify-between text-[8px] sm:text-[9px] text-zinc-300 font-mono font-bold tracking-wider leading-none mb-0.5">
-            <span>MINI ({availableMini}/{totalMiniBikes})</span>
+        {showMini && (
+          <div>
+            <div className="flex items-center justify-between text-[8px] sm:text-[9px] text-zinc-300 font-mono font-bold tracking-wider leading-none mb-0.5">
+              <span>MINI ({availableMini}/{totalMiniBikes})</span>
+            </div>
+            <div className="flex items-center gap-0.5 sm:gap-1 flex-nowrap">
+              {Array.from({ length: totalMiniBikes }).map((_, i) => {
+                const isAvailable = i < availableMini;
+                return (
+                  <span
+                    key={i}
+                    className={`w-1.5 h-1.5 rounded-full flex-shrink-0 transition-all ${
+                      isAvailable 
+                        ? 'bg-blue-500 shadow-xs' 
+                        : 'bg-zinc-700 border border-zinc-800'
+                    }`}
+                  />
+                );
+              })}
+            </div>
           </div>
-          <div className="flex items-center gap-0.5 sm:gap-1 flex-nowrap">
-            {Array.from({ length: totalMiniBikes }).map((_, i) => {
-              const isAvailable = i < availableMini;
-              return (
-                <span
-                  key={i}
-                  className={`w-1.5 h-1.5 rounded-full flex-shrink-0 transition-all ${
-                    isAvailable 
-                      ? 'bg-blue-500 shadow-xs' 
-                      : 'bg-zinc-700 border border-zinc-800'
-                  }`}
-                />
-              );
-            })}
-          </div>
-        </div>
+        )}
       </div>
     );
   };
@@ -979,49 +987,24 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                       </span>
                       <p className="text-zinc-200 text-xs sm:text-xs leading-relaxed font-semibold">
                         Pit bikes (110cc / CRF80) and Quad bikes (80cc) are strictly walk-in / arrive-and-drive at the track — pay at the gate on arrival (no advance online booking required).
-                        <strong className="text-white block mt-1">Advance online bookings below are exclusively reserved for Kids Off-Road Go Karts &amp; Mini Bikes (R200 for 10 min • R280 for 15 min).</strong>
+                        <strong className="text-white block mt-1">Advance online bookings below are exclusively reserved for Kids Off-Road Go Karts &amp; Mini Bikes (R280 for 15 min).</strong>
                       </p>
                     </div>
                   </div>
                 </div>
 
                 <div className="space-y-4 pt-1">
-                  {/* Ride Duration Selection: 10 min (R200) vs 15 min (R280) */}
-                  <div className="p-3.5 sm:p-4 bg-zinc-950/90 border-2 border-zinc-700 space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="font-mono text-xs uppercase font-black text-white">Choose Session Duration:</span>
-                      <span className="text-[10px] font-mono text-blue-400 uppercase font-bold">Both Vehicles Same Rates</span>
+                  {/* Fixed Session Rate Badge: 15 min for R280 */}
+                  <div className="p-3 sm:p-3.5 bg-blue-950/80 border-2 border-blue-500/80 flex items-center justify-between flex-wrap gap-2 text-white">
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-blue-400 flex-shrink-0" />
+                      <span className="font-mono text-xs sm:text-sm uppercase font-black tracking-wider text-blue-200">
+                        15-Minute Session
+                      </span>
                     </div>
-                    <div className="grid grid-cols-2 gap-2.5">
-                      <button
-                        type="button"
-                        onClick={() => setSessionDuration(10)}
-                        className={`p-3 border-2 text-center transition-all cursor-pointer ${
-                          sessionDuration === 10
-                            ? 'bg-blue-950/90 border-blue-500 text-white shadow-md ring-1 ring-blue-500'
-                            : 'bg-zinc-900 border-zinc-700 text-zinc-300 hover:border-zinc-500'
-                        }`}
-                      >
-                        <div className="font-mono text-xs font-black uppercase tracking-wider">10 Min Session</div>
-                        <div className="font-sans text-base sm:text-lg font-black text-blue-400 mt-0.5">
-                          R200 <span className="text-xs text-zinc-400 font-bold uppercase">/ vehicle</span>
-                        </div>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setSessionDuration(15)}
-                        className={`p-3 border-2 text-center transition-all cursor-pointer ${
-                          sessionDuration === 15
-                            ? 'bg-blue-950/90 border-blue-500 text-white shadow-md ring-1 ring-blue-500'
-                            : 'bg-zinc-900 border-zinc-700 text-zinc-300 hover:border-zinc-500'
-                        }`}
-                      >
-                        <div className="font-mono text-xs font-black uppercase tracking-wider">15 Min Session</div>
-                        <div className="font-sans text-base sm:text-lg font-black text-blue-400 mt-0.5">
-                          R280 <span className="text-xs text-zinc-400 font-bold uppercase">/ vehicle</span>
-                        </div>
-                      </button>
-                    </div>
+                    <span className="font-sans text-base sm:text-lg font-black text-blue-400">
+                      R280 <span className="text-xs text-zinc-300 font-bold uppercase">/ vehicle</span>
+                    </span>
                   </div>
 
                   <div className="space-y-3 bg-zinc-950/80 p-4 sm:p-6 border-2 border-zinc-700 divide-y-2 divide-zinc-800">
@@ -1055,7 +1038,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                               70cc off-road racing go kart for kids with roll cage & safety belt
                             </p>
                             <span className="font-sans text-sm sm:text-base text-blue-400 font-black mt-1 block">
-                              R{sessionDuration === 15 ? 280 : 200} <span className="text-xs text-zinc-400 font-bold">per {sessionDuration} min ride</span>
+                              R280 <span className="text-xs text-zinc-400 font-bold">per 15 min ride</span>
                             </span>
                           </div>
                         </div>
@@ -1115,7 +1098,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                               70cc mini bike (great for smaller/younger riders developing throttle control)
                             </p>
                             <span className="font-sans text-sm sm:text-base text-blue-400 font-black mt-1 block">
-                              R{sessionDuration === 15 ? 280 : 200} <span className="text-xs text-zinc-400 font-bold">per {sessionDuration} min ride</span>
+                              R280 <span className="text-xs text-zinc-400 font-bold">per 15 min ride</span>
                             </span>
                           </div>
                         </div>
@@ -1155,7 +1138,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                   {/* Pricing Preview Box */}
                   <div className="p-4 sm:p-5 bg-zinc-950 border-2 border-zinc-700 flex items-center justify-between">
                     <div>
-                      <span className="text-xs text-zinc-400 font-sans uppercase block font-black">Subtotal (per {sessionDuration} min session)</span>
+                      <span className="text-xs text-zinc-400 font-sans uppercase block font-black">Subtotal (per 15 min session)</span>
                       <span className="text-xs sm:text-sm text-zinc-200 font-sans font-bold">
                         {getSelectedVehiclesSummary()}
                       </span>
@@ -1213,7 +1196,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                     </span>
                   </div>
                   <p className="text-xs text-zinc-400 font-sans mt-1">
-                    Select one or more 15-minute time slots ({sessionDuration}-minute active rides • R{sessionDuration === 15 ? 280 : 200} per session). Tap any slot to add or remove it from your booking!
+                    Select one or more 15-minute time slots (15-minute active rides • R280 per session). Tap any slot to add or remove it from your booking!
                   </p>
                 </div>
 
@@ -1261,7 +1244,6 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                             <h4 className="font-mono text-xs sm:text-sm uppercase tracking-wider text-white font-black flex items-center gap-2">
                               <Car className="w-4 h-4 text-blue-400" />
                               Go Kart &amp; Mini Bike Sessions
-                              <span className="text-[10px] text-blue-400 font-normal font-sans">(15-Min Intervals • {sessionDuration}m Active Ride • R{sessionDuration === 15 ? 280 : 200})</span>
                             </h4>
                             <span className="text-[11px] text-zinc-400">
                               Choose multiple slots to extend ride time • Pit bikes & Quad bikes are walk-in only
@@ -1432,7 +1414,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                       <span className="text-[10px] font-mono uppercase text-zinc-400 block mb-0.5 font-bold">Reserved Date &amp; Time</span>
                       <h4 className="font-bold text-white text-sm">{date} ({dayOfWeekName})</h4>
                       <p className="text-xs text-blue-400 font-mono font-bold mt-1">
-                        Selected Time Slots (15-min intervals): {selectedSlots.join(', ')} ({selectedSlots.length} session{selectedSlots.length > 1 ? 's' : ''} of {sessionDuration} min each)
+                        Selected Time Slots (15-min intervals): {selectedSlots.join(', ')} ({selectedSlots.length} session{selectedSlots.length > 1 ? 's' : ''} of 15 min each)
                       </p>
                     </div>
                     <button
@@ -1452,7 +1434,7 @@ export default function BookingPage({ isInline = false }: { isInline?: boolean }
                         {getSelectedVehiclesSummary()}
                       </h4>
                       <p className="text-xs text-zinc-400 mt-1 font-mono">
-                        {selectedSlots.length} session{selectedSlots.length > 1 ? 's' : ''} ({sessionDuration} min) × R{sessionDuration === 15 ? 280 : 200} per vehicle on {date}
+                        {selectedSlots.length} session{selectedSlots.length > 1 ? 's' : ''} (15 min) × R280 per vehicle on {date}
                       </p>
                     </div>
                     <button

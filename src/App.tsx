@@ -40,22 +40,35 @@ export default function App() {
       setCurrentPage('ticket');
       setCurrentBookingId(bookingIdParam);
       
-      // Auto-confirm booking as paid in the local JSON database
-      fetch(`/api/bookings/${bookingIdParam}/confirm`, { method: 'POST' })
+      // Retrieve local booking data backup if available
+      let localBackup: any = null;
+      try {
+        const stored = localStorage.getItem(`rix_booking_${bookingIdParam}`);
+        if (stored) {
+          localBackup = JSON.parse(stored);
+          localBackup.paid = true;
+          localStorage.setItem(`rix_booking_${bookingIdParam}`, JSON.stringify(localBackup));
+        }
+      } catch (e) {
+        console.warn('Error reading local booking for confirm:', e);
+      }
+
+      // 1. Auto-confirm booking as paid via API (with payload fallback)
+      fetch(`/api/bookings/${bookingIdParam}/confirm`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bookingData: localBackup })
+      })
         .then((res) => res.json())
-        .then((data) => console.log('Booking confirmed:', data))
-        .catch(async (err) => {
-          console.warn('Error confirming booking via API, attempting direct Firestore update:', err);
-          try {
-            const { doc, updateDoc } = await import('firebase/firestore');
-            const { db } = await import('./lib/firebase');
-            const docRef = doc(db, 'bookings', bookingIdParam);
-            await updateDoc(docRef, { paid: true });
-            console.log('Booking confirmed directly via Firestore.');
-          } catch (fsErr) {
-            console.error('Failed to confirm booking via Firestore:', fsErr);
-          }
-        });
+        .then((data) => console.log('Booking confirmed via API:', data))
+        .catch((err) => console.warn('API confirm request failed:', err));
+
+      // 2. ALWAYS perform direct Firestore update to guarantee persistence
+      import('./lib/firebase').then(({ confirmBookingDirect }) => {
+        confirmBookingDirect(bookingIdParam, localBackup)
+          .then(() => console.log('Booking confirmed directly in Firestore.'))
+          .catch((fsErr) => console.error('Failed to confirm booking in Firestore:', fsErr));
+      });
     } else if (pageParam === 'booking') {
       setShowTermsModal(true);
     } else if (pageParam === 'admin') {

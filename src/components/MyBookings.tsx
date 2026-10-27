@@ -80,25 +80,53 @@ export default function MyBookings() {
         
         // DIRECT FIRESTORE FALLBACK FOR ID NUMBER OR BOOKING ID
         const bookingsCol = collection(db, 'bookings');
+        const bookingMap = new Map<string, any>();
         
         // 1. Direct document lookup by ID
-        const docRef = doc(db, 'bookings', qTrim);
-        const docSnap = await getDoc(docRef);
-        const bookingMap = new Map<string, any>();
-
-        if (docSnap.exists()) {
-          const b = { id: docSnap.id, ...docSnap.data() } as any;
-          if (b.paid) {
-            bookingMap.set(b.id, b);
+        try {
+          const docRef = doc(db, 'bookings', qTrim);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            const b = { id: docSnap.id, ...docSnap.data() } as any;
+            const isPaid = b.paid === true || b.paid === 'true' || b.paymentStatus === 'COMPLETE';
+            if (isPaid) {
+              bookingMap.set(b.id, b);
+            }
           }
-        }
+        } catch (e) {}
 
-        // 2. Query where idNumber matches
-        const qIdNumber = fsQuery(bookingsCol, where('idNumber', '==', qTrim), where('paid', '==', true));
-        const snapId = await getDocs(qIdNumber);
-        snapId.forEach((dSnap) => {
-          bookingMap.set(dSnap.id, { id: dSnap.id, ...dSnap.data() });
-        });
+        // 2. Query where idNumber matches (single-field query, no composite index needed)
+        try {
+          const qIdNumber = fsQuery(bookingsCol, where('idNumber', '==', qTrim));
+          const snapId = await getDocs(qIdNumber);
+          snapId.forEach((dSnap) => {
+            const b = { id: dSnap.id, ...dSnap.data() } as any;
+            const isPaid = b.paid === true || b.paid === 'true' || b.paymentStatus === 'COMPLETE';
+            if (isPaid) {
+              bookingMap.set(dSnap.id, b);
+            }
+          });
+        } catch (e) {}
+
+        // 3. Check localStorage for local cached bookings
+        try {
+          for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key && key.startsWith('rix_booking_')) {
+              const itemStr = localStorage.getItem(key);
+              if (itemStr) {
+                const b = JSON.parse(itemStr);
+                const matches = (b.id && b.id.toLowerCase() === qTrim.toLowerCase()) || 
+                                (b.idNumber && b.idNumber.toLowerCase() === qTrim.toLowerCase()) ||
+                                (b.email && b.email.toLowerCase() === qTrim.toLowerCase()) ||
+                                (b.phone && comparePhones(b.phone, qTrim));
+                if (matches && (b.paid === true || b.paid === 'true')) {
+                  bookingMap.set(b.id, b);
+                }
+              }
+            }
+          }
+        } catch (e) {}
 
         data = Array.from(bookingMap.values());
       }
